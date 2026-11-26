@@ -23,9 +23,10 @@ key.properties
 # Built artefacts (rebuilt in CI — see tools/build_db.py and build.yml)
 assets/sunnati.db
 assets/sunnati.db.sha256
+assets/narrators.db
+assets/narrators.db.sha256
 assets/fonts/Amiri-Regular.ttf
 assets/fonts/Amiri-Bold.ttf
-android/app/src/main/res/mipmap-*/ic_launcher.png
 
 # Local tooling
 local.properties

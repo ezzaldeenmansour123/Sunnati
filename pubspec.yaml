@@ -30,14 +30,13 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/sunnati.db
-    - assets/sunnati.db.sha256
-    # Phase 5 core (optional asset): the derived narrators database
-    # (CC BY-NC-SA 4.0, OpenITI Taqrib al-Tahdhib). The app installs it
-    # when present and works without it when absent.
-    - assets/narrators.db
-    - assets/narrators.db.sha256
+    # NOTE (rebuild 2026-11-26): the library (sunnati.db) is downloaded
+    # after install from the library-v1 release, and narrators.db is held
+    # back by the KITAB gate — neither is embedded any more. Only the
+    # assistant phrasings stay embedded (small, needed offline).
     - assets/assistant_phrasings.json
+    # Home brand header image (owner's v2 icon, 512 px legacy PNG).
+    - assets/app_icon.png
   fonts:
     # Amiri (SIL OFL 1.1) — يُحمَّل في CI من مصدر موثّق (انظر .github/workflows/build.yml).
     # إن غاب الخط في بيئة البناء سقط Flutter تلقائياً إلى خط النظام؛ لا يُسلَّم APK بخط غير مرخّص.

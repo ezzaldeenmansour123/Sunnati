@@ -51,9 +51,10 @@
 الواجهة حديثة بسيطة راقية واضحة، بعيدة عن الزخارف المبالغ فيها أو
 القوالب التقليدية للتطبيقات الإسلامية. روح التصميم المرجعي محفوظة
 (شعار الكتاب المفتوح والقبة، والشاشات الـ15) بهذه اللوحة الجديدة.
-الألوان مصدرها الوحيد `lib/core/theme.dart`؛ الأيقونة تُولد من
-`tools/make_icon.py` (بترولي وذهبي مطفي على عاجي — بلا أخضر إطلاقاً)،
-ومصدرها `tools/icon-source.png` (أيقونة 2026-11-26 v2).
+الألوان مصدرها الوحيد `lib/core/theme.dart`؛ الأيقونة تُولد من صورة
+المالك `tools/icon-source.png` (أيقونة 2026-11-26 v2) عبر
+`tools/make_icon_from_source.py` (تحويل JPEG→PNG، أيقونة تكيفية على
+عاجي — بلا أخضر إطلاقاً).
 
 ## البنية
 
@@ -69,7 +70,7 @@ lib/
                        #   assistant, narrators, takhrij, commentaries,
                        #   downloads, favorites, settings (+ widgets)
 test/                  # 6 ملفات، 47 اختباراً — CI يفشل عند فشل أي منها
-tools/                 # build_db.py (بناء DB)، isnad_parser.py (+ اختباراته)، make_icon.py
+tools/                 # build_db.py (بناء DB)، isnad_parser.py (+ اختباراته)، make_icon_from_source.py
 android/               # مشروع Android كامل في المستودع — applicationId ثابت com.sunnati.app
 .github/workflows/     # build.yml — analyze + test + build DB + font + icon + signing + APK + Release
                        # generate-keystore.yml — توليد keystore الإصدار مرة واحدة (يدوي)
@@ -130,7 +131,7 @@ storeFile=keystore.jks
 أبداً**، وفقدان المفتاح يعني فقدان هوية التوقيع واضطرار المستخدمين
 لإعادة التثبيت.
 
-الأيقونة: `python3 tools/make_icon.py --out android/app/src/main/res`
+الأيقونة: `python3 tools/make_icon_from_source.py --out android/app/src/main/res`
 (يتطلب Pillow).
 
 ## حالة المراحل
