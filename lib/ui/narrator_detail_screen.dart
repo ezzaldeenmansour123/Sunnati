@@ -77,15 +77,21 @@ class _NarratorDetailScreenState extends State<NarratorDetailScreen> {
   Widget build(BuildContext context) {
     final n = _narrator;
     if (n == null) {
+      // When the narrators package is held back pending approval, the
+      // empty state names that reason instead of looking like a bug.
+      final heldBack = !widget.db.narratorsAvailable;
       return Scaffold(
         appBar: AppBar(title: const Text('الراوي')),
         body: ListView(
           padding: const EdgeInsets.all(12),
-          children: const [
+          children: [
             EmptyLibraryCard(
-              title: 'لم تتوفر ترجمة موثّقة',
-              detail:
-                  'لا يوجد راوٍ بهذا المعرف في المكتبة المثبّتة — تراجم الرواة قيد الاستيراد في المرحلة 5.',
+              title: heldBack
+                  ? 'حزمة الرواة قيد انتظار الموافقة'
+                  : 'لم تتوفر ترجمة موثّقة',
+              detail: heldBack
+                  ? 'حالة هذا الراوي غير متاحة بعد — حزمة الرواة قيد انتظار الموافقة ولم تُثبَّت بعد.'
+                  : 'لا يوجد راوٍ بهذا المعرف في المكتبة المثبّتة — تراجم الرواة قيد الاستيراد في المرحلة 5.',
               icon: Icons.person_outline,
             ),
           ],

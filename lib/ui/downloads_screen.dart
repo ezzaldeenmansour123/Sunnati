@@ -9,11 +9,27 @@ import '../core/theme.dart';
 import '../data/database.dart';
 import '../data/download_manager.dart';
 import '../models/downloaded_library.dart';
+import 'library_download_card.dart';
 
-/// Downloads manager (master prompt §12) — Phase 7.
+/// Downloads manager (master prompt §12) — Phase 7, external-download
+/// rebuild 2026-11-26.
 ///
-/// The core library (the Nine Books) is bundled in the APK and always
-/// installed; this screen reports it honestly with its real counts.
+/// The core library (the Nine Books) is NO LONGER bundled in the APK:
+/// it is downloaded once after install from the `library-v1` release
+/// (see [kLibraryPackage]) and this screen shows its real state —
+/// download / pause / resume / retry / SHA-256 verify / delete — through
+/// the shared [LibraryDownloadCard]. A migrated build-52 install shows
+/// as installed here with its real counts; its SHA-256 is reported as
+/// "not recorded for this migrated copy" when no hash was ever stored
+/// (never invented).
+///
+/// The narrators package is HELD BACK by the KITAB gate
+/// ([kNarratorsPackageHeldBack]): it is shown as "pending approval"
+/// with the honest explanation and NO download button — never a dead
+/// button. The only narrators state that can show as installed is a
+/// valid copy already on the device from a previous install (legacy
+/// local copy, labelled as such).
+///
 /// Extended libraries are PREPARATION ONLY (see
 /// `lib/core/extended_library.dart`): they are listed as "preparing —
 /// not available yet" with NO download button, NO size and NO URL. A
@@ -24,8 +40,7 @@ import '../models/downloaded_library.dart';
 /// with status `available` exists (created only after a verified
 /// package is published with a valid manifest), this screen offers a
 /// working download with progress, pause/resume, retry, SHA-256
-/// verification and delete — through [DownloadManager]. Today no such
-/// row exists, so those controls are dormant, not fake.
+/// verification and delete — through [DownloadManager].
 class DownloadsScreen extends StatefulWidget {
   const DownloadsScreen({super.key, required this.db});
 
@@ -36,6 +51,7 @@ class DownloadsScreen extends StatefulWidget {
 }
 
 class _DownloadsScreenState extends State<DownloadsScreen> {
+  late SunnatiDatabase _db;
   List<DownloadedLibrary> _packages = const <DownloadedLibrary>[];
   StorageSummary? _storage;
   DownloadManager? _manager;
@@ -46,6 +62,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
   @override
   void initState() {
     super.initState();
+    _db = widget.db;
     _refresh();
   }
 
@@ -63,13 +80,20 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
     if (!mounted) return;
     setState(() {
       _manager = manager;
-      _packages = widget.db.downloadedLibraries();
+      _packages = _db.downloadedLibraries();
       _storage = summary;
     });
   }
 
   void _snack(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  DownloadedLibrary? get _libraryRow {
+    for (final pkg in _packages) {
+      if (pkg.libraryId == kLibraryPackage.id) return pkg;
+    }
+    return null;
   }
 
   Future<void> _download(DownloadedLibrary pkg) async {
@@ -113,7 +137,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
       );
       _notice = null;
     });
-    widget.db.upsertDownloadedLibrary(
+    _db.upsertDownloadedLibrary(
       _withStatus(pkg, 'downloading', downloadedBytes: pkg.downloadedBytes),
     );
     try {
@@ -125,7 +149,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
       await for (final entity in dir.list(recursive: true)) {
         if (entity is File) size += await entity.length();
       }
-      widget.db.upsertDownloadedLibrary(
+      _db.upsertDownloadedLibrary(
         _withStatus(
           pkg,
           'installed',
@@ -133,7 +157,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
           downloadedBytes: manifest.totalBytes,
         ),
       );
-      widget.db.auditInsert(
+      _db.auditInsert(
         action: 'package_installed',
         entityType: 'package',
         entityId: manifest.libraryId,
@@ -148,7 +172,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
       }
     } on DownloadPausedException {
       // Pause is not an error: the partial file stays for resume.
-      widget.db.upsertDownloadedLibrary(
+      _db.upsertDownloadedLibrary(
         _withStatus(
           pkg,
           'paused',
@@ -156,7 +180,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
         ),
       );
     } on PackageException catch (e) {
-      widget.db.upsertDownloadedLibrary(_withStatus(pkg, 'failed'));
+      _db.upsertDownloadedLibrary(_withStatus(pkg, 'failed'));
       if (mounted) _snack(e.message);
     } finally {
       if (mounted) {
@@ -226,8 +250,8 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
       }
     }
     if (manifest != null) await manager.deletePackage(manifest);
-    widget.db.deleteDownloadedLibrary(pkg.libraryId);
-    widget.db.auditInsert(
+    _db.deleteDownloadedLibrary(pkg.libraryId);
+    _db.auditInsert(
       action: 'package_deleted',
       entityType: 'package',
       entityId: pkg.libraryId,
@@ -256,14 +280,114 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
     );
   }
 
+  /// Verify the installed CORE library: SQLite header + quick_check +
+  /// hadith count, and — when a hash was recorded for this copy — a
+  /// streaming SHA-256 comparison. A migrated build-52 copy has no
+  /// recorded hash, and the message says so instead of inventing one.
+  Future<void> _verifyLibrary() async {
+    final dir = await getApplicationSupportDirectory();
+    final file = SunnatiDatabase.installedLibraryFile(dir);
+    final valid = await SunnatiDatabase.verifyLibraryFile(file);
+    if (!valid) {
+      _snack('المكتبة المثبّتة غير سليمة — احذفها وأعد تنزيلها.');
+      return;
+    }
+    final row = _libraryRow;
+    if (row == null || row.sha256.isEmpty) {
+      _snack('المكتبة سليمة وفق فحص قاعدة البيانات — لا توجد بصمة '
+          'SHA-256 محفوظة لهذه النسخة (مهاجَرة من تثبيت سابق).');
+      return;
+    }
+    final matches = await verifyFileSha256(file, row.sha256);
+    if (!mounted) return;
+    _snack(
+      matches
+          ? 'المكتبة سليمة — تطابق SHA-256 المنشور.'
+          : 'المكتبة لا تطابق SHA-256 المنشور — احذفها وأعد تنزيلها.',
+    );
+  }
+
+  /// Delete the installed CORE library (file + registry row), then
+  /// re-open the database so the screen shows the download card again.
+  /// The app offers the re-download in place; on the next cold boot the
+  /// first-run screen would do the same.
+  Future<void> _deleteLibrary() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('حذف المكتبة الأساسية؟'),
+        content: const Text(
+          'ستُحذف الكتب التسعة من الجهاز، وستحتاج إلى إعادة تنزيلها '
+          'لتصفح الأحاديث دون إنترنت.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('إلغاء'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('حذف'),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+    // Delete the registry row first, while the file still exists.
+    _db.deleteDownloadedLibrary(kLibraryPackage.id);
+    _db.auditInsert(
+      action: 'package_deleted',
+      entityType: 'package',
+      entityId: kLibraryPackage.id,
+      detail: 'deleted core library ${kLibraryPackage.id}',
+    );
+    final dir = await getApplicationSupportDirectory();
+    final file = SunnatiDatabase.installedLibraryFile(dir);
+    final partial = File('${file.path}.part');
+    try {
+      if (await partial.exists()) await partial.delete();
+    } catch (_) {}
+    try {
+      if (await file.exists()) await file.delete();
+    } catch (_) {}
+    // NOTE: the old database handle is deliberately NOT closed here:
+    // the Home screen behind this page still holds the same instance,
+    // and closing it would make its next read throw. The stale handle
+    // keeps reading the deleted file until the next cold boot, when the
+    // first-run screen takes over — the notice below says so.
+    final fresh = await SunnatiDatabase.open();
+    if (!mounted) return;
+    setState(() {
+      _db = fresh;
+      _notice = 'حُذفت المكتبة الأساسية — نزّلها مجدداً من الأسفل. '
+          'أعد تشغيل التطبيق لتحديث الشاشة الرئيسية.';
+    });
+    await _refresh();
+  }
+
+  Future<void> _onLibraryInstalled() async {
+    final fresh = await SunnatiDatabase.open();
+    if (!mounted) return;
+    setState(() {
+      _db = fresh;
+      _notice = 'تم تثبيت المكتبة الأساسية بعد التحقق من سلامتها. '
+          'أعد تشغيل التطبيق لتحديث الشاشة الرئيسية.';
+    });
+    await _refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final books = widget.db.books();
-    final installed = widget.db.totalHadiths();
-    final available =
-        _packages.where((p) => p.status == 'available').toList();
-    final installedPkgs =
-        _packages.where((p) => p.status == 'installed').toList();
+    final books = _db.books();
+    final installed = _db.totalHadiths();
+    final libraryInstalled = _db.isAvailable;
+    final libraryRow = _libraryRow;
+    final available = _packages
+        .where((p) => p.status == 'available' && p.libraryId != 'library')
+        .toList();
+    final installedPkgs = _packages
+        .where((p) => p.status == 'installed' && p.libraryId != 'library')
+        .toList();
     final activeId = _activeProgress?.libraryId;
     return Scaffold(
       appBar: AppBar(title: const Text('التنزيلات')),
@@ -282,10 +406,110 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
             child: Text(
               installed > 0
                   ? '$installed حديثاً مثبّتاً وتعمل دون إنترنت.'
-                  : 'لا توجد أحاديث مثبّتة بعد — المكتبة قيد الاستيراد.',
+                  : 'لا توجد أحاديث مثبّتة بعد — نزّل المكتبة الأساسية من الأسفل.',
               style: const TextStyle(color: SunnatiColors.inkMuted),
             ),
           ),
+          const _SectionTitle('المكتبة الأساسية — الكتب التسعة'),
+          if (libraryInstalled)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      kLibraryPackage.displayName,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${libraryRow?.version ?? '1.0.0'} — '
+                      '${libraryRow != null && libraryRow.sizeBytes > 0 ? formatBytes(libraryRow.sizeBytes) : '$installed حديثاً'}'
+                      '${libraryRow != null && libraryRow.sha256.isEmpty ? '\nبصمة SHA-256 غير محفوظة لهذه النسخة (مهاجَرة من تثبيت سابق)' : ''}',
+                      style:
+                          const TextStyle(color: SunnatiColors.inkMuted),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: _verifyLibrary,
+                          icon: const Icon(Icons.verified_outlined),
+                          label: const Text('التحقق من السلامة (SHA-256)'),
+                        ),
+                        const SizedBox(width: 8),
+                        OutlinedButton.icon(
+                          onPressed: _deleteLibrary,
+                          icon: const Icon(Icons.delete_outline),
+                          label: const Text('حذف'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            LibraryDownloadCard(onInstalled: _onLibraryInstalled),
+          const _SectionTitle('حزمة الرواة'),
+          _db.narratorsAvailable
+              ? Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${kNarratorsPackage.displayName} — مثبّتة من نسخة سابقة',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${_db.narratorCount()} راوٍ موثّق — نسخة محلية '
+                          'من تثبيت سابق على هذا الجهاز. هذه النسخة ليست '
+                          'منزّلة من هذا الإصدار ولا تُوزَّع منه؛ تبقى '
+                          'للقراءة فقط إلى أن يُبتّ في أمر الحزمة.',
+                          style: const TextStyle(
+                            color: SunnatiColors.inkMuted,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Chip(
+                          label: Text('نسخة محلية قديمة'),
+                          backgroundColor: SunnatiColors.goldSoft,
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          kNarratorsPackage.displayName,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${kNarratorsPackage.unavailableReason} — لن '
+                          'تظهر للتنزيل حتى تصل الموافقة أو يقرر المالك.',
+                          style: const TextStyle(
+                            color: SunnatiColors.inkMuted,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Chip(
+                          label: Text('بانتظار الموافقة'),
+                          backgroundColor: SunnatiColors.goldSoft,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
           _SectionCard(
             title: 'المساحة',
             child: Text(
@@ -294,7 +518,8 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                   : 'الحزم الموسعة على الجهاز: '
                       '${formatBytes(_storage!.totalBytes)} '
                       '(${_storage!.perPackage.length} حزمة). '
-                      'المكتبة الأساسية مضمّنة في التطبيق.',
+                      'المكتبة الأساسية تُنزَّل بعد التثبيت وتُحفظ في '
+                      'مساحة التطبيق.',
               style: const TextStyle(color: SunnatiColors.inkMuted),
             ),
           ),
@@ -388,8 +613,8 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'التنزيل اختياري للمكتبات الموسعة فقط. المكتبة الأساسية كاملة '
-            'داخل التطبيق وتعمل دون إنترنت.',
+            'التنزيل اختياري للمكتبات الموسعة فقط. المكتبة الأساسية '
+            'تُنزَّل مرة واحدة بعد التثبيت ثم تعمل دون إنترنت.',
             textAlign: TextAlign.center,
             style: TextStyle(color: SunnatiColors.inkMuted, fontSize: 12),
           ),

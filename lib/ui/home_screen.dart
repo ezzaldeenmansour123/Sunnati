@@ -69,15 +69,16 @@ class HomeScreen extends StatelessWidget {
         children: [
           // Brand header: open-book + dome mark is the launcher icon; here
           // the wordmark + tagline carry the identity in petrol + matte gold.
-          const Card(
+          Card(
             color: SunnatiColors.petrol,
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               child: Column(
                 children: [
-                  Icon(Icons.menu_book, size: 44, color: Colors.white),
-                  SizedBox(height: 8),
-                  Text(
+                  Image.asset('assets/app_icon.png', width: 64, height: 64),
+                  const SizedBox(height: 8),
+                  const Text(
                     'سُنَّتي',
                     style: TextStyle(
                       fontSize: 30,
@@ -85,7 +86,7 @@ class HomeScreen extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-                  Text(
+                  const Text(
                     'SUNNATI',
                     style: TextStyle(
                       fontSize: 13,
@@ -93,8 +94,8 @@ class HomeScreen extends StatelessWidget {
                       color: SunnatiColors.goldSoft,
                     ),
                   ),
-                  SizedBox(height: 8),
-                  Text(
+                  const SizedBox(height: 8),
+                  const Text(
                     'السنة النبوية بين يديك، بفهم موثّق وذكاء متقدم',
                     style: TextStyle(color: Colors.white70),
                     textAlign: TextAlign.center,
@@ -103,6 +104,23 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),
+          const SizedBox(height: 8),
+          // Search entry — the reference home has a search field under
+          // the title; it opens the advanced search (same screen as
+          // the البحث tile). Hidden while the library is unavailable,
+          // like the other data actions on this screen.
+          if (db.isAvailable)
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.search, color: SunnatiColors.petrol),
+                title: const Text(
+                  'ابحث عن حديث أو كلمة…',
+                  style: TextStyle(color: SunnatiColors.inkMuted),
+                ),
+                trailing: const Icon(Icons.chevron_left),
+                onTap: () => _push(context, SearchScreen(db: db)),
+              ),
+            ),
           const SizedBox(height: 8),
           if (!db.isAvailable)
             EmptyLibraryCard(

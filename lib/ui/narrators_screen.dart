@@ -159,12 +159,25 @@ class _NarratorsScreenState extends State<NarratorsScreen> {
                 ? ListView(
                     padding: const EdgeInsets.all(12),
                     children: [
-                      const EmptyLibraryCard(
-                        title: 'لا توجد تراجم بعد',
-                        detail:
-                            'لم تُستورد تراجم الرواة بعد — مصدر موثّق ومرخّص للتراجم وأحوال الرواة (ثقة، ثبت، ضعيف، مدلس…) قيد الاختيار في المرحلة 5. لا تُعرض هنا أي ترجمة غير موثقة.',
-                        icon: Icons.people_outline,
-                      ),
+                      // When the narrators package is held back pending
+                      // approval, the empty state names that reason —
+                      // it must not look like a bug or a missing feature.
+                      // (When the package IS installed the count is > 0
+                      // and this branch is never reached.)
+                      if (!widget.db.narratorsAvailable)
+                        const EmptyLibraryCard(
+                          title: 'حزمة الرواة قيد انتظار الموافقة',
+                          detail:
+                              'تراجم الرواة الموثّقة قيد انتظار الموافقة ولم تُثبَّت بعد — لا تُعرض هنا أي ترجمة غير موثقة.',
+                          icon: Icons.people_outline,
+                        )
+                      else
+                        const EmptyLibraryCard(
+                          title: 'لا توجد تراجم بعد',
+                          detail:
+                              'لم تُستورد تراجم الرواة بعد — مصدر موثّق ومرخّص للتراجم وأحوال الرواة (ثقة، ثبت، ضعيف، مدلس…) قيد الاختيار في المرحلة 5. لا تُعرض هنا أي ترجمة غير موثقة.',
+                          icon: Icons.people_outline,
+                        ),
                       if (_searched)
                         const Padding(
                           padding: EdgeInsets.only(top: 8),

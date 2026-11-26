@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../core/narrator_logic.dart';
 import '../core/theme.dart';
 import '../data/database.dart';
 import '../data/user_repository.dart';
@@ -13,6 +14,7 @@ import 'commentaries_screen.dart';
 import 'takhrij_screen.dart';
 import 'widgets/isnad_text.dart';
 import 'widgets/isnad_tree.dart';
+import 'widgets/narrator_card.dart';
 
 /// Hadith reader: full text (diacritics kept), book/number/chapter,
 /// gradings with scholars' names, transmitted commentary when available,
@@ -170,23 +172,48 @@ class _HadithReaderScreenState extends State<HadithReaderScreen> {
             db: widget.db,
             text: _hadith.text,
             confirmedNarrators: _chainNarrators,
+            chainLinks: _chainLinks,
+            narratorsAvailable: widget.db.narratorsAvailable,
           ),
-          if (_chainNarrators.isNotEmpty)
-            const Padding(
-              padding: EdgeInsets.only(top: 6),
-              child: Text(
-                'اضغط على اسم مميّز باللون البترولي لعرض بطاقة الراوي.',
-                style: TextStyle(color: SunnatiColors.inkMuted, fontSize: 12),
-              ),
-            )
-          else
-            const Padding(
-              padding: EdgeInsets.only(top: 6),
-              child: Text(
-                'أسماء الرواة غير مرتبطة بعد — لا توجد بيانات سلسلة موثّقة لهذا الحديث.',
-                style: TextStyle(color: SunnatiColors.inkMuted, fontSize: 12),
+          _CoverageLine(
+            state: hadithCoverageState(
+              hasVerifiedNarrators: _chainNarrators.isNotEmpty,
+              hasVerifiedLinks:
+                  _chainLinks.any((l) => l.narratorId != null),
+              hasParserRows: _chainLinks.isNotEmpty,
+            ),
+          ),
+          // Narrators of this hadith (reference design: the hadith
+          // screen lists «رواة الحديث»). Real data only: the verified
+          // chain already loaded in _loadChain; tapping a row opens
+          // the same narrator bottom sheet as tapping the name in
+          // the text. Empty when no verified chain exists — the
+          // coverage line above already says so, so nothing is shown
+          // here then.
+          if (_chainNarrators.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            const _SectionTitle('رواة الحديث'),
+            Card(
+              child: Column(
+                children: [
+                  for (final n in _chainNarrators)
+                    ListTile(
+                      dense: true,
+                      title: Text(n.displayName),
+                      subtitle: n.hasStatus
+                          ? Text('${n.status} — ${n.statusSource}')
+                          : null,
+                      trailing: const Icon(Icons.chevron_left, size: 18),
+                      onTap: () => showNarratorSheetById(
+                        context,
+                        widget.db,
+                        n.id,
+                      ),
+                    ),
+                ],
               ),
             ),
+          ],
           const SizedBox(height: 8),
           ExpansionTile(
             title: const Text('شجرة الإسناد'),
@@ -299,6 +326,72 @@ class _HadithReaderScreenState extends State<HadithReaderScreen> {
         ],
       ),
     );
+  }
+}
+
+/// Honest coverage line under the hadith text — one of four states,
+/// never claiming verification that does not exist.
+///
+/// * verified + package installed: tap hint (plain, not tappable).
+/// * verified links but package held back: the pending-approval line,
+///   tappable — it opens the pending sheet (rung b), showing NO status.
+/// * parser rows but zero verified links: the "not linked yet" line,
+///   tappable — it opens rung (c)
+///   ('لا توجد ترجمة موثّقة لهذا الراوي بعد'), since the names
+///   themselves are plain and must never look tappable.
+/// * no parser rows at all: the "isnad not parsed yet" line (plain —
+///   there is no name to tap).
+class _CoverageLine extends StatelessWidget {
+  const _CoverageLine({required this.state});
+
+  final HadithCoverageState state;
+
+  @override
+  Widget build(BuildContext context) {
+    const style = TextStyle(color: SunnatiColors.inkMuted, fontSize: 12);
+    switch (state) {
+      case HadithCoverageState.verifiedAvailable:
+        return const Padding(
+          padding: EdgeInsets.only(top: 6),
+          child: Text(
+            'اضغط على اسم مميّز باللون البترولي لعرض بطاقة الراوي.',
+            style: style,
+          ),
+        );
+      case HadithCoverageState.verifiedHeldBack:
+        return Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: GestureDetector(
+            onTap: () => showNarratorPendingSheet(
+              context,
+              verifiedLinkKnown: true,
+            ),
+            child: const Text(
+              kNarratorsPendingApprovalMessage,
+              style: style,
+            ),
+          ),
+        );
+      case HadithCoverageState.parserRowsNoVerified:
+        return Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: GestureDetector(
+            onTap: () => showUnverifiedNarratorSheet(context),
+            child: const Text(
+              kNoVerifiedChainMessage,
+              style: style,
+            ),
+          ),
+        );
+      case HadithCoverageState.notParsed:
+        return const Padding(
+          padding: EdgeInsets.only(top: 6),
+          child: Text(
+            kIsnadNotParsedMessage,
+            style: style,
+          ),
+        );
+    }
   }
 }
 
