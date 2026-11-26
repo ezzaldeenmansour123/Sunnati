@@ -24,6 +24,10 @@ class ChainLink {
     required this.linkType,
     required this.source,
     required this.notes,
+    this.narratorText = '',
+    this.startChar,
+    this.endChar,
+    this.matchStatus = '',
   });
 
   factory ChainLink.fromRow(Map<String, Object?> row, {Narrator? narrator}) {
@@ -34,6 +38,16 @@ class ChainLink {
       linkType: (row['link_type'] as String?) ?? '',
       source: (row['source'] as String?) ?? '',
       notes: (row['notes'] as String?) ?? '',
+      // Parser row fields (hadith_narrators). Absent on pre-v3 rows and
+      // on any query that does not select them — the UI then falls back
+      // to normalised name search (lower confidence); nothing here is
+      // invented. `chainForHadith` in lib/data/database.dart selects
+      // these four columns AND passes them through to fromRow, so
+      // offset spans fire at runtime (integrator fix 2026-11-26).
+      narratorText: (row['narrator_text'] as String?) ?? '',
+      startChar: row['start_char'] as int?,
+      endChar: row['end_char'] as int?,
+      matchStatus: (row['match_status'] as String?) ?? '',
     );
   }
 
@@ -54,6 +68,42 @@ class ChainLink {
 
   /// Notes recorded with the row. Empty when none.
   final String notes;
+
+  /// Name exactly as printed in the hadith text (with diacritics),
+  /// from `hadith_narrators.narrator_text`. Empty when the query did
+  /// not return it.
+  final String narratorText;
+
+  /// Exact character offsets of [narratorText] inside the hadith text,
+  /// from `hadith_narrators.start_char` / `end_char`. Null when the
+  /// query did not return them.
+  final int? startChar;
+
+  /// Exclusive end offset (see [startChar]).
+  final int? endChar;
+
+  /// Review state of this row in `hadith_narrators`
+  /// (`linked_verified` / `needs_review` / `unlinked`). Empty when the
+  /// query did not return it.
+  final String matchStatus;
+
+  /// True when both stored offsets are present and ordered.
+  bool get hasOffsets =>
+      startChar != null &&
+      endChar != null &&
+      startChar! >= 0 &&
+      endChar! > startChar!;
+
+  /// True only for a `linked_verified` row carrying a narrator id.
+  /// Only such a link may ever show a status.
+  bool get isVerifiedLink =>
+      matchStatus == 'linked_verified' && narratorId != null;
+
+  /// True for a parser row that names someone but has no verified link
+  /// (`needs_review` / `unlinked`): the name stays plain text, never
+  /// tappable, never given a status.
+  bool get isUnverifiedParserName =>
+      narratorText.isNotEmpty && !isVerifiedLink;
 
   /// True only when a verified narrator row is attached.
   bool get isConfirmed => narrator != null && narratorId != null;
