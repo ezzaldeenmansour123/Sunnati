@@ -93,4 +93,15 @@ flutter {
     source "../.."
 }
 
+// Diagnostic (runs #97-#104 all shipped a fresh cert despite every
+// keystore mechanism): print the RESOLVED signing configs so the CI log
+// proves what the release build actually signs with. Remove once the
+// stable signature is confirmed in a delivered APK.
+afterEvaluate {
+    def rsc = android.buildTypes.release.signingConfig
+    println("RESOLVED RELEASE SIGNING: name=${rsc?.name} storeFile=${rsc?.storeFile} storeType=${rsc?.storeType} keyAlias=${rsc?.keyAlias}")
+    def dsc = android.signingConfigs.debug
+    println("RESOLVED DEBUG SIGNING: name=${dsc?.name} storeFile=${dsc?.storeFile} storeType=${dsc?.storeType} keyAlias=${dsc?.keyAlias}")
+}
+
 dependencies {}
