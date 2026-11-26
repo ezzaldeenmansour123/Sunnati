@@ -111,6 +111,43 @@ CREATE INDEX IF NOT EXISTS idx_sr_term ON search_roots(term_norm);
 """
 
 
+def build_commentaries_fts(
+    con: sqlite3.Connection, log: dict | None = None
+) -> dict:
+    """Build ONLY the commentaries FTS index on an open connection.
+
+    Standalone subset of :func:`build_phase4_index` (rebuild 2026-11-26):
+    a CONTENTLESS FTS5 over the HadeethEnc ``commentaries`` rows
+    (``norm`` = ``fts_norm(text + explanation)``, rowid == commentaries.id).
+    Display comes from the ``commentaries`` table itself via JOIN on rowid,
+    so no text is duplicated. Measured on the real library DB: +2.87 MiB,
+    ~6 s, 3,574 rows. No dependency on the isnad parser, the hadith
+    vocabulary, or any other Phase 4 table — this is the ONLY Phase 4
+    artefact built by default in v1.0.0; the full set stays behind the
+    ``SUNNATI_BUILD_PHASE4_INDEX`` size gate in ``tools/build_db.py``.
+
+    Idempotent (DROP + rebuild). Returns a report dict.
+    """
+    log = log if log is not None else {}
+    t0 = time.time()
+    enc_rows = con.execute(
+        "SELECT id, text, explanation FROM commentaries"
+    ).fetchall()
+    con.execute("DROP TABLE IF EXISTS commentaries_fts")
+    con.execute(
+        "CREATE VIRTUAL TABLE commentaries_fts USING fts5("
+        "norm, content='', tokenize='unicode61 remove_diacritics 0')"
+    )
+    con.executemany(
+        "INSERT INTO commentaries_fts (rowid, norm) VALUES (?, ?)",
+        [(cid, fts_norm(f"{text} {expl}")) for cid, text, expl in enc_rows],
+    )
+    con.commit()
+    log["commentaries_fts_rows"] = len(enc_rows)
+    log["elapsed_seconds"] = round(time.time() - t0, 1)
+    return log
+
+
 def build_phase4_index(con: sqlite3.Connection, log: dict | None = None) -> dict:
     """Build all Phase 4 indexes on an open connection. Returns a report."""
     log = log if log is not None else {}
@@ -178,23 +215,10 @@ def build_phase4_index(con: sqlite3.Connection, log: dict | None = None) -> dict
     )
 
     # -- commentaries_fts ---------------------------------------------------
-    # CONTENTLESS FTS5: the inverted index only (no stored copy of the
-    # text, no extra `norm` column on commentaries — display comes from
-    # the commentaries table itself via JOIN on rowid). Saves ~9 MB
-    # versus an external-content table with a norm column.
-    enc_rows = con.execute(
-        "SELECT id, text, explanation FROM commentaries"
-    ).fetchall()
-    con.execute("DROP TABLE IF EXISTS commentaries_fts")
-    con.execute(
-        "CREATE VIRTUAL TABLE commentaries_fts USING fts5("
-        "norm, content='', tokenize='unicode61 remove_diacritics 0')"
-    )
-    con.executemany(
-        "INSERT INTO commentaries_fts (rowid, norm) VALUES (?, ?)",
-        [(cid, fts_norm(f"{text} {expl}")) for cid, text, expl in enc_rows],
-    )
-    log["commentaries_fts_rows"] = len(enc_rows)
+    # Standalone subset (see build_commentaries_fts): the full Phase 4
+    # build reuses it so the two can never drift apart.
+    commentaries_log = build_commentaries_fts(con, {})
+    log["commentaries_fts_rows"] = commentaries_log["commentaries_fts_rows"]
 
     # -- search_synonyms (curated, from arabic_text) -----------------------
     syn_rows: list[tuple] = []

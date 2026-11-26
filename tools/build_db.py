@@ -1205,11 +1205,42 @@ def main() -> int:
         log["hadeethenc_grade_kinds"] = dict(enc_grade_dist)
         print(f"  hadeethenc: {enc_actual} commentaries (verbatim, unlinked)")
 
+        # -- commentaries_fts ONLY (rebuild 2026-11-26) ------------------
+        # The commentaries search scope needs ONLY this one index: a
+        # contentless FTS5 over the HadeethEnc rows (measured +2.87 MiB
+        # on the real DB, ~6 s — see
+        # SUNNATI_REBUILD_WORK_B_2026-11-26.md). It is built ALWAYS,
+        # independent of the SUNNATI_BUILD_PHASE4_INDEX size gate below,
+        # which still governs the FULL Phase 4 set (spans / lexicon,
+        # +94 MB) pending the owner's v1.1 decision. Additive only: a
+        # failure here must NEVER break the library build — the app
+        # degrades gracefully (commentary scope returns no results) and
+        # the failure is logged.
+        try:
+            from phase4_search_index import build_commentaries_fts
+
+            log["commentaries_fts"] = build_commentaries_fts(con, {})
+            print(
+                "  commentaries_fts: "
+                f"{log['commentaries_fts'].get('commentaries_fts_rows')} rows"
+            )
+        except Exception as e:  # noqa: BLE001 - index is additive
+            log["warnings"].append(
+                f"commentaries_fts index failed: {e!r} (commentary search "
+                "scope will return no results)"
+            )
+            print(
+                f"  WARNING: commentaries_fts index failed: {e!r}",
+                file=sys.stderr,
+            )
+
         # -- Phase 4 search indexes (spans / FTS / lexicon) --------------
-        # Additive only: hadith_spans (+ FTS), commentaries_fts,
-        # search_synonyms, search_roots, search_vocab. A failure here
-        # must NEVER break the library build — the app degrades
-        # gracefully (full-text search only) and the failure is logged.
+        # Additive only: hadith_spans (+ FTS), search_synonyms,
+        # search_roots, search_vocab. (commentaries_fts is built
+        # separately above — small, always on — and is NOT part of this
+        # gate.) A failure here must NEVER break the library build — the
+        # app degrades gracefully (full-text search only) and the failure
+        # is logged.
         # SIZE GATE (merge 2026-11-26, measured): the indexes add +94 MB
         # (DB 181 -> 275 MB, APK ~300 MB) which sits exactly on the
         # owner's 300 MB flag threshold — so they are OPT-IN here:
