@@ -1232,7 +1232,7 @@ class SunnatiDatabase {
         'JOIN isnad_nodes n2 ON n2.chain_id = n1.chain_id '
         'AND n2.position = n1.position + ? '
         'JOIN narrators_db.narrators n ON n.id = n2.narrator_id '
-        "WHERE n1.narrator_id = ? "
+        'WHERE n1.narrator_id = ? '
         "AND n1.match_status = 'linked_verified' "
         "AND n2.match_status = 'linked_verified' ORDER BY n.name",
         <Object?>[delta, narratorId],
@@ -1364,7 +1364,7 @@ class SunnatiDatabase {
     final db = _db;
     if (db == null) return false;
     final rows = db.select(
-      "SELECT COUNT(*) AS c FROM sqlite_master "
+      'SELECT COUNT(*) AS c FROM sqlite_master '
       "WHERE type = 'table' AND name = ?",
       <Object?>[name],
     );
@@ -1833,20 +1833,20 @@ class SunnatiDatabase {
 
     return <String, int>{
       'staging_pending': count(
-        "SELECT COUNT(*) AS c FROM admin_staging "
+        'SELECT COUNT(*) AS c FROM admin_staging '
         "WHERE review_status = 'pending_review'",
       ),
       'staging_approved': count(
-        "SELECT COUNT(*) AS c FROM admin_staging "
+        'SELECT COUNT(*) AS c FROM admin_staging '
         "WHERE review_status = 'approved'",
       ),
       'staging_rejected': count(
-        "SELECT COUNT(*) AS c FROM admin_staging "
+        'SELECT COUNT(*) AS c FROM admin_staging '
         "WHERE review_status = 'rejected'",
       ),
       'audit_rows': count('SELECT COUNT(*) AS c FROM admin_audit_log'),
       'packages_installed': count(
-        "SELECT COUNT(*) AS c FROM downloaded_libraries "
+        'SELECT COUNT(*) AS c FROM downloaded_libraries '
         "WHERE status = 'installed'",
       ),
       'narrators': count('SELECT COUNT(*) AS c FROM $_narratorsTable'),

@@ -268,7 +268,7 @@ ImportValidationResult validateImportDocument(
 /// Validate a JSON import document given as a string.
 ImportValidationResult validateImportJsonString(String source) {
   if (source.length > kMaxImportBytes) {
-    return ImportValidationResult(
+    return const ImportValidationResult(
       ok: false,
       errors: <String>['file exceeds $kMaxImportBytes bytes'],
       recordCount: 0,
