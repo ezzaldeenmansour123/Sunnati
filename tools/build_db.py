@@ -31,10 +31,16 @@ Rules that MUST NOT be violated (master prompt + Phase 2/3 task):
     shown — no single "official" grade is chosen. Bukhari/Muslim are
     «صحيح على مستوى المجموعة» (collection level, no per-hadith grade);
     Ahmad/Darimi are «لا توجد درجة في المصدر» (explicitly, not invented).
-  * Chapter titles come from fawazahmed0/hadith-api `editions/ara-*.json`
-    (`tools/chapter_titles.json`, verbatim extract). They are ENGLISH ONLY
-    in that source: stored verbatim in `title` with `title_lang='en'` and
-    a warning in `meta`. No Arabic title is translated or invented.
+  * Chapter titles: the fawazahmed0/hadith-api English titles are
+    imported verbatim FIRST (title_lang='en'), then
+    tools/chapters_import.py REPLACES them for the 7 verified books
+    with Arabic kitab <- bab titles from Arabic Wikisource (CC BY-SA
+    4.0) and re-links hadiths.chapter_id via the derived maps; the
+    old English rows are preserved in chapters_backup_v4_en and the
+    majority old-English title per bab is kept in chapters.title_en.
+    Nasai/Malik keep English titles (no verified Arabic source).
+    No Arabic title is translated or invented; any hadith with no
+    verified bab stays under «غير مصنّف».
   * HadeethEnc rows go to `commentaries` ONLY, verbatim, with attribution
     and grade — never auto-linked to Nine-Books hadiths (no reliable key).
   * Tables with no verified data yet (narrators, chains, takhrij,
@@ -1282,6 +1288,34 @@ def main() -> int:
                     file=sys.stderr,
                 )
 
+        # -- Arabic chapters (kitab <- bab) for the 7 verified books ----
+        # MANDATORY (owner's 2026-11-26 order): replaces the English
+        # chapter rows of the 7 books with Arabic ones from Arabic
+        # Wikisource (CC BY-SA 4.0) and re-links hadiths.chapter_id via
+        # the derived maps (tools/chapters/*_hadith_chapters.json).
+        # Nasai/Malik are NOT touched (no verified source — English
+        # titles stay, tagged «غير مترجم» in the app). Old English rows
+        # are preserved in chapters_backup_v4_en (rollback plan:
+        # SUNNATI_CHAPTERS_MIGRATION_PLAN_2026-11-26.md). A failure
+        # here fails the build — a library without Arabic chapters
+        # must not ship. tools/chapters_import.py holds the logic.
+        from chapters_import import apply_arabic_chapters
+
+        arabic_stats = apply_arabic_chapters(con, log)
+        log["counts"]["arabic_chapters_rows"] = sum(
+            s["rows_created"] for s in arabic_stats.values()
+            if isinstance(s, dict)
+        )
+        log["counts"]["arabic_chapters_hadiths_linked"] = sum(
+            s["hadiths_linked"] for s in arabic_stats.values()
+            if isinstance(s, dict)
+        )
+        print(
+            "  arabic chapters: "
+            f"{log['counts']['arabic_chapters_rows']} rows, "
+            f"{log['counts']['arabic_chapters_hadiths_linked']} hadiths linked"
+        )
+
         # -- totals + meta --------------------------------------------------
         total = con.execute("SELECT COUNT(*) FROM hadiths").fetchone()[0]
         total_grades = con.execute("SELECT COUNT(*) FROM hadith_grades").fetchone()[0]
@@ -1321,13 +1355,19 @@ def main() -> int:
                  if b != "hadeethenc"}, ensure_ascii=False),
             "hadeethenc_commentaries": str(enc_actual),
             "chapters_note": (
-                "Chapter titles for the 7 fawazahmed0 books are ENGLISH, "
-                "verbatim from fawazahmed0/hadith-api editions/ara-*.json "
-                "(branch 1); no verified Arabic chapter title exists in the "
-                "source — Arabic titles are pending a verified Arabic source "
-                "(Phase 5). book_number=0 rows are under an explicit "
-                "«غير مصنّف» chapter. Ahmad/Darimi have no chapter division "
-                "in the source (single «غير مصنّف» chapter each)."
+                "Arabic chapters (kitab <- bab) for 7 books — bukhari, "
+                "muslim, abudawud, tirmidhi, ibnmajah, ahmad (20 masanid, "
+                "not abwab), darimi — from Arabic Wikisource "
+                "(Bayanat-Labs/arabic-wikisource-pd, arwikisource-20261001), "
+                "CC BY-SA 4.0; original text public domain. Hadiths are "
+                "re-linked to their Arabic bab by the derived offset/ "
+                "alignment maps (tools/chapters/*_hadith_chapters.json); "
+                "any hadith with no verified bab stays under an explicit "
+                "«غير مصنّف» chapter — no bab is ever invented. Nasai/Malik "
+                "keep their English titles (no verified Arabic source) "
+                "tagged «غير مترجم». The old English chapter rows are "
+                "preserved in chapters_backup_v4_en (rollback plan: "
+                "SUNNATI_CHAPTERS_MIGRATION_PLAN_2026-11-26.md)."
             ),
             "grades_note": (
                 "Grades are grader-attributed, never asserted by SUNNATI. "
@@ -1356,7 +1396,8 @@ def main() -> int:
                 {
                     "quranlab/hadith": "Arabic matn public domain; digitisation ODbL-1.0/DbCL-1.0 with attribution (ahmad, darimi)",
                     "hadeethenc": "HadeethEnc terms: no modification, cite source + version, removal on request",
-                    "hadith-api chapter titles": "The Unlicense (fawazahmed0/hadith-api)",
+                    "hadith-api chapter titles": "The Unlicense (fawazahmed0/hadith-api) — old English titles preserved in chapters_backup_v4_en",
+                    "arabic-wikisource chapters": "CC BY-SA 4.0 (Bayanat-Labs/arabic-wikisource-pd, arwikisource-20261001); original text public domain, digitisation/ordering CC BY-SA 4.0 — see Sources & Licences page",
                     "amiri_font": "SIL OFL 1.1",
                 },
                 ensure_ascii=False,
