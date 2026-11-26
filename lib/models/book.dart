@@ -89,3 +89,18 @@ class Chapter {
   final String title;
   final int count;
 }
+
+/// True when [title] is NOT a verified Arabic باب title: it still
+/// carries Latin letters — the English verbatim title imported from the
+/// source API (fawazahmed0/hadith-api). Such a title is shown WITH a
+/// visible «غير مترجم» tag (UntranslatedChapterTag in
+/// `lib/ui/widgets/untranslated_tag.dart`) and never presented as if it
+/// were the Arabic باب — and never replaced by an invented Arabic title.
+/// The real Arabic titles come later from the per-book pilots; until a
+/// verified Arabic title exists for a chapter, the tag is the honest
+/// marker. A title with no Latin letters (a real Arabic باب, or the
+/// honest «غير مصنّف» label) is not untranslated. An empty title is not
+/// tagged either: there is no title to tag.
+bool isUntranslatedChapterTitle(String title) {
+  return RegExp(r'[A-Za-z]').hasMatch(title);
+}
