@@ -10,9 +10,8 @@
 /// The card expands to show the details, and offers the full narrator page.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
-import '../../core/narrator_logic.dart';
 import '../../core/theme.dart';
 import '../../data/database.dart';
 import '../../models/narrator.dart';

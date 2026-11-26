@@ -9,7 +9,7 @@
 /// a fabricated chain.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../core/theme.dart';
 import '../../data/database.dart';
@@ -141,7 +141,7 @@ class _ProphetNode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return const Card(
       color: SunnatiColors.petrol,
       child: const ListTile(
         leading: Icon(Icons.menu_book, color: Colors.white),
