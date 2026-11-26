@@ -206,6 +206,14 @@ class _NarratorsScreenState extends State<NarratorsScreen> {
                       )
                     : ListView.builder(
                         padding: const EdgeInsets.all(12),
+                        // Smoothness fix 2026-11-26 (review §3):
+                        // pre-render off-screen rows for smooth
+                        // scrolling. NO itemExtent: a row's height is
+                        // NOT fixed — the subtitle joins kunya / laqab
+                        // / tier / status / death year and wraps to
+                        // several lines — so a fixed extent would
+                        // break the layout.
+                        scrollCacheExtent: const ScrollCacheExtent.pixels(600),
                         itemCount: _results.length,
                         itemBuilder: (context, index) {
                           final n = _results[index];

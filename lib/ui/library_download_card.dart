@@ -9,11 +9,14 @@ import '../data/database.dart';
 import '../data/download_manager.dart';
 import '../models/downloaded_library.dart';
 
-/// Reusable core-library download card (rebuild 2026-11-26).
+/// Reusable core-library download card — recovery path only (embed
+/// 2026-11-26, owner decision 16:54).
 ///
-/// Used by the blocking first-run screen (FirstRunDownloadScreen) and
-/// embedded in DownloadsScreen when the core library is missing or was
-/// deleted. One flow, one set of honest states:
+/// Used by the recovery first-run screen (FirstRunDownloadScreen) and
+/// embedded in DownloadsScreen when the core library is missing. The
+/// library is normally EMBEDDED in the APK; this card downloads the
+/// library-v1 copy only when the embedded install failed. One flow,
+/// one set of honest states:
 ///
 ///   * metadata: fetch the published SHA-256 (+ size via HEAD) first —
 ///     the download never starts on an unverified hash;
@@ -250,9 +253,10 @@ class _LibraryDownloadCardState extends State<LibraryDownloadCard> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'المكتبة الأساسية (الكتب التسعة) تُنزَّل مرة واحدة بعد '
-              'التثبيت، ثم تعمل دون إنترنت. يُفضَّل الاتصال بشبكة Wi-Fi '
-              'لأن حجمها كبير.',
+              'المكتبة الأساسية (الكتب التسعة) مضمّنة في التطبيق عادةً؛ '
+              'هذا التنزيل للاسترداد فقط عند تعذّر التثبيت من النسخة '
+              'المضمّنة. بعد التنزيل تعمل دون إنترنت. يُفضَّل الاتصال '
+              'بشبكة Wi-Fi لأن حجمها كبير.',
               style: TextStyle(color: SunnatiColors.inkMuted),
             ),
             const SizedBox(height: 8),

@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../core/narrator_logic.dart';
+import '../core/normalize.dart';
 import '../core/theme.dart';
 import '../data/database.dart';
 import '../data/user_repository.dart';
@@ -8,15 +9,22 @@ import '../models/book.dart';
 import '../models/hadith.dart';
 import '../models/narrator.dart';
 import '../search/search_service.dart';
+import 'book_screen.dart';
 import 'hadith_reader_screen.dart';
 import 'widgets/empty_library.dart';
+import 'widgets/isnad_text.dart';
+import 'widgets/untranslated_tag.dart';
 
-/// Advanced search — layout of mockup screen 4 (2026-11-26).
+/// Advanced search — layout of mockup screen 4 (2026-11-26), with the
+/// «جامع الكتب التسعة» search-2.0 tab structure (user decision
+/// 2026-11-26 17:26): four tabs — الحديث / الرواة / الأبواب / الموضوع.
+/// There is NO المشكاة tab (that book is not in this library at all),
+/// and the الموضوع tab shows an honest empty state (topics = 0 rows).
 ///
 /// The mockup is the «جامع الكتب التسعة» search interface, and the user
 /// asked (2026-11-26 15:25) for SUNNATI's screens to match those
-/// interfaces exactly — same structure, same layout, same flow. So this
-/// screen reproduces screen 4's layout faithfully:
+/// interfaces exactly — same structure, same layout, same flow. The
+/// الحديث tab reproduces screen 4's layout faithfully:
 ///   - search box «ابحث عن حديث أو راوٍ...» with a clear (×) button;
 ///   - «خيارات البحث» header;
 ///   - four filter rows: في الكتب / في الأبواب / رقم الحديث / الراوي;
@@ -34,13 +42,18 @@ import 'widgets/empty_library.dart';
 ///
 /// Honest limits, shown in the UI where they apply:
 ///   - chapter titles are English in the source (never translated or
-///     invented in Arabic);
+///     invented in Arabic) — an untranslated title carries a visible
+///     «غير مترجم» tag in the الأبواب tab;
 ///   - the narrator picker is available only when the verified
 ///     narrators package is installed; while the KITAB gate holds it
 ///     back the row honestly says «حزمة الرواة بانتظار الموافقة» and
 ///     no unlinked name is ever searched as if verified;
 ///   - a hadith number jumps to that hadith in the chosen book, and
-///     says honestly when no such number exists in that book.
+///     says honestly when no such number exists in that book;
+///   - tapping a narrator anywhere in search shows ONLY his status +
+///     source as an inline red line under the row — never the full
+///     details page (that page lives only in the narrators
+///     encyclopedia, user decision 2026-11-26 17:23).
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key, required this.db});
 
@@ -50,12 +63,34 @@ class SearchScreen extends StatefulWidget {
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
+/// Search scope tabs, in reference order (RTL: الحديث first).
+enum _SearchTab { hadith, narrators, chapters, topics }
+
+const Map<_SearchTab, String> _searchTabLabels = <_SearchTab, String>{
+  _SearchTab.hadith: 'الحديث',
+  _SearchTab.narrators: 'الرواة',
+  _SearchTab.chapters: 'الأبواب',
+  _SearchTab.topics: 'الموضوع',
+};
+
 class _SearchScreenState extends State<SearchScreen> {
   final _controller = TextEditingController();
   final _numberController = TextEditingController();
+  final _narratorQueryController = TextEditingController();
+  final _chapterQueryController = TextEditingController();
   String? _bookId;
   int? _chapterId;
   List<Chapter> _chapters = const <Chapter>[];
+
+  /// Active search-scope tab (default: الحديث — the mockup screen).
+  _SearchTab _tab = _SearchTab.hadith;
+
+  /// Book filter of the الأبواب tab (null: all books).
+  String? _chapterBookId;
+
+  /// Index of the tapped narrator row in the الرواة tab (null: none).
+  /// The status + source line is shown right under that row, inline.
+  int? _narratorSelected;
 
   /// Display name of the verified narrator picked from the picker, or
   /// null when none is picked. Only a name from the verified installed
@@ -187,6 +222,8 @@ class _SearchScreenState extends State<SearchScreen> {
   void dispose() {
     _controller.dispose();
     _numberController.dispose();
+    _narratorQueryController.dispose();
+    _chapterQueryController.dispose();
     super.dispose();
   }
 
@@ -198,37 +235,281 @@ class _SearchScreenState extends State<SearchScreen> {
       appBar: AppBar(title: const Text('البحث')),
       body: Column(
         children: [
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(12),
-              children: [
-                _buildSearchBox(),
-                const SizedBox(height: 12),
-                _buildOptionsHeader(),
-                const SizedBox(height: 8),
-                _buildBookRow(books),
-                _buildChapterRow(),
-                _buildNumberRow(),
-                _buildNarratorRow(),
-                const SizedBox(height: 4),
-                _buildSearchButton(),
-                const SizedBox(height: 12),
-                if (!_searched)
-                  const Center(
-                    child: Text(
-                      'اكتب كلمة أو جملة، أو اختر كتاباً وباباً ورقم '
-                      'حديث أو راوياً، ثم اضغط «بحث».',
-                    ),
-                  )
-                else if (page != null)
-                  _buildResults(page),
-              ],
-            ),
-          ),
-          if (_searched && page != null && _numberNotFound.isEmpty)
+          _buildTabRow(),
+          Expanded(child: _buildTabContent(books, page)),
+          if (_tab == _SearchTab.hadith &&
+              _searched &&
+              page != null &&
+              _numberNotFound.isEmpty)
             _buildPagination(page.total, page.totalPages, page.hasMore),
         ],
       ),
+    );
+  }
+
+  /// The search-2.0 tab row (الحديث / الرواة / الأبواب / الموضوع).
+  Widget _buildTabRow() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            for (final tab in _SearchTab.values)
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: 8),
+                child: _SearchTabPill(
+                  label: _searchTabLabels[tab]!,
+                  selected: _tab == tab,
+                  onTap: () => setState(() => _tab = tab),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabContent(List<Book> books, SearchPage<SearchHit>? page) {
+    switch (_tab) {
+      case _SearchTab.hadith:
+        return _buildHadithTab(books, page);
+      case _SearchTab.narrators:
+        return _buildNarratorsTab();
+      case _SearchTab.chapters:
+        return _buildChaptersTab(books);
+      case _SearchTab.topics:
+        return _buildTopicsTab();
+    }
+  }
+
+  /// الحديث tab: the mockup screen-4 advanced search, unchanged.
+  Widget _buildHadithTab(List<Book> books, SearchPage<SearchHit>? page) {
+    return ListView(
+      padding: const EdgeInsets.all(12),
+      // Smoothness fix 2026-11-26 (review §3): pre-render
+      // off-screen result rows. NO itemExtent: result rows are NOT
+      // fixed-height — the matn snippet is up to 3 lines and the
+      // subtitle wraps — so a fixed extent would break the layout.
+      scrollCacheExtent: const ScrollCacheExtent.pixels(600),
+      children: [
+        _buildSearchBox(),
+        const SizedBox(height: 12),
+        _buildOptionsHeader(),
+        const SizedBox(height: 8),
+        _buildBookRow(books),
+        _buildChapterRow(),
+        _buildNumberRow(),
+        _buildNarratorRow(),
+        const SizedBox(height: 4),
+        _buildSearchButton(),
+        const SizedBox(height: 12),
+        if (!_searched)
+          const Center(
+            child: Text(
+              'اكتب كلمة أو جملة، أو اختر كتاباً وباباً ورقم '
+              'حديث أو راوياً، ثم اضغط «بحث».',
+            ),
+          )
+        else if (page != null)
+          _buildResults(page),
+      ],
+    );
+  }
+
+  /// الرواة tab: search the verified installed narrators only.
+  /// Tapping a row shows ONLY his status + source as an inline red
+  /// line under the row — never the full details page (that page lives
+  /// only in the narrators encyclopedia).
+  Widget _buildNarratorsTab() {
+    if (!widget.db.narratorsAvailable) {
+      return ListView(
+        padding: const EdgeInsets.all(12),
+        children: [
+          EmptyLibraryCard(
+            title: 'البحث في الرواة غير متوفر بعد',
+            detail: widget.db.narratorsUnavailableReason.isNotEmpty
+                ? widget.db.narratorsUnavailableReason
+                : kNarratorsPendingApprovalMessage,
+          ),
+        ],
+      );
+    }
+    final query = _narratorQueryController.text.trim();
+    final results = query.isEmpty
+        ? widget.db.listNarrators(limit: 100)
+        : widget.db.searchNarrators(query);
+    return ListView(
+      padding: const EdgeInsets.all(12),
+      // Smoothness fix 2026-11-26 (review §3): pre-render
+      // off-screen narrator rows. NO itemExtent: rows are NOT
+      // fixed-height (status subtitle wraps).
+      scrollCacheExtent: const ScrollCacheExtent.pixels(600),
+      children: [
+        TextField(
+          controller: _narratorQueryController,
+          decoration: const InputDecoration(
+            hintText: 'ابحث باسم الراوي...',
+            prefixIcon: Icon(Icons.search),
+            border: OutlineInputBorder(),
+          ),
+          onChanged: (_) => setState(() => _narratorSelected = null),
+        ),
+        const SizedBox(height: 8),
+        if (results.isEmpty)
+          const Center(child: Text('لا يوجد راوٍ موثّق بهذا الاسم.'))
+        else
+          for (var i = 0; i < results.length; i++)
+            Card(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ListTile(
+                    dense: true,
+                    title: Text(results[i].displayName),
+                    subtitle: results[i].hasStatus
+                        ? Text(
+                            '${results[i].status} — ${results[i].statusSource}',
+                          )
+                        : null,
+                    onTap: () => setState(
+                      () => _narratorSelected =
+                          _narratorSelected == i ? null : i,
+                    ),
+                  ),
+                  if (_narratorSelected == i)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                      child: Text(
+                        inlineStatusLineText(
+                          inlineStatusForTap(
+                            name: results[i].displayName,
+                            outcome: NarratorTapOutcome.showStatus,
+                            status: results[i].status,
+                            statusSource: results[i].statusSource,
+                          ),
+                        ),
+                        style: isnadInlineStatusStyle(context),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+      ],
+    );
+  }
+
+  /// الأبواب tab: search chapter titles across the installed books.
+  /// An untranslated (English) title carries the visible «غير مترجم»
+  /// tag — never presented as an Arabic باب, never replaced by an
+  /// invented Arabic title. Tapping a chapter opens its book.
+  Widget _buildChaptersTab(List<Book> books) {
+    final query = _chapterQueryController.text.trim();
+    final matches = <({Book book, Chapter chapter})>[];
+    if (query.isNotEmpty) {
+      final needle = query.toLowerCase();
+      final normNeedle = normalizeArabic(query);
+      final bookIds = _chapterBookId == null
+          ? books.map((b) => b.id)
+          : <String>[_chapterBookId!];
+      for (final bookId in bookIds) {
+        final book =
+            books.where((b) => b.id == bookId).firstOrNull;
+        if (book == null) continue;
+        for (final chapter in widget.db.chapters(bookId)) {
+          final title = chapter.title;
+          final hit = title.toLowerCase().contains(needle) ||
+              (normNeedle.isNotEmpty &&
+                  normalizeArabic(title).contains(normNeedle));
+          if (hit) matches.add((book: book, chapter: chapter));
+          if (matches.length >= 100) break;
+        }
+        if (matches.length >= 100) break;
+      }
+    }
+    return ListView(
+      padding: const EdgeInsets.all(12),
+      // Smoothness fix 2026-11-26 (review §3): pre-render
+      // off-screen chapter rows. NO itemExtent: chapter titles wrap
+      // to several lines, so rows are NOT fixed-height.
+      scrollCacheExtent: const ScrollCacheExtent.pixels(600),
+      children: [
+        DropdownButton<String?>(
+          isExpanded: true,
+          value: _chapterBookId,
+          items: [
+            const DropdownMenuItem<String?>(
+              value: null,
+              child: Text('جميع الكتب'),
+            ),
+            ...books.map(
+              (b) => DropdownMenuItem<String?>(
+                value: b.id,
+                child: Text(b.name),
+              ),
+            ),
+          ],
+          onChanged: (v) => setState(() => _chapterBookId = v),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _chapterQueryController,
+          decoration: const InputDecoration(
+            hintText: 'ابحث في عناوين الأبواب...',
+            prefixIcon: Icon(Icons.search),
+            border: OutlineInputBorder(),
+          ),
+          onChanged: (_) => setState(() {}),
+        ),
+        const SizedBox(height: 8),
+        if (query.isEmpty)
+          const Center(
+            child: Text('اكتب كلمة للبحث في عناوين الأبواب.'),
+          )
+        else if (matches.isEmpty)
+          const Center(child: Text('لا توجد أبواب مطابقة.'))
+        else ...[
+          Text(
+            'الأبواب (${matches.length})',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          for (final m in matches)
+            Card(
+              child: ListTile(
+                title: Row(
+                  children: [
+                    Expanded(child: Text(m.chapter.title)),
+                    if (isUntranslatedChapterTitle(m.chapter.title))
+                      const UntranslatedChapterTag(),
+                  ],
+                ),
+                subtitle: Text(m.book.name),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => _BookOpener(db: widget.db, book: m.book),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ],
+    );
+  }
+
+  /// الموضوع tab: the topics table is empty (0 rows) — honest empty
+  /// state, never invented topics.
+  Widget _buildTopicsTab() {
+    return ListView(
+      padding: const EdgeInsets.all(12),
+      children: const [
+        EmptyLibraryCard(
+          title: 'لا توجد مواضيع مستوردة بعد',
+          detail:
+              'شجرة المواضيع قيد الإعداد — جدول المواضيع فارغ في المكتبة المثبّتة، فلا يُعرض هنا أي موضوع غير موثّق.',
+          icon: Icons.account_tree_outlined,
+        ),
+      ],
     );
   }
 
@@ -590,6 +871,10 @@ class _NarratorPickerDialogState extends State<_NarratorPickerDialog> {
                   ? const Text('لا يوجد راوٍ موثّق بهذا الاسم.')
                   : ListView.builder(
                       shrinkWrap: true,
+                      // Smoothness fix 2026-11-26 (review §3). NO
+                      // itemExtent: picker rows are NOT fixed-height
+                      // (subtitle joins kunya + status and wraps).
+                      scrollCacheExtent: const ScrollCacheExtent.pixels(400),
                       itemCount: _shown.length,
                       itemBuilder: (context, i) {
                         final n = _shown[i];
@@ -620,6 +905,75 @@ class _NarratorPickerDialogState extends State<_NarratorPickerDialog> {
           child: const Text('إلغاء'),
         ),
       ],
+    );
+  }
+}
+
+/// One tab pill of the search tab row. Selected: pink fill; otherwise
+/// an ivory pill with a neutral border (same visual language as the
+/// hadith-page tab pills).
+class _SearchTabPill extends StatelessWidget {
+  const _SearchTabPill({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected
+              ? SunnatiColors.blush
+              : Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? SunnatiColors.blush : SunnatiColors.neutral,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+            color: selected
+                ? SunnatiColors.petrol
+                : Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Opens the book screen for a chapter found in the الأبواب tab. The
+/// book screen needs a [UserRepository]; it is loaded here so the
+/// search screen itself stays stateless about user data.
+class _BookOpener extends StatelessWidget {
+  const _BookOpener({required this.db, required this.book});
+
+  final SunnatiDatabase db;
+  final Book book;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<UserRepository>(
+      future: UserRepository.load(),
+      builder: (context, snap) {
+        if (!snap.hasData) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        return BookScreen(db: db, userRepo: snap.data!, book: book);
+      },
     );
   }
 }

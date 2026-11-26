@@ -68,7 +68,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'الكتب التسعة: مجموعة quranlab/hadith (revision مثبّت في بيانات المكتبة) — المتن العربي ملكية عامة.\n\n'
             'مسند أحمد وسنن الدارمي: رقمنة mhashim6/Open-Hadith-Data تحت ODbL-1.0 / DbCL-1.0 — مع النسبة والمشاركة بالمثل.\n\n'
             'شرح موسوعة الأحاديث النبوية: HadeethEnc.com — دون تعديل، مع ذكر المصدر ورقم الإصدار.\n\n'
-            'تراجم الرواة: نصوص كتب الرجال مأخوذة من OpenITI — Open Islamicate Texts Initiative (KITAB Project)، برخصة Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)، https://creativecommons.org/licenses/by-nc-sa/4.0/ — معرّف الملف: 0852IbnHajarCasqalani.TaqribTahdhib (طبعة محمد عوامة، الأولى، دار الرشيد، 1406هـ/1986م). حُوِّل النص إلى قاعدة بيانات منظمة (اشتقاق)؛ قاعدة الرواة المشتقة منشورة بنفس الترخيص CC BY-NC-SA 4.0.\n\n'
+            'الأبواب العربية: أبواب الكتب السبعة (صحيح البخاري، صحيح مسلم، سنن أبي داود، جامع الترمذي، سنن ابن ماجه، مسند أحمد، سنن الدارمي) مشتقة من ويكي مصدر العربية (Arabic Wikisource) — مشروع Bayanat-Labs/arabic-wikisource-pd، لقطة arwikisource-20261001 — بموجب رخصة CC BY-SA 4.0. النص الأصلي للكتب ملك عام (public domain)؛ أما النسخ الرقمي والترتيب والتبويب فمرخّصة CC BY-SA 4.0. كتابا النسائي والموطأ (مالك) بلا مصدر عربي موثق حتى الآن، فتبقى أبوابهما بالإنجليزية مع وسم «غير مترجم».\n\n'
+            'تراجم الرواة وأحكامهم: من «تقريب التهذيب» للحافظ ابن حجر العسقلاني، طبعة محمد عوامة، الأولى، دار الرشيد، 1406هـ/1986م، عبر OpenITI — Open Islamicate Texts Initiative (KITAB Project)، برخصة Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)، https://creativecommons.org/licenses/by-nc-sa/4.0/ — معرّف الملف: 0852IbnHajarCasqalani.TaqribTahdhib. حُوِّل النص إلى قاعدة بيانات منظمة (اشتقاق)؛ قاعدة الرواة المشتقة منشورة بنفس الترخيص CC BY-NC-SA 4.0 — يُمنع الاستخدام التجاري وتُعاد المشاركة بنفس الترخيص.\n\n'
+            'تضمّنت قاعدة الرواة داخل التطبيق بأمر مالك التطبيق بتاريخ 2026-11-26 (تجاوز موثّق لبوابة انتظار إذن KITAB)؛ ومسودة طلب الإذن إلى KITAB (kitab@aku.edu) ما زالت بلا رد. ولا تُنشر قاعدة الرواة أبداً كملف مستقل خارج التطبيق.\n\n'
             '$narratorsStatus\n\n'
             'خط Amiri: SIL Open Font License 1.1.\n\n'
             'لا يُنسخ أي محتوى من sunnah.com.',
@@ -89,7 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // Phase 5 core: the narrators sentence reflects the live installed
     // state instead of the old "no verified data yet" claim.
     final narratorsLine = widget.db.narratorsAvailable
-        ? 'تراجم الرواة: ${widget.db.narratorCount()} راوٍ موثّق من تقريب التهذيب (OpenITI).'
+        ? 'تراجم الرواة: ${widget.db.narratorCount()} راوٍ موثّق من «تقريب التهذيب» لابن حجر (طبعة عوامة 1986، عبر OpenITI، CC BY-NC-SA 4.0) — مضمّنة في التطبيق بأمر مالك التطبيق بتاريخ 2026-11-26، وطلب الإذن إلى KITAB ما زال بلا رد.'
         : 'تراجم الرواة بلا بيانات موثقة بعد.';
     showDialog<void>(
       context: context,
@@ -101,7 +103,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'الإصدار $appVersionDisplay\n\n'
             'السنة النبوية بين يديك، بفهم موثّق وذكاء متقدم.\n\n'
             'مكتبة حديثية عربية تعمل دون إنترنت. المساعد يسترجع من المكتبة فقط ولا يولّد إجابات.\n\n'
-            'المرحلة الحالية: 9–10 — الاختبارات الشاملة وحزمة الإصدار v1.0.0. الكتب التسعة مثبّتة وموثّقة (65,712 حديثاً). $narratorsLine التخريج والطرق بلا بيانات موثقة بعد — تُعرض الشاشات ذلك بصراحة ولا تخترع شيئاً.',
+            'المرحلة الحالية: 9–10 — الاختبارات الشاملة وحزمة الإصدار v1.0.0. الكتب التسعة مثبّتة وموثّقة (65,712 حديثاً). الأبواب العربية للكتب السبعة من ويكي مصدر العربية (CC BY-SA 4.0)؛ النسائي والموطأ بأبواب إنجليزية مع وسم «غير مترجم» حتى يتوفر مصدر عربي موثق. $narratorsLine التخريج والطرق بلا بيانات موثقة بعد — تُعرض الشاشات ذلك بصراحة ولا تخترع شيئاً.',
             style: const TextStyle(height: 1.7),
           ),
         ),

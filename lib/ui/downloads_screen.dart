@@ -11,24 +11,28 @@ import '../data/download_manager.dart';
 import '../models/downloaded_library.dart';
 import 'library_download_card.dart';
 
-/// Downloads manager (master prompt §12) — Phase 7, external-download
-/// rebuild 2026-11-26.
+/// Downloads manager (master prompt §12) — Phase 7, embed 2026-11-26.
 ///
-/// The core library (the Nine Books) is NO LONGER bundled in the APK:
-/// it is downloaded once after install from the `library-v1` release
-/// (see [kLibraryPackage]) and this screen shows its real state —
-/// download / pause / resume / retry / SHA-256 verify / delete — through
-/// the shared [LibraryDownloadCard]. A migrated build-52 install shows
-/// as installed here with its real counts; its SHA-256 is reported as
-/// "not recorded for this migrated copy" when no hash was ever stored
-/// (never invented).
+/// The core library (the Nine Books) is EMBEDDED in the APK (owner
+/// decision 2026-11-26 16:54): it installs from the asset on first run
+/// with no download, and this screen shows its real state — installed,
+/// with SHA-256 verify. The shared [LibraryDownloadCard] appears here
+/// only as a recovery path when the embedded install failed. The
+/// library itself can never be deleted from this screen: a corrupt copy
+/// is repaired automatically from the embedded asset on the next boot.
+/// A migrated build-52 install shows as installed here with its real
+/// counts; its SHA-256 is reported as "not recorded for this migrated
+/// copy" when no hash was ever stored (never invented).
 ///
-/// The narrators package is HELD BACK by the KITAB gate
-/// ([kNarratorsPackageHeldBack]): it is shown as "pending approval"
-/// with the honest explanation and NO download button — never a dead
-/// button. The only narrators state that can show as installed is a
-/// valid copy already on the device from a previous install (legacy
-/// local copy, labelled as such).
+/// The narrators package is EMBEDDED in the APK (owner override
+/// 2026-11-26 17:51 — the KITAB gate is overridden for the in-app
+/// copy; the file is still never published to `library-v1`): a fresh
+/// install shows it as installed from the embedded asset, with its
+/// real counts. A valid copy already on the device from a previous
+/// install (legacy local copy, labelled as such) is still used as-is.
+/// There is NO download button for narrators — never a dead button.
+/// When the embedded install failed, the screen shows the honest
+/// reason instead of the old "pending approval" state.
 ///
 /// Extended libraries are PREPARATION ONLY (see
 /// `lib/core/extended_library.dart`): they are listed as "preparing —
@@ -289,7 +293,8 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
     final file = SunnatiDatabase.installedLibraryFile(dir);
     final valid = await SunnatiDatabase.verifyLibraryFile(file);
     if (!valid) {
-      _snack('المكتبة المثبّتة غير سليمة — احذفها وأعد تنزيلها.');
+      _snack('المكتبة المثبّتة غير سليمة — أعد تشغيل التطبيق لإصلاحها '
+          'من النسخة المضمّنة.');
       return;
     }
     final row = _libraryRow;
@@ -303,66 +308,9 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
     _snack(
       matches
           ? 'المكتبة سليمة — تطابق SHA-256 المنشور.'
-          : 'المكتبة لا تطابق SHA-256 المنشور — احذفها وأعد تنزيلها.',
+          : 'المكتبة لا تطابق SHA-256 المنشور — أعد تشغيل التطبيق '
+              'لإصلاحها من النسخة المضمّنة.',
     );
-  }
-
-  /// Delete the installed CORE library (file + registry row), then
-  /// re-open the database so the screen shows the download card again.
-  /// The app offers the re-download in place; on the next cold boot the
-  /// first-run screen would do the same.
-  Future<void> _deleteLibrary() async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('حذف المكتبة الأساسية؟'),
-        content: const Text(
-          'ستُحذف الكتب التسعة من الجهاز، وستحتاج إلى إعادة تنزيلها '
-          'لتصفح الأحاديث دون إنترنت.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('إلغاء'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('حذف'),
-          ),
-        ],
-      ),
-    );
-    if (confirm != true) return;
-    // Delete the registry row first, while the file still exists.
-    _db.deleteDownloadedLibrary(kLibraryPackage.id);
-    _db.auditInsert(
-      action: 'package_deleted',
-      entityType: 'package',
-      entityId: kLibraryPackage.id,
-      detail: 'deleted core library ${kLibraryPackage.id}',
-    );
-    final dir = await getApplicationSupportDirectory();
-    final file = SunnatiDatabase.installedLibraryFile(dir);
-    final partial = File('${file.path}.part');
-    try {
-      if (await partial.exists()) await partial.delete();
-    } catch (_) {}
-    try {
-      if (await file.exists()) await file.delete();
-    } catch (_) {}
-    // NOTE: the old database handle is deliberately NOT closed here:
-    // the Home screen behind this page still holds the same instance,
-    // and closing it would make its next read throw. The stale handle
-    // keeps reading the deleted file until the next cold boot, when the
-    // first-run screen takes over — the notice below says so.
-    final fresh = await SunnatiDatabase.open();
-    if (!mounted) return;
-    setState(() {
-      _db = fresh;
-      _notice = 'حُذفت المكتبة الأساسية — نزّلها مجدداً من الأسفل. '
-          'أعد تشغيل التطبيق لتحديث الشاشة الرئيسية.';
-    });
-    await _refresh();
   }
 
   Future<void> _onLibraryInstalled() async {
@@ -431,20 +379,14 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                           const TextStyle(color: SunnatiColors.inkMuted),
                     ),
                     const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        OutlinedButton.icon(
-                          onPressed: _verifyLibrary,
-                          icon: const Icon(Icons.verified_outlined),
-                          label: const Text('التحقق من السلامة (SHA-256)'),
-                        ),
-                        const SizedBox(width: 8),
-                        OutlinedButton.icon(
-                          onPressed: _deleteLibrary,
-                          icon: const Icon(Icons.delete_outline),
-                          label: const Text('حذف'),
-                        ),
-                      ],
+                    // No delete button: the core library is embedded in
+                    // the APK (owner decision 2026-11-26 16:54) and a
+                    // corrupt copy is repaired from the embedded asset
+                    // on the next boot — it must never be deletable.
+                    OutlinedButton.icon(
+                      onPressed: _verifyLibrary,
+                      icon: const Icon(Icons.verified_outlined),
+                      label: const Text('التحقق من السلامة (SHA-256)'),
                     ),
                   ],
                 ),
@@ -461,22 +403,33 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${kNarratorsPackage.displayName} — مثبّتة من نسخة سابقة',
+                          _db.downloadedLibraryById('narrators')?.source ==
+                                  'embedded-asset'
+                              ? '${kNarratorsPackage.displayName} — مضمّنة في التطبيق'
+                              : '${kNarratorsPackage.displayName} — مثبّتة من نسخة سابقة',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${_db.narratorCount()} راوٍ موثّق — نسخة محلية '
-                          'من تثبيت سابق على هذا الجهاز. هذه النسخة ليست '
-                          'منزّلة من هذا الإصدار ولا تُوزَّع منه؛ تبقى '
-                          'للقراءة فقط إلى أن يُبتّ في أمر الحزمة.',
+                          _db.downloadedLibraryById('narrators')?.source ==
+                                  'embedded-asset'
+                              ? '${_db.narratorCount()} راوٍ موثّق — مضمّنة في التطبيق بأمر مالك التطبيق بتاريخ 2026-11-26 (تقريب التهذيب، CC BY-NC-SA 4.0). لا تُنشر كملف مستقل.'
+                              : '${_db.narratorCount()} راوٍ موثّق — نسخة محلية '
+                                  'من تثبيت سابق على هذا الجهاز. هذه النسخة ليست '
+                                  'منزّلة من هذا الإصدار ولا تُوزَّع منه؛ تبقى '
+                                  'للقراءة فقط.',
                           style: const TextStyle(
                             color: SunnatiColors.inkMuted,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Chip(
-                          label: Text('نسخة محلية قديمة'),
+                        Chip(
+                          label: Text(
+                            _db.downloadedLibraryById('narrators')?.source ==
+                                    'embedded-asset'
+                                ? 'مضمّنة في التطبيق'
+                                : 'نسخة محلية قديمة',
+                          ),
                           backgroundColor: SunnatiColors.goldSoft,
                         ),
                       ],
@@ -495,15 +448,14 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${kNarratorsPackage.unavailableReason} — لن '
-                          'تظهر للتنزيل حتى تصل الموافقة أو يقرر المالك.',
+                          '${_db.narratorsUnavailableReason.isNotEmpty ? _db.narratorsUnavailableReason : 'تعذّر تثبيت حزمة الرواة المضمّنة — أعد تثبيت التطبيق.'} — حزمة الرواة مضمّنة في التطبيق ولا تُنزَّل من هنا.',
                           style: const TextStyle(
                             color: SunnatiColors.inkMuted,
                           ),
                         ),
                         const SizedBox(height: 8),
                         const Chip(
-                          label: Text('بانتظار الموافقة'),
+                          label: Text('غير مثبّتة'),
                           backgroundColor: SunnatiColors.goldSoft,
                         ),
                       ],
@@ -518,7 +470,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                   : 'الحزم الموسعة على الجهاز: '
                       '${formatBytes(_storage!.totalBytes)} '
                       '(${_storage!.perPackage.length} حزمة). '
-                      'المكتبة الأساسية تُنزَّل بعد التثبيت وتُحفظ في '
+                      'المكتبة الأساسية مضمّنة في التطبيق وتُحفظ في '
                       'مساحة التطبيق.',
               style: const TextStyle(color: SunnatiColors.inkMuted),
             ),
@@ -614,7 +566,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
           const SizedBox(height: 8),
           const Text(
             'التنزيل اختياري للمكتبات الموسعة فقط. المكتبة الأساسية '
-            'تُنزَّل مرة واحدة بعد التثبيت ثم تعمل دون إنترنت.',
+            'مضمّنة في التطبيق وتعمل دون إنترنت.',
             textAlign: TextAlign.center,
             style: TextStyle(color: SunnatiColors.inkMuted, fontSize: 12),
           ),

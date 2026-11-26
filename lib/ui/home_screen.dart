@@ -4,6 +4,7 @@ import '../core/theme.dart';
 import '../data/database.dart';
 import '../data/user_repository.dart';
 import '../models/hadith.dart';
+import 'assistant_screen.dart';
 import 'hadith_reader_screen.dart';
 import 'library_screen.dart';
 import 'narrators_screen.dart';
@@ -16,8 +17,10 @@ import 'widgets/sunnati_bottom_nav.dart';
 /// Home screen — mockup screen 1, reproduced faithfully in structure:
 /// top row (settings gear one side, search icon the other), brand header
 /// (launcher icon + «سُنّتي» + «موسوعة السنة النبوية»), the verse quote
-/// card, a 2×2 grid of rose shortcut cards (موسوعة الرواة، شجرة الإسناد،
-/// الكتب التسعة، البحث المتقدم), then «آخر الأحاديث» with «عرض الكل».
+/// card, a prominent full-width «المساعد الذكي سُنَّتي» card (user order
+/// 2026-11-26 ~17:51), then a 2×2 grid of rose shortcut cards (موسوعة
+/// الرواة، شجرة الإسناد، الكتب التسعة، البحث المتقدم), then «آخر
+/// الأحاديث» with «عرض الكل».
 ///
 /// Only the DESIGN is copied from the mockup: every hadith shown comes
 /// from the installed database — «آخر الأحاديث» is the last-read hadiths
@@ -89,6 +92,10 @@ class HomeScreen extends StatelessWidget {
 
   void _openNarrators(BuildContext context) {
     _push(context, NarratorsScreen(db: db));
+  }
+
+  void _openAssistant(BuildContext context) {
+    _push(context, AssistantScreen(db: db));
   }
 
   /// The hadith the isnad-tree card shows: the last-read hadith, else
@@ -232,6 +239,63 @@ class HomeScreen extends StatelessWidget {
                   color: SunnatiColors.ink,
                 ),
                 textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Prominent assistant entry — full-width petrol card, above
+            // the shortcut grid and «آخر الأحاديث», so it is never
+            // buried at the bottom of the list (user order 2026-11-26
+            // ~17:51). Opens the existing AssistantScreen; when the
+            // library is not installed yet the assistant shows its own
+            // honest "not available yet" state.
+            Container(
+              decoration: const BoxDecoration(
+                color: SunnatiColors.petrol,
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
+              child: InkWell(
+                onTap: () => _openAssistant(context),
+                borderRadius: BorderRadius.circular(16),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.smart_toy_outlined,
+                        size: 32,
+                        color: SunnatiColors.gold,
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'المساعد الذكي سُنَّتي',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'اسأل عن حديث أو راوٍ — يسترجع لك الأدلة من المكتبة مع مصادرها.',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.chevron_left, color: Colors.white),
+                    ],
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 16),

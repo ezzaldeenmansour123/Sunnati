@@ -15,13 +15,12 @@ import '../models/takhrij.dart';
 import 'assistant_screen.dart';
 import 'book_screen.dart';
 import 'commentaries_screen.dart';
-import 'hadith_details_sheet.dart';
 import 'isnad_analysis_screen.dart';
 import 'takhrij_screen.dart';
 import 'widgets/empty_library.dart';
 import 'widgets/isnad_text.dart';
-import 'widgets/narrator_card.dart';
 import 'widgets/sunnati_bottom_nav.dart';
+import 'widgets/untranslated_tag.dart';
 
 /// Hadith page — mockup screen 3 (the «جامع الكتب التسعة» layout, copied
 /// as DESIGN only; every word of content comes from the installed DB).
@@ -30,15 +29,23 @@ import 'widgets/sunnati_bottom_nav.dart';
 /// * AppBar with the REAL book name.
 /// * Chapter header: the REAL book + باب title from the `chapters` table
 ///   (verbatim — the source titles are English, e.g. `Revelation`, and no
-///   Arabic title is ever invented; a «غير مصنّف» chapter shows exactly
+///   Arabic title is ever invented; an untranslated title carries a
+///   visible «غير مترجم» tag; a «غير مصنّف» chapter shows exactly
 ///   that). Tapping it opens the book's chapters page.
 /// * Pink pill «رقم الحديث: N» (the real number).
 /// * The matn in large readable Amiri text (real hadith text, unmodified).
 /// * A separate «الإسناد» section with a pink pill header; the isnad is
-///   rendered through [InteractiveIsnadText], so only verified narrator
-///   names are tappable (in the widget's single distinctive colour).
-/// * A tabs row — شرح / تخريج / الحكم / الغريب / ملاحظات — each tab shows
-///   REAL data or an honest empty state, never invented content.
+///   rendered through [InteractiveIsnadText], so every parsed narrator
+///   name is in ONE distinctive RED and tappable (user decisions
+///   2026-11-26 15:03 + 17:23); a tap shows the status + source as an
+///   inline line embedded in the hadith text right under the name —
+///   never a popup card/sheet, never the full details page, never a
+///   navigation (user decision 2026-11-26 17:23).
+/// * A tabs row — تخريج / الحكم / رواة / شرح / تعليقات — the «جامع
+///   الكتب التسعة» tab set (user decision 2026-11-26 17:26, reconciled
+///   with the mockup tabs: الغريب had no data and is dropped, and the
+///   user's ملاحظات live inside تعليقات). Each tab shows REAL data or
+///   an honest empty state, never invented content.
 /// * An «تحليل الإسناد» button opening the analysis screen.
 ///
 /// The isnad/matn split is the parser's own data: the isnad is the text
@@ -73,15 +80,21 @@ class HadithReaderScreen extends StatefulWidget {
   State<HadithReaderScreen> createState() => _HadithReaderScreenState();
 }
 
-/// The five tabs of the mockup's tabs row, in mockup (RTL) order.
-enum _ReaderTab { sharh, takhrij, hukm, gharib, notes }
+/// The five tabs of the hadith page, in «جامع الكتب التسعة» order
+/// (RTL: تخريج first). User decision 2026-11-26 17:26: adopt the
+/// reference tab set (تخريج، حكم، رواة، شرح، تعليقات), reconciled with
+/// the mockup tabs — الغريب is dropped (its table is empty: 0 rows,
+/// it only ever showed an honest empty state) and the user's own
+/// ملاحظات live inside تعليقات. Private folders and the thematic tree
+/// are FUTURE scope, not this build.
+enum _ReaderTab { takhrij, hukm, narrators, sharh, comments }
 
 const Map<_ReaderTab, String> _tabLabels = <_ReaderTab, String>{
-  _ReaderTab.sharh: 'شرح',
   _ReaderTab.takhrij: 'تخريج',
   _ReaderTab.hukm: 'الحكم',
-  _ReaderTab.gharib: 'الغريب',
-  _ReaderTab.notes: 'ملاحظات',
+  _ReaderTab.narrators: 'رواة',
+  _ReaderTab.sharh: 'شرح',
+  _ReaderTab.comments: 'تعليقات',
 };
 
 class _HadithReaderScreenState extends State<HadithReaderScreen> {
@@ -92,6 +105,19 @@ class _HadithReaderScreenState extends State<HadithReaderScreen> {
   List<TakhrijEntry> _takhrijEntries = const <TakhrijEntry>[];
   List<HadithVariant> _variants = const <HadithVariant>[];
   _ReaderTab _tab = _ReaderTab.sharh;
+
+  /// Inline message from a tap on the coverage line (null: none
+  /// tapped). Shown as a small red line right under the coverage line,
+  /// inside this page — never a sheet, never a navigation (user
+  /// decision 2026-11-26 17:23). The in-text taps render their own
+  /// line inside [InteractiveIsnadText]; the narrators tab renders its
+  /// own line under the tapped row.
+  String? _inlineMessage;
+
+  /// Index into [_chainNarrators] of the narrator tapped in the رواة
+  /// tab (null: none tapped). The status + source line is shown right
+  /// under that row, inline — never a sheet, never a navigation.
+  int? _selectedNarratorIndex;
 
   @override
   void initState() {
@@ -136,6 +162,10 @@ class _HadithReaderScreenState extends State<HadithReaderScreen> {
   /// Chapter header, verbatim from the `chapters` table: the real book +
   /// the real باب title. A «غير مصنّف» chapter shows exactly that —
   /// never an invented باب title. An empty title shows the book alone.
+  /// An untranslated (English) title is shown with a visible
+  /// «غير مترجم» tag next to it (see [UntranslatedChapterTag]) —
+  /// never presented as if it were the Arabic باب, never replaced by
+  /// an invented Arabic title.
   String get _chapterHeader {
     final title = _hadith.chapterTitle.trim();
     if (title.isEmpty) return _bookName;
@@ -233,38 +263,26 @@ class _HadithReaderScreenState extends State<HadithReaderScreen> {
     if (index < 0 || next < 0 || next >= list.length) return;
     setState(() {
       _hadith = list[next];
+      _inlineMessage = null;
+      _selectedNarratorIndex = null;
       _loadData();
     });
     widget.userRepo.touch(_hadith.stableId);
   }
 
-  /// Open the hadith-details sheet for a verified narrator, using the
-  /// existing tap-outcome decision from `narrator_logic.dart` — the
-  /// other outcomes keep their existing sheets and show NO status.
+  /// Tap a narrator in the رواة tab: show ONLY his status + source as
+  /// an inline line right under that row — never the full details
+  /// page/sheet, never a navigation (user decision 2026-11-26 17:23).
+  /// The full narrator page is reachable only from the narrators
+  /// encyclopedia. Tapping the same row again hides the line. The
+  /// line's text is built at render time by [_NarratorsTab] from the
+  /// honest ladder ([inlineStatusForTap]).
   void _openNarrator(Narrator narrator) {
-    final outcome = narratorTapOutcome(
-      verifiedLink: true,
-      narratorsAvailable: widget.db.narratorsAvailable,
-    );
-    if (outcome == NarratorTapOutcome.showStatus) {
-      showHadithDetailsSheet(
-        context,
-        db: widget.db,
-        hadith: _hadith,
-        narrator: narrator,
-      );
-    } else if (outcome == NarratorTapOutcome.pendingApproval) {
-      showNarratorPendingSheet(
-        context,
-        narratorName: narrator.displayName,
-        verifiedLinkKnown: true,
-      );
-    } else {
-      showUnverifiedNarratorSheet(
-        context,
-        narratorName: narrator.displayName,
-      );
-    }
+    final index = _chainNarrators.indexOf(narrator);
+    setState(() {
+      _selectedNarratorIndex =
+          (index < 0 || _selectedNarratorIndex == index) ? null : index;
+    });
   }
 
   @override
@@ -344,13 +362,27 @@ class _HadithReaderScreenState extends State<HadithReaderScreen> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        _chapterHeader,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              _chapterHeader,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                          if (isUntranslatedChapterTitle(
+                            _hadith.chapterTitle,
+                          )) ...[
+                            const SizedBox(width: 6),
+                            const UntranslatedChapterTag(),
+                          ],
+                        ],
                       ),
                     ),
                     const Icon(
@@ -395,13 +427,6 @@ class _HadithReaderScreenState extends State<HadithReaderScreen> {
                       confirmedNarrators: _chainNarrators,
                       chainLinks: _isnadLinks,
                       narratorsAvailable: widget.db.narratorsAvailable,
-                      onVerifiedNarratorTap: (id) =>
-                          showHadithDetailsSheetById(
-                        context,
-                        widget.db,
-                        _hadith,
-                        id,
-                      ),
                     ),
             ),
           ),
@@ -412,7 +437,20 @@ class _HadithReaderScreenState extends State<HadithReaderScreen> {
                   _chainLinks.any((l) => l.narratorId != null),
               hasParserRows: _chainLinks.isNotEmpty,
             ),
+            onShowMessage: (message) => setState(
+              () => _inlineMessage =
+                  _inlineMessage == message ? null : message,
+            ),
           ),
+          if (_inlineMessage != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(
+                _inlineMessage!,
+                style: isnadInlineStatusStyle(context),
+                textAlign: TextAlign.center,
+              ),
+            ),
           const SizedBox(height: 12),
           // Isnad analysis (built by the parallel worker with exactly
           // this constructor).
@@ -432,32 +470,11 @@ class _HadithReaderScreenState extends State<HadithReaderScreen> {
               label: const Text('تحليل الإسناد'),
             ),
           ),
-          // Verified narrators of this hadith. Real data only; tapping a
-          // row opens the hadith-details sheet (verified case) or the
-          // honest-ladder sheet — the same decision as tapping the name
-          // in the text.
-          if (_chainNarrators.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            const _SectionTitle('رواة الحديث'),
-            Card(
-              child: Column(
-                children: [
-                  for (final n in _chainNarrators)
-                    ListTile(
-                      dense: true,
-                      title: Text(n.displayName),
-                      subtitle: n.hasStatus
-                          ? Text('${n.status} — ${n.statusSource}')
-                          : null,
-                      trailing: const Icon(Icons.chevron_left, size: 18),
-                      onTap: () => _openNarrator(n),
-                    ),
-                ],
-              ),
-            ),
-          ],
           const SizedBox(height: 16),
-          // Tabs row (mockup: شرح / تخريج / الحكم / الغريب / ملاحظات).
+          // Tabs row (جامع الكتب التسعة set: تخريج / الحكم / رواة /
+          // شرح / تعليقات). The narrators live in the رواة tab now —
+          // the standalone «رواة الحديث» section above the tabs was
+          // removed with the 2026-11-26 17:26 reconciliation.
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -475,6 +492,13 @@ class _HadithReaderScreenState extends State<HadithReaderScreen> {
             ),
           ),
           const SizedBox(height: 12),
+          // LAZY tab content (smoothness fix 2026-11-26, review §4):
+          // only the SELECTED tab's widget is ever instantiated —
+          // [_TabContent] switches on [_tab] and builds that one tab
+          // alone, so the other four tabs' widgets (and their DB reads,
+          // e.g. the sharh tab's commentary count) are never built
+          // while the user reads the matn/isnad. The matn and isnad
+          // above stay visible on every tab by design.
           _TabContent(tab: _tab, state: this),
           const SizedBox(height: 20),
           // Ask SUNNATI about this hadith (retrieval, as before).
@@ -599,6 +623,12 @@ class _TabPill extends StatelessWidget {
 
 /// Content of the selected tab — real data or an honest empty state.
 /// Reads its data from the owning [_HadithReaderScreenState].
+///
+/// LAZY by construction: the switch below instantiates exactly one
+/// tab widget — the selected one. Unselected tabs are never built
+/// (their widgets, DB reads and empty states do not exist in the tree
+/// until the user taps that tab), which is what keeps a tab switch
+/// from rebuilding the whole page's content.
 class _TabContent extends StatelessWidget {
   const _TabContent({required this.tab, required this.state});
 
@@ -608,24 +638,83 @@ class _TabContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     switch (tab) {
-      case _ReaderTab.sharh:
-        return _SharhTab(state: state);
       case _ReaderTab.takhrij:
         return _TakhrijTab(state: state);
       case _ReaderTab.hukm:
         return _HukmTab(state: state);
-      case _ReaderTab.gharib:
-        // The `glossary` table is installed but empty (0 rows, verified
-        // in the shipped library DB) — no definition is ever invented.
-        return const EmptyLibraryCard(
-          title: 'لا توجد بيانات غريب الحديث مسجّلة بعد',
-          detail:
-              'جدول الغريب فارغ في المكتبة المثبّتة — لم تُستورد تعريفات الألفاظ الغريبة بعد، فلا يُعرض هنا أي تعريف غير موثّق.',
-          icon: Icons.text_snippet_outlined,
-        );
-      case _ReaderTab.notes:
-        return _NotesTab(state: state);
+      case _ReaderTab.narrators:
+        return _NarratorsTab(state: state);
+      case _ReaderTab.sharh:
+        return _SharhTab(state: state);
+      case _ReaderTab.comments:
+        return _CommentsTab(state: state);
     }
+  }
+}
+
+/// رواة: the verified narrators of this hadith (real data only).
+/// Tapping a row shows ONLY his status + source as an inline line
+/// right under that row — never the full details page, never a
+/// navigation (user decision 2026-11-26 17:23). The full narrator page
+/// is reachable only from the narrators encyclopedia.
+class _NarratorsTab extends StatelessWidget {
+  const _NarratorsTab({required this.state});
+
+  final _HadithReaderScreenState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final narrators = state._chainNarrators;
+    if (narrators.isEmpty) {
+      return const EmptyLibraryCard(
+        title: 'لا يوجد راوٍ موثّق مرتبط بهذا الحديث بعد',
+        detail:
+            'لم تُربط أسماء الإسناد برواة موثّقين بعد — لا يُعرض هنا أي راوٍ غير موثّق.',
+        icon: Icons.person_outline,
+      );
+    }
+    final selected = state._selectedNarratorIndex;
+    return Card(
+      child: Column(
+        children: [
+          for (var i = 0; i < narrators.length; i++) ...[
+            ListTile(
+              dense: true,
+              title: Text(narrators[i].displayName),
+              subtitle: narrators[i].hasStatus
+                  ? Text(
+                      '${narrators[i].status} — ${narrators[i].statusSource}',
+                    )
+                  : null,
+              trailing: const Icon(Icons.chevron_left, size: 18),
+              onTap: () => state._openNarrator(narrators[i]),
+            ),
+            if (selected == i)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    inlineStatusLineText(
+                      inlineStatusForTap(
+                        name: narrators[i].displayName,
+                        outcome: narratorTapOutcome(
+                          verifiedLink: true,
+                          narratorsAvailable:
+                              state.widget.db.narratorsAvailable,
+                        ),
+                        status: narrators[i].status,
+                        statusSource: narrators[i].statusSource,
+                      ),
+                    ),
+                    style: isnadInlineStatusStyle(context),
+                  ),
+                ),
+              ),
+          ],
+        ],
+      ),
+    );
   }
 }
 
@@ -867,9 +956,12 @@ class _HukmTab extends StatelessWidget {
   }
 }
 
-/// ملاحظات: the user's real notes for this hadith, with add/edit.
-class _NotesTab extends StatelessWidget {
-  const _NotesTab({required this.state});
+/// تعليقات: the user's own comments/notes on this hadith, with
+/// add/edit. There is no shared-comments data in the library, so only
+/// the user's own note is ever shown here — never invented comments
+/// from other users.
+class _CommentsTab extends StatelessWidget {
+  const _CommentsTab({required this.state});
 
   final _HadithReaderScreenState state;
 
@@ -885,7 +977,7 @@ class _NotesTab extends StatelessWidget {
           children: [
             if (note.isEmpty)
               const Text(
-                'لا توجد ملاحظات لهذا الحديث بعد.',
+                'لا توجد تعليقات لهذا الحديث بعد — أضف تعليقك الخاص.',
                 style: TextStyle(color: SunnatiColors.inkMuted),
               )
             else
@@ -895,7 +987,7 @@ class _NotesTab extends StatelessWidget {
               children: [
                 FilledButton(
                   onPressed: state._showNoteDialog,
-                  child: Text(note.isEmpty ? 'إضافة ملاحظة' : 'تعديل الملاحظة'),
+                  child: Text(note.isEmpty ? 'إضافة تعليق' : 'تعديل التعليق'),
                 ),
                 if (note.isNotEmpty) ...[
                   const SizedBox(width: 8),
@@ -907,7 +999,7 @@ class _NotesTab extends StatelessWidget {
                       );
                       if (state.mounted) state.refresh();
                     },
-                    child: const Text('حذف الملاحظة'),
+                    child: const Text('حذف التعليق'),
                   ),
                 ],
               ],
@@ -924,17 +1016,24 @@ class _NotesTab extends StatelessWidget {
 ///
 /// * verified + package installed: tap hint (plain, not tappable).
 /// * verified links but package held back: the pending-approval line,
-///   tappable — it opens the pending sheet (rung b), showing NO status.
+///   tappable — it shows the pending message as an inline red line
+///   under this line (rung b), showing NO status.
 /// * parser rows but zero verified links: the "not linked yet" line,
-///   tappable — it opens rung (c)
-///   ('لا توجد ترجمة موثّقة لهذا الراوي بعد'), since the names
-///   themselves are plain and must never look tappable.
+///   tappable — it shows rung (c)
+///   ('لا توجد ترجمة موثّقة لهذا الراوي بعد') as an inline red line,
+///   since the names themselves are plain and must never look tappable.
 /// * no parser rows at all: the "isnad not parsed yet" line (plain —
 ///   there is no name to tap).
 class _CoverageLine extends StatelessWidget {
-  const _CoverageLine({required this.state});
+  const _CoverageLine({required this.state, required this.onShowMessage});
 
   final HadithCoverageState state;
+
+  /// Called with the honest message to show as an inline red line
+  /// under the coverage line when a tappable coverage line is tapped.
+  /// Never opens a sheet, never navigates (user decision 2026-11-26
+  /// 17:23).
+  final void Function(String message) onShowMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -944,7 +1043,7 @@ class _CoverageLine extends StatelessWidget {
         return const Padding(
           padding: EdgeInsets.only(top: 6),
           child: Text(
-            'اضغط على أي اسم مميّز لعرض بطاقته التفصيلية؛ الموثّق بحالته ومصدرها، وغير الموثّق ببيان صريح.',
+            'اضغط على أي اسم أحمر لعرض حالته ومصدرها في سطر مدمج تحت الاسم؛ وغير الموثّق ببيان صريح.',
             style: style,
           ),
         );
@@ -952,10 +1051,7 @@ class _CoverageLine extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(top: 6),
           child: GestureDetector(
-            onTap: () => showNarratorPendingSheet(
-              context,
-              verifiedLinkKnown: true,
-            ),
+            onTap: () => onShowMessage(kNarratorsPendingApprovalMessage),
             child: const Text(
               kNarratorsPendingApprovalMessage,
               style: style,
@@ -966,7 +1062,7 @@ class _CoverageLine extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(top: 6),
           child: GestureDetector(
-            onTap: () => showUnverifiedNarratorSheet(context),
+            onTap: () => onShowMessage(kNoVerifiedBiographyMessage),
             child: const Text(
               kNoVerifiedChainMessage,
               style: style,

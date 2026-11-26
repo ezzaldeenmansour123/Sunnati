@@ -7,15 +7,21 @@ import '../models/book.dart';
 import 'book_screen.dart';
 import 'widgets/empty_library.dart';
 
-/// Library screen — mockup screen 2, reproduced faithfully in structure:
-/// a LIST (not a grid) of the Nine Books, each row with a gold book-cover
-/// thumbnail drawn in code, the book name + author from the database, and
-/// a chevron; tapping opens the book.
+/// Library screen — the Nine Books as a grid of book-cover cards
+/// (جامع الكتب التسعة layout, user decision 2026-11-26 17:26).
 ///
-/// Only the DESIGN is copied from the mockup: names, authors and counts
-/// come from the `books` table — never hard-coded here. A book with no
-/// imported data is shown dimmed as "قيد الاستيراد" and is NOT openable:
-/// tapping it would show an empty list, so it is not a button at all.
+/// Each book is a cover card: a coloured cover block (identity-family
+/// tints — petrol blues, violet-gray, muted gold, rose; NEVER the
+/// reference's brown/green/purple covers, and never a green primary —
+/// palette decision 2026-11-26 17:26 «أبقِ البترولي وخذ التخطيط بس»)
+/// with the short name + a gold divider, then the book name, author
+/// and the REAL imported hadith count. Tapping opens the book.
+///
+/// Only the DESIGN is copied from the reference: names, authors and
+/// counts come from the `books` table — never hard-coded here. A book
+/// with no imported data is shown dimmed as "قيد الاستيراد" and is NOT
+/// openable: tapping it would show an empty list, so it is not a button
+/// at all.
 class LibraryScreen extends StatelessWidget {
   const LibraryScreen({super.key, required this.db, required this.userRepo});
 
@@ -27,28 +33,66 @@ class LibraryScreen extends StatelessWidget {
     final books = db.books();
     return Scaffold(
       appBar: AppBar(title: const Text('الكتب التسعة')),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      body: Column(
         children: [
           if (!db.isAvailable)
-            EmptyLibraryCard(
-              title: 'المكتبة تُبنى',
-              detail: db.unavailableReason.isNotEmpty
-                  ? db.unavailableReason
-                  : 'الكتب التسعة قيد الاستيراد (المرحلتان 2 و3). ستظهر هنا فور اكتمال الاستيراد والتحقق.',
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+              child: EmptyLibraryCard(
+                title: 'المكتبة تُبنى',
+                detail: db.unavailableReason.isNotEmpty
+                    ? db.unavailableReason
+                    : 'الكتب التسعة قيد الاستيراد (المرحلتان 2 و3). ستظهر هنا فور اكتمال الاستيراد والتحقق.',
+              ),
             ),
-          for (final book in books)
-            _BookRow(book: book, db: db, userRepo: userRepo),
+          Expanded(
+            child: GridView.count(
+              crossAxisCount: 2,
+              mainAxisSpacing: 4,
+              crossAxisSpacing: 4,
+              // Tall cover cards: cover block on top, name/author/count
+              // below — the reference's 2-column cover grid.
+              childAspectRatio: 0.68,
+              padding: const EdgeInsets.all(12),
+              children: [
+                for (final book in books)
+                  _BookCard(book: book, db: db, userRepo: userRepo),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-/// One row of the Nine Books list: gold cover (right, RTL leading),
-/// name + author centred, chevron (left, RTL trailing).
-class _BookRow extends StatelessWidget {
-  const _BookRow({
+/// Cover colours, one per book in canonical order (index = sort − 1).
+/// Identity-family tints only: petrol blues, violet-gray, muted gold,
+/// rose — the petrol/ivory/matte-gold identity, no brown, no green.
+const List<Color> kBookCoverColors = <Color>[
+  Color(0xFF0F3B4D), // petrol
+  Color(0xFF14606E), // petrol-teal
+  Color(0xFF2E7A96), // petrolLight
+  Color(0xFF0A2A38), // deepPetrol
+  Color(0xFF2F4A6B), // slate petrol-blue
+  Color(0xFF5E5670), // violet-gray
+  Color(0xFF6E5A7A), // violet-gray, lighter
+  Color(0xFF9A7B3F), // muted dark gold
+  Color(0xFFB84A5E), // roseDark (rose accent family)
+];
+
+/// Correct Arabic count label for [count] imported hadiths.
+String bookCountLabel(int count) {
+  if (count == 1) return 'حديث واحد';
+  if (count == 2) return 'حديثان';
+  if (count >= 3 && count <= 10) return '$count أحاديث';
+  return '$count حديثاً';
+}
+
+/// One book-cover card: coloured cover block (short name + gold
+/// divider) on top, name + author + real count below.
+class _BookCard extends StatelessWidget {
+  const _BookCard({
     required this.book,
     required this.db,
     required this.userRepo,
@@ -60,58 +104,81 @@ class _BookRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final row = Card(
-      margin: const EdgeInsets.symmetric(vertical: 6),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        child: Row(
-          children: [
-            // Gold cover thumbnail, drawn in code — no image asset.
-            _GoldCover(shortName: book.shortName),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    book.name,
-                    style: SunnatiText.bookTitle,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    book.author,
-                    style: SunnatiText.bookAuthor,
-                    textAlign: TextAlign.center,
-                  ),
-                  if (!book.hasData) ...[
-                    const SizedBox(height: 2),
-                    const Text(
-                      'قيد الاستيراد',
-                      style: TextStyle(
-                        color: SunnatiColors.inkMuted,
-                        fontSize: 11,
+    final color = kBookCoverColors[
+        (book.sort - 1) % kBookCoverColors.length];
+    final card = Card(
+      margin: const EdgeInsets.all(6),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Container(
+              color: color,
+              alignment: Alignment.center,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      book.shortName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        height: 1.5,
                       ),
                       textAlign: TextAlign.center,
                     ),
+                    const SizedBox(height: 6),
+                    Container(
+                      width: 24,
+                      height: 2,
+                      color: SunnatiColors.gold,
+                    ),
                   ],
-                ],
+                ),
               ),
             ),
-            const SizedBox(width: 8),
-            Icon(
-              Icons.chevron_left,
-              color: book.hasData
-                  ? SunnatiColors.neutral
-                  : SunnatiColors.neutral.withValues(alpha: 0.4),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Column(
+              children: [
+                Text(
+                  book.name,
+                  style: SunnatiText.bookTitle,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  book.author,
+                  style: SunnatiText.bookAuthor,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  book.hasData
+                      ? bookCountLabel(book.count)
+                      : 'قيد الاستيراد',
+                  style: const TextStyle(
+                    color: SunnatiColors.inkMuted,
+                    fontSize: 11,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
     final dimmed = Opacity(
       opacity: book.hasData ? 1.0 : 0.55,
-      child: row,
+      child: card,
     );
     if (!book.hasData) return dimmed;
     return InkWell(
@@ -126,53 +193,6 @@ class _BookRow extends StatelessWidget {
       ),
       borderRadius: BorderRadius.circular(12),
       child: dimmed,
-    );
-  }
-}
-
-/// Gold book cover drawn in code (matte gold, petrol border, short name
-/// + divider line) — the same cover style the library used before, now
-/// as a small list thumbnail instead of a grid tile.
-class _GoldCover extends StatelessWidget {
-  const _GoldCover({required this.shortName});
-
-  final String shortName;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 52,
-      height: 68,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: SunnatiColors.gold,
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: SunnatiColors.petrol, width: 1.5),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              shortName,
-              style: const TextStyle(
-                color: SunnatiColors.petrol,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                height: 1.5,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 4),
-            Container(
-              width: 20,
-              height: 2,
-              color: SunnatiColors.petrol,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
