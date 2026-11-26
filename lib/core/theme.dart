@@ -14,7 +14,7 @@
 /// this new palette.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Brand colours. Hex values are the single source of truth; do not
 /// re-declare them in widgets.
