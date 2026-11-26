@@ -143,7 +143,7 @@ class _ProphetNode extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Card(
       color: SunnatiColors.petrol,
-      child: const ListTile(
+      child: ListTile(
         leading: Icon(Icons.menu_book, color: Colors.white),
         title: Text(
           'النبي ﷺ',
