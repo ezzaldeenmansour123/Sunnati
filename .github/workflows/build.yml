@@ -262,6 +262,17 @@ jobs:
           else
             echo "android/key.properties already exists (release secrets) — leaving it untouched."
           fi
+          echo "key.properties content (public debug credentials only):"
+          cat android/key.properties
+
+      - name: Re-verify keystore immediately before the build
+        # Diagnostic (runs #97-#104 all shipped a fresh cert): prove the
+        # JKS is STILL the stable one right before `flutter build apk`
+        # runs, so a during-build regeneration is distinguishable from a
+        # between-step change.
+        run: |
+          keytool -list -v -keystore ~/.android/debug.keystore -storepass android | grep -E "SHA256:|Alias name:"
+          ls -l ~/.android/debug.keystore android/key.properties
 
       - name: Build release APK (single arm64-v8a APK)
         # One APK on purpose: the target test device is a Samsung Galaxy
