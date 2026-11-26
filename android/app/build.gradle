@@ -1,0 +1,71 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+// Release signing: reads android/key.properties (created in CI from the
+// KEYSTORE_BASE64 / KEYSTORE_PASSWORD / KEY_ALIAS / KEY_PASSWORD secrets).
+// The keystore itself is NEVER in the repo (see .gitignore).
+// If key.properties is absent, the release build falls back to the DEBUG
+// signing config and prints a loud warning — a debug-signed "release" must
+// never be distributed silently. This is the Ezz-alsonah lesson applied
+// from day one: signing is decided before the first shipped build.
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+} else {
+    println("WARNING: key.properties not found — release APK will use DEBUG signing. Do NOT distribute this build as a release.")
+}
+
+android {
+    namespace "com.sunnati.app"
+    compileSdk 34
+
+    defaultConfig {
+        // FIXED from day one — never change after the first shipped build,
+        // or installed users cannot update.
+        applicationId "com.sunnati.app"
+        minSdk 21
+        targetSdk 34
+        // Single source of truth for versionCode/versionName is pubspec.yaml;
+        // Flutter injects them via flutterVersionCode / flutterVersionName.
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+    }
+
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                keyAlias keystoreProperties["keyAlias"]
+                keyPassword keystoreProperties["keyPassword"]
+                storeFile keystoreProperties["storeFile"] ? file(keystoreProperties["storeFile"]) : null
+                storePassword keystoreProperties["storePassword"]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig keystorePropertiesFile.exists() ? signingConfigs.release : signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+
+flutter {
+    source "../.."
+}
+
+dependencies {}
