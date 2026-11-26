@@ -1,6 +1,5 @@
 plugins {
     id "com.android.application"
-    id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -21,14 +20,14 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.sunnati.app"
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         // FIXED from day one — never change after the first shipped build,
         // or installed users cannot update.
         applicationId "com.sunnati.app"
         minSdk 21
-        targetSdk 34
+        targetSdk 36
         // Single source of truth for versionCode/versionName is pubspec.yaml;
         // Flutter injects them via flutterVersionCode / flutterVersionName.
         versionCode flutterVersionCode.toInteger()
@@ -59,8 +58,12 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
+    // AGP 9 built-in Kotlin: the old kotlinOptions DSL is gone; the
+    // compiler target is set through the kotlin extension instead.
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+        }
     }
 }
 
