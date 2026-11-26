@@ -146,8 +146,11 @@ class _HadithReaderScreenState extends State<HadithReaderScreen> {
           IconButton(
             icon: const Icon(Icons.share),
             tooltip: 'مشاركة',
-            onPressed: () => Share.share(
-              '${_hadith.text}\n(${_hadith.bookId} — حديث ${_hadith.num})',
+            onPressed: () => SharePlus.instance.share(
+              ShareParams(
+                text:
+                    '${_hadith.text}\n(${_hadith.bookId} — حديث ${_hadith.num})',
+              ),
             ),
           ),
         ],
