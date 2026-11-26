@@ -1,0 +1,313 @@
+/// Download-package manifest (Phase 7) — pure Dart, no Flutter import.
+///
+/// Format v1 (single source of truth beside `tools/package_manifest.py`
+/// and `docs/PACKAGE_FORMAT.md` — the three must agree; the Python test
+/// suite checks the Dart constants against the Python implementation):
+///
+///     format          "sunnati-package"
+///     format_version  1
+///     library_id      ^[a-z0-9][a-z0-9_-]{0,63}$
+///     name            Arabic display name
+///     version         semantic x.y.z
+///     source          source name — never empty
+///     license         licence identifier — never empty
+///     license_url     optional canonical licence URL
+///     files           [{path, sha256, size_bytes}] — every file listed
+///     total_bytes     sum of files[].size_bytes
+///     created_at      ISO-8601 timestamp
+///     min_app_version optional, e.g. "1.0.0"
+///
+/// Rules enforced here and in Python:
+///   * SHA-256 is 64 lowercase hex chars; the installer refuses a package
+///     whose manifest hash, file hash or total size disagrees.
+///   * File paths are relative, `/`-separated, never start with `/`,
+///     never contain `..`, a drive letter or a backslash (path-traversal
+///     guard — a package must not write outside its own directory).
+///   * Allowed extensions: `.db`, `.json`, `.txt`, `.md`.
+///   * A package bigger than 2 GiB is refused; it must be split or
+///     flagged to the owner first.
+library;
+
+import 'dart:convert';
+
+/// Manifest format identifier.
+const String kPackageFormat = 'sunnati-package';
+
+/// Manifest format version supported by this build.
+const int kPackageFormatVersion = 1;
+
+/// Maximum accepted package size (2 GiB).
+const int kMaxPackageBytes = 2 * 1024 * 1024 * 1024;
+
+/// Allowed file extensions inside a package.
+const Set<String> kPackageAllowedExtensions = <String>{
+  '.db',
+  '.json',
+  '.txt',
+  '.md',
+};
+
+final RegExp _sha256RegExp = RegExp(r'^[0-9a-f]{64}$');
+final RegExp _libraryIdRegExp = RegExp(r'^[a-z0-9][a-z0-9_-]{0,63}$');
+final RegExp _versionRegExp = RegExp(r'^\d+\.\d+\.\d+$');
+final RegExp _driveRegExp = RegExp(r'^[A-Za-z]:');
+
+/// True iff [path] is a safe relative path inside a package.
+bool isSafePackagePath(String path) {
+  if (path.isEmpty) return false;
+  if (path.startsWith('/') || path.startsWith(r'\')) return false;
+  if (path.contains(r'\') || path.contains('\x00')) return false;
+  if (_driveRegExp.hasMatch(path)) return false;
+  final parts = path.split('/');
+  for (final part in parts) {
+    if (part.isEmpty || part == '.' || part == '..') return false;
+  }
+  final dot = path.lastIndexOf('.');
+  if (dot < 0) return false;
+  if (!kPackageAllowedExtensions.contains(path.substring(dot).toLowerCase())) {
+    return false;
+  }
+  return true;
+}
+
+/// One file inside a package.
+class PackageFileEntry {
+  const PackageFileEntry({
+    required this.path,
+    required this.sha256,
+    required this.sizeBytes,
+  });
+
+  factory PackageFileEntry.fromJson(Map<String, Object?> json) {
+    return PackageFileEntry(
+      path: json['path'] as String? ?? '',
+      sha256: json['sha256'] as String? ?? '',
+      sizeBytes: json['size_bytes'] as int? ?? 0,
+    );
+  }
+
+  final String path;
+
+  /// Lowercase hex SHA-256 of the file bytes.
+  final String sha256;
+
+  final int sizeBytes;
+
+  Map<String, Object?> toJson() => <String, Object?>{
+        'path': path,
+        'sha256': sha256,
+        'size_bytes': sizeBytes,
+      };
+}
+
+/// A validated download-package manifest.
+class PackageManifest {
+  const PackageManifest({
+    required this.libraryId,
+    required this.name,
+    required this.version,
+    required this.source,
+    required this.license,
+    required this.files,
+    required this.totalBytes,
+    required this.createdAt,
+    this.licenseUrl = '',
+    this.minAppVersion = '',
+  });
+
+  /// Parse + validate. Returns null and fills [errors] on any failure —
+  /// an invalid manifest is refused, never partially trusted.
+  static PackageManifest? tryParse(
+    Map<String, Object?> json,
+    List<String> errors,
+  ) {
+    final found = validateManifestJson(json);
+    errors.addAll(found);
+    if (found.isNotEmpty) return null;
+    return PackageManifest(
+      libraryId: json['library_id'] as String,
+      name: json['name'] as String,
+      version: json['version'] as String,
+      source: json['source'] as String,
+      license: json['license'] as String,
+      files: (json['files'] as List)
+          .map(
+            (e) => PackageFileEntry.fromJson(e as Map<String, Object?>),
+          )
+          .toList(),
+      totalBytes: json['total_bytes'] as int,
+      createdAt: json['created_at'] as String,
+      licenseUrl: json['license_url'] as String? ?? '',
+      minAppVersion: json['min_app_version'] as String? ?? '',
+    );
+  }
+
+  /// Parse a manifest JSON string. Throws [FormatException] listing the
+  /// validation errors when the manifest is invalid.
+  factory PackageManifest.fromJsonString(String source) {
+    final decoded = jsonDecode(source);
+    if (decoded is! Map<String, Object?>) {
+      throw const FormatException('Package manifest is not a JSON object');
+    }
+    final errors = <String>[];
+    final manifest = PackageManifest.tryParse(decoded, errors);
+    if (manifest == null) {
+      throw FormatException('Invalid package manifest: ${errors.join('; ')}');
+    }
+    return manifest;
+  }
+
+  final String libraryId;
+  final String name;
+  final String version;
+  final String source;
+  final String license;
+  final List<PackageFileEntry> files;
+  final int totalBytes;
+  final String createdAt;
+  final String licenseUrl;
+  final String minAppVersion;
+
+  Map<String, Object?> toJson() => <String, Object?>{
+        'format': kPackageFormat,
+        'format_version': kPackageFormatVersion,
+        'library_id': libraryId,
+        'name': name,
+        'version': version,
+        'source': source,
+        'license': license,
+        if (licenseUrl.isNotEmpty) 'license_url': licenseUrl,
+        'files': files.map((f) => f.toJson()).toList(),
+        'total_bytes': totalBytes,
+        'created_at': createdAt,
+        if (minAppVersion.isNotEmpty) 'min_app_version': minAppVersion,
+      };
+
+  String toJsonString() => jsonEncode(toJson());
+}
+
+/// Validate a decoded manifest object. Returns the error list
+/// (empty = valid). Mirrors `tools/package_manifest.py::validate_manifest`.
+List<String> validateManifestJson(Map<String, Object?> manifest) {
+  final errors = <String>[];
+  if (manifest['format'] != kPackageFormat) {
+    errors.add("format must be '$kPackageFormat'");
+  }
+  if (manifest['format_version'] != kPackageFormatVersion) {
+    errors.add('format_version must be $kPackageFormatVersion');
+  }
+  final libraryId = manifest['library_id'];
+  if (libraryId is! String || !_libraryIdRegExp.hasMatch(libraryId)) {
+    errors.add('library_id is missing or malformed');
+  }
+  final name = manifest['name'];
+  if (name is! String || name.trim().isEmpty) {
+    errors.add('name is missing or empty');
+  }
+  final version = manifest['version'];
+  if (version is! String || !_versionRegExp.hasMatch(version)) {
+    errors.add('version must be semantic (x.y.z)');
+  }
+  final source = manifest['source'];
+  if (source is! String || source.trim().isEmpty) {
+    errors.add('source is missing or empty');
+  }
+  final license = manifest['license'];
+  if (license is! String || license.trim().isEmpty) {
+    errors.add('license is missing or empty');
+  }
+  final files = manifest['files'];
+  if (files is! List || files.isEmpty) {
+    errors.add('files must be a non-empty list');
+    return errors;
+  }
+  var total = 0;
+  final seen = <String>{};
+  for (final entry in files) {
+    if (entry is! Map<String, Object?>) {
+      errors.add('files[] entry is not an object');
+      continue;
+    }
+    final path = entry['path'];
+    if (path is! String || !isSafePackagePath(path)) {
+      errors.add('unsafe file path: $path');
+      continue;
+    }
+    if (!seen.add(path)) errors.add('duplicate file path: $path');
+    final sha = entry['sha256'];
+    if (sha is! String || !_sha256RegExp.hasMatch(sha)) {
+      errors.add('bad sha256 for $path');
+    }
+    final size = entry['size_bytes'];
+    if (size is! int || size <= 0) {
+      errors.add('bad size_bytes for $path');
+    } else {
+      total += size;
+    }
+  }
+  final declared = manifest['total_bytes'];
+  if (declared is! int || declared <= 0) {
+    errors.add('total_bytes is missing or not a positive integer');
+  } else if (declared != total) {
+    errors.add('total_bytes ($declared) != sum of files ($total)');
+  }
+  if (total > kMaxPackageBytes) {
+    errors.add('total_bytes exceeds the $kMaxPackageBytes cap');
+  }
+  final createdAt = manifest['created_at'];
+  if (createdAt is! String || createdAt.trim().isEmpty) {
+    errors.add('created_at is missing or empty');
+  }
+  return errors;
+}
+
+/// Download lifecycle states (master prompt §12). `paused` keeps the
+/// partial file so a later resume continues from [DownloadProgress.receivedBytes].
+enum DownloadStatus {
+  notStarted,
+  downloading,
+  paused,
+  verifying,
+  installed,
+  failed,
+  deleted,
+}
+
+/// Progress snapshot for one package download.
+class DownloadProgress {
+  const DownloadProgress({
+    required this.libraryId,
+    required this.status,
+    required this.receivedBytes,
+    required this.totalBytes,
+    this.error = '',
+  });
+
+  final String libraryId;
+  final DownloadStatus status;
+  final int receivedBytes;
+  final int totalBytes;
+  final String error;
+
+  /// 0.0–1.0; 0 when the total is unknown.
+  double get fraction =>
+      totalBytes <= 0 ? 0 : (receivedBytes / totalBytes).clamp(0.0, 1.0);
+
+  bool get isDone => status == DownloadStatus.installed;
+}
+
+/// True when [installedVersion] is older than [availableVersion]
+/// (semantic x.y.z comparison) — i.e. a partial update is available.
+bool isUpdateAvailable(String installedVersion, String availableVersion) {
+  List<int> parts(String v) =>
+      v.split('.').map((p) => int.tryParse(p) ?? 0).toList();
+  final a = parts(installedVersion);
+  final b = parts(availableVersion);
+  for (var i = 0; i < 3; i++) {
+    final ai = i < a.length ? a[i] : 0;
+    final bi = i < b.length ? b[i] : 0;
+    if (bi > ai) return true;
+    if (bi < ai) return false;
+  }
+  return false;
+}
