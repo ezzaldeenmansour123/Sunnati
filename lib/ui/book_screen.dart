@@ -5,6 +5,7 @@ import '../data/user_repository.dart';
 import '../models/book.dart';
 import 'hadith_reader_screen.dart';
 import 'widgets/empty_library.dart';
+import 'widgets/sunnati_bottom_nav.dart';
 
 /// One book: its chapters (أبواب) in order, each with its hadith count.
 /// Tapping a chapter with hadiths opens the first hadith in the reader;
@@ -27,6 +28,13 @@ class BookScreen extends StatelessWidget {
     final chapters = db.chapters(book.id);
     return Scaffold(
       appBar: AppBar(title: Text(book.name)),
+      // Shared bottom nav (mockup screen 2, the books list: الرئيسية
+      // active). Tapping a tab replaces the stack with a fresh shell on
+      // that tab — see `sunnatiGoToTab`.
+      bottomNavigationBar: SunnatiBottomNav(
+        currentIndex: 2,
+        onTap: (index) => sunnatiGoToTab(context, index),
+      ),
       body: chapters.isEmpty
           ? ListView(
               padding: const EdgeInsets.all(12),

@@ -1,30 +1,46 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../core/narrator_logic.dart';
+import '../core/theme.dart';
 import '../data/database.dart';
 import '../data/user_repository.dart';
 import '../models/book.dart';
-import '../models/commentary.dart';
-import '../models/grade.dart';
 import '../models/hadith.dart';
-import '../search/search_history.dart';
+import '../models/narrator.dart';
 import '../search/search_service.dart';
 import 'hadith_reader_screen.dart';
 import 'widgets/empty_library.dart';
 
-/// Advanced search (master prompt §7): word / phrase / part of a hadith,
-/// in all books or one book, by hadith number (with book filter), by
-/// grade, by narrator (isnad region), by Companion (last narrator
-/// candidate), by chapter (the topic filter — chapters are the topic
-/// divisions the data actually has; their titles are English in the
-/// source), in the commentaries, in the takhrij scope (text-similarity
-/// grouping — the verified takhrij table is empty, and the screen says
-/// so), with lexical semantic expansion («بحث دلالي معجمي» — roots +
-/// synonyms, NOT embeddings and NOT an LLM), saved search history, and
-/// paginated results (one SQL page at a time — never thousands of rows
-/// in memory).
+/// Advanced search — layout of mockup screen 4 (2026-11-26).
 ///
-/// Every result always shows the book, the hadith number, the chapter
-/// and the source.
+/// The mockup is the «جامع الكتب التسعة» search interface, and the user
+/// asked (2026-11-26 15:25) for SUNNATI's screens to match those
+/// interfaces exactly — same structure, same layout, same flow. So this
+/// screen reproduces screen 4's layout faithfully:
+///   - search box «ابحث عن حديث أو راوٍ...» with a clear (×) button;
+///   - «خيارات البحث» header;
+///   - four filter rows: في الكتب / في الأبواب / رقم الحديث / الراوي;
+///   - a pink «بحث» button;
+///   - «نتائج البحث (N)» header and result cards (matn snippet + book
+///     + hadith number).
+///
+/// ONLY the design/layout is copied. The content stays the verified
+/// local database: the books and chapters come from the real installed
+/// library, the narrator picker lists only the verified narrators
+/// actually installed, the result count is the real SQL COUNT of the
+/// query (never the mockup's illustrative number), and the search
+/// itself is the existing [SearchService] (FTS5/lexical) — no new
+/// search engine was written.
+///
+/// Honest limits, shown in the UI where they apply:
+///   - chapter titles are English in the source (never translated or
+///     invented in Arabic);
+///   - the narrator picker is available only when the verified
+///     narrators package is installed; while the KITAB gate holds it
+///     back the row honestly says «حزمة الرواة بانتظار الموافقة» and
+///     no unlinked name is ever searched as if verified;
+///   - a hadith number jumps to that hadith in the chosen book, and
+///     says honestly when no such number exists in that book.
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key, required this.db});
 
@@ -34,90 +50,82 @@ class SearchScreen extends StatefulWidget {
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
-const String _kLibrarySource = 'مكتبة سُنَّتي — الكتب التسعة (quranlab/hadith)';
-
-String _scopeLabel(SearchScope scope) {
-  return switch (scope) {
-    SearchScope.all => 'المتن والسند',
-    SearchScope.matn => 'المتن فقط',
-    SearchScope.isnad => 'السند فقط',
-    SearchScope.commentary => 'الشروح',
-    SearchScope.takhrij => 'التخريج',
-  };
-}
-
 class _SearchScreenState extends State<SearchScreen> {
   final _controller = TextEditingController();
-  final _narratorController = TextEditingController();
-  final _companionController = TextEditingController();
+  final _numberController = TextEditingController();
   String? _bookId;
-  String? _grade;
   int? _chapterId;
-  SearchScope _scope = SearchScope.all;
-  bool _semantic = false;
+  List<Chapter> _chapters = const <Chapter>[];
+
+  /// Display name of the verified narrator picked from the picker, or
+  /// null when none is picked. Only a name from the verified installed
+  /// list is ever searched — never a typed unlinked name.
+  String? _narratorName;
+
   SearchPage<SearchHit>? _page;
-  SearchPage<Commentary>? _commentaryPage;
   bool _searched = false;
   int _pageNumber = 1;
-  List<Chapter> _chapters = const <Chapter>[];
-  SearchHistory? _history;
+
+  /// Set when a number jump found no hadith in the chosen book.
+  String _numberNotFound = '';
 
   late final SearchService _search = SearchService(widget.db);
-
-  @override
-  void initState() {
-    super.initState();
-    SearchHistory.load().then((h) {
-      if (mounted) setState(() => _history = h);
-    });
-  }
 
   SearchQuery get _currentQuery {
     return SearchQuery(
       text: _controller.text,
       bookId: _bookId,
-      grade: _grade,
       chapterId: _chapterId,
-      narrator: _narratorController.text,
-      companion: _companionController.text,
-      scope: _scope,
-      semantic: _semantic,
+      narrator: _narratorName ?? '',
       page: _pageNumber,
     );
   }
 
   void _run({int page = 1}) {
     _pageNumber = page;
-    final query = _currentQuery;
-    if (_scope == SearchScope.commentary) {
+    final numberText = _numberController.text.trim();
+    final number = int.tryParse(numberText);
+    if (number != null) {
+      // Hadith number: jump to that hadith in the chosen book.
+      if (_bookId != null) {
+        final one = widget.db.hadithByNumber(_bookId!, number);
+        if (one != null) {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => _ReaderOpener(db: widget.db, hadith: one),
+            ),
+          );
+          return;
+        }
+        setState(() {
+          _numberNotFound =
+              'لا يوجد حديث رقم $number في ${_bookName(_bookId!)}.';
+          _page = const SearchPage<SearchHit>(
+            items: <SearchHit>[],
+            total: 0,
+            page: 1,
+            pageSize: kDefaultPageSize,
+          );
+          _searched = true;
+        });
+        return;
+      }
+      // No book chosen: numeric search across all books (existing
+      // SearchService numeric path).
       setState(() {
-        _commentaryPage = _search.searchCommentaries(query);
-        _page = null;
+        _numberNotFound = '';
+        _page = _search.search(
+          SearchQuery(text: numberText, page: _pageNumber),
+        );
         _searched = true;
       });
-    } else {
-      setState(() {
-        _page = _search.search(query);
-        _commentaryPage = null;
-        _searched = true;
-      });
+      return;
     }
-    _history?.add(query);
-  }
-
-  void _runHistory(SearchHistoryEntry entry) {
-    _controller.text = entry.text;
-    _narratorController.text = entry.narrator;
-    _companionController.text = entry.companion;
     setState(() {
-      _bookId = entry.bookId;
-      _grade = entry.grade;
-      _chapterId = entry.chapterId;
-      _scope = entry.scope;
-      _semantic = entry.semantic;
+      _numberNotFound = '';
+      _page = _search.search(_currentQuery);
+      _searched = true;
     });
-    _loadChapters();
-    _run();
   }
 
   void _loadChapters() {
@@ -136,74 +144,6 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-  void _showSimilar(Hadith base) {
-    final similar = _search.findSimilar(base);
-    showDialog<void>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('روايات مشابهة — ${base.bookId} ${base.num}'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: similar.isEmpty
-                ? const Text(
-                    'لا توجد روايات مشابهة فوق العتبة (تشابه جاكارد 0.30).',
-                  )
-                : ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: similar.length + 1,
-                    itemBuilder: (context, i) {
-                      if (i == 0) {
-                        return const Padding(
-                          padding: EdgeInsets.only(bottom: 8),
-                          child: Text(
-                            'التشابه النصي وحده ليس دليلاً على وحدة الحديث '
-                            '(البرومبت §11) — قارن النص والسند بنفسك.',
-                            style: TextStyle(fontStyle: FontStyle.italic),
-                          ),
-                        );
-                      }
-                      final s = similar[i - 1];
-                      return Card(
-                        child: ListTile(
-                          title: Text(
-                            s.hadith.text,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          subtitle: Text(
-                            '${_bookName(s.hadith.bookId)} — حديث '
-                            '${s.hadith.num} — تشابه '
-                            '${(s.jaccard * 100).round()}٪ '
-                            '(${s.common} مشتركة)',
-                          ),
-                          onTap: () {
-                            Navigator.of(context).pop();
-                            Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                builder: (_) => _ReaderOpener(
-                                  db: widget.db,
-                                  hadith: s.hadith,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('إغلاق'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   String _bookName(String bookId) {
     for (final b in widget.db.books()) {
       if (b.id == bookId) return b.name;
@@ -211,11 +151,42 @@ class _SearchScreenState extends State<SearchScreen> {
     return bookId;
   }
 
+  /// Narrator picker: verified installed narrators only. When the
+  /// narrators package is held back (KITAB gate) the picker never
+  /// opens — the row explains why instead.
+  Future<void> _pickNarrator() async {
+    if (!widget.db.narratorsAvailable) {
+      final reason = widget.db.narratorsUnavailableReason.isNotEmpty
+          ? widget.db.narratorsUnavailableReason
+          : kNarratorsPendingApprovalMessage;
+      await showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('الراوي'),
+          content: Text(reason),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('إغلاق'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    final picked = await showDialog<String?>(
+      context: context,
+      builder: (context) => _NarratorPickerDialog(db: widget.db),
+    );
+    if (picked != null && mounted) {
+      setState(() => _narratorName = picked.isEmpty ? null : picked);
+    }
+  }
+
   @override
   void dispose() {
     _controller.dispose();
-    _narratorController.dispose();
-    _companionController.dispose();
+    _numberController.dispose();
     super.dispose();
   }
 
@@ -223,285 +194,301 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     final books = widget.db.books().where((b) => b.hasData).toList();
     final page = _page;
-    final commentaryPage = _commentaryPage;
-    final note = page?.semanticNote ?? commentaryPage?.semanticNote ?? '';
     return Scaffold(
-      appBar: AppBar(title: const Text('البحث المتقدم')),
+      appBar: AppBar(title: const Text('البحث')),
       body: Column(
         children: [
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(12),
               children: [
-                _buildFilters(context, books),
+                _buildSearchBox(),
+                const SizedBox(height: 12),
+                _buildOptionsHeader(),
                 const SizedBox(height: 8),
-                if (note.isNotEmpty)
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(note),
-                    ),
-                  ),
-                if (_grade != null)
-                  const Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(12),
-                      child: Text(
-                        'التصفية بالدرجة تُظهر الأحاديث ذات الدرجة المسجلة '
-                        'فقط — البخاري ومسلم (صحيح على مستوى المجموعة) '
-                        'وأحمد والدارمي (بلا درجة في المصدر) لا يظهران.',
-                      ),
-                    ),
-                  ),
-                if (!_searched) ...[
-                  const SizedBox(height: 8),
+                _buildBookRow(books),
+                _buildChapterRow(),
+                _buildNumberRow(),
+                _buildNarratorRow(),
+                const SizedBox(height: 4),
+                _buildSearchButton(),
+                const SizedBox(height: 12),
+                if (!_searched)
                   const Center(
                     child: Text(
-                      'اكتب كلمة أو جملة أو رقم حديث، ثم اضغط «بحث».',
+                      'اكتب كلمة أو جملة، أو اختر كتاباً وباباً ورقم '
+                      'حديث أو راوياً، ثم اضغط «بحث».',
                     ),
-                  ),
-                  _buildHistory(),
-                ] else if (page != null)
-                  _buildHadithResults(page)
-                else if (commentaryPage != null)
-                  _buildCommentaryResults(commentaryPage),
+                  )
+                else if (page != null)
+                  _buildResults(page),
               ],
             ),
           ),
-          if (_searched && (page != null || commentaryPage != null))
-            _buildPagination(
-              page?.total ?? commentaryPage?.total ?? 0,
-              page?.totalPages ?? commentaryPage?.totalPages ?? 1,
-              page?.hasMore ?? commentaryPage?.hasMore ?? false,
-            ),
+          if (_searched && page != null && _numberNotFound.isEmpty)
+            _buildPagination(page.total, page.totalPages, page.hasMore),
         ],
       ),
     );
   }
 
-  Widget _buildFilters(BuildContext context, List<Book> books) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        TextField(
-          controller: _controller,
-          decoration: const InputDecoration(
-            hintText: 'ابحث عن كلمة أو جملة أو رقم حديث…',
-            prefixIcon: Icon(Icons.search),
-            border: OutlineInputBorder(),
-          ),
-          textInputAction: TextInputAction.search,
-          onSubmitted: (_) => _run(),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          children: SearchScope.values.map((scope) {
-            return ChoiceChip(
-              label: Text(_scopeLabel(scope)),
-              selected: _scope == scope,
-              onSelected: (_) => setState(() => _scope = scope),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _narratorController,
-          decoration: const InputDecoration(
-            labelText: 'الراوي (بحث في السند فقط)',
-            hintText: 'مثال: الزهري',
-            border: OutlineInputBorder(),
-          ),
-          onSubmitted: (_) => _run(),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _companionController,
-          decoration: const InputDecoration(
-            labelText: 'الصحابي (آخر راوٍ في السند)',
-            hintText: 'مثال: أبو هريرة',
-            border: OutlineInputBorder(),
-          ),
-          onSubmitted: (_) => _run(),
-        ),
-        const SizedBox(height: 4),
-        const Text(
-          'إن كتبت اسم راوٍ أو صحابي قُدّم على نص البحث؛ البحث بالاسم '
-          'لا يُوسَّع بالجذور والمرادفات (أسماء أعلام).',
-          style: TextStyle(fontSize: 12),
-        ),
-        const SizedBox(height: 8),
-        DropdownButtonFormField<String?>(
-          key: ValueKey(_bookId),
-          initialValue: _bookId,
-          decoration: const InputDecoration(
-            labelText: 'الكتاب',
-            border: OutlineInputBorder(),
-          ),
-          items: [
-            const DropdownMenuItem<String?>(
-              value: null,
-              child: Text('جميع الكتب'),
-            ),
-            ...books.map(
-              (b) =>
-                  DropdownMenuItem<String?>(value: b.id, child: Text(b.name)),
-            ),
-          ],
-          onChanged: (v) {
-            setState(() => _bookId = v);
-            _loadChapters();
+  /// Search box exactly as in mockup screen 4: hint «ابحث عن حديث أو
+  /// راوٍ...», magnifier icon, clear (×) button.
+  Widget _buildSearchBox() {
+    return TextField(
+      controller: _controller,
+      decoration: InputDecoration(
+        hintText: 'ابحث عن حديث أو راوٍ...',
+        prefixIcon: const Icon(Icons.search),
+        suffixIcon: IconButton(
+          icon: const Icon(Icons.close),
+          tooltip: 'مسح البحث',
+          onPressed: () {
+            _controller.clear();
+            setState(() {});
           },
         ),
-        const SizedBox(height: 8),
-        DropdownButtonFormField<int?>(
-          key: ValueKey(_chapterId),
-          initialValue: _chapterId,
-          decoration: const InputDecoration(
-            labelText: 'الموضوع (الباب)',
-            border: OutlineInputBorder(),
-          ),
-          items: [
-            const DropdownMenuItem<int?>(value: null, child: Text('أي موضوع')),
-            ..._chapters.map(
-              (c) => DropdownMenuItem<int?>(value: c.id, child: Text(c.title)),
-            ),
-          ],
-          onChanged:
-              _bookId == null ? null : (v) => setState(() => _chapterId = v),
-        ),
-        const Text(
-          'الموضوع = باب الكتاب؛ عناوين الأبواب إنجليزية في المصدر '
-          '(لم تُترجم ولم تُخترع عناوين عربية). اختر كتاباً أولاً.',
-          style: TextStyle(fontSize: 12),
-        ),
-        const SizedBox(height: 8),
-        DropdownButtonFormField<String?>(
-          key: ValueKey(_grade),
-          initialValue: _grade,
-          decoration: const InputDecoration(
-            labelText: 'الدرجة',
-            border: OutlineInputBorder(),
-          ),
-          items: [
-            const DropdownMenuItem<String?>(
-              value: null,
-              child: Text('أي درجة'),
-            ),
-            ...gradeFilterOptions.map(
-              (g) => DropdownMenuItem<String?>(value: g, child: Text(g)),
-            ),
-          ],
-          onChanged: (v) => setState(() => _grade = v),
-        ),
-        SwitchListTile(
-          title: const Text('بحث دلالي معجمي'),
-          subtitle: const Text(
-            'توسيع الاستعلام بجذور الكلمات والمرادفات من قواميس '
-            'التطبيق. ليس تضمينات متجهية ولا نموذجاً لغوياً.',
-          ),
-          value: _semantic,
-          onChanged: (v) => setState(() => _semantic = v),
-        ),
-        FilledButton.icon(
-          onPressed: () => _run(),
-          icon: const Icon(Icons.search),
-          label: const Text('بحث'),
+        border: const OutlineInputBorder(),
+      ),
+      textInputAction: TextInputAction.search,
+      onSubmitted: (_) => _run(),
+    );
+  }
+
+  Widget _buildOptionsHeader() {
+    return const Row(
+      children: [
+        Icon(Icons.tune, color: SunnatiColors.petrol),
+        SizedBox(width: 8),
+        Text(
+          'خيارات البحث',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ],
     );
   }
 
-  Widget _buildHistory() {
-    final history = _history;
-    if (history == null || history.entries.isEmpty) {
-      return const SizedBox.shrink();
-    }
+  /// One mockup filter row: label + icon on the right, control on the
+  /// left (RTL row order), inside a bordered rounded container.
+  Widget _filterRow({
+    required IconData icon,
+    required String label,
+    required Widget child,
+    VoidCallback? onTap,
+  }) {
+    final row = Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        border: Border.all(color: Theme.of(context).dividerColor),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: SunnatiColors.petrol),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(width: 12),
+          Expanded(child: child),
+        ],
+      ),
+    );
+    if (onTap == null) return row;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: row,
+    );
+  }
+
+  Widget _buildBookRow(List<Book> books) {
+    return _filterRow(
+      icon: Icons.menu_book,
+      label: 'في الكتب',
+      child: DropdownButton<String?>(
+        isExpanded: true,
+        underline: const SizedBox.shrink(),
+        value: _bookId,
+        items: [
+          const DropdownMenuItem<String?>(
+            value: null,
+            child: Text('جميع الكتب'),
+          ),
+          ...books.map(
+            (b) => DropdownMenuItem<String?>(
+              value: b.id,
+              child: Text(b.name),
+            ),
+          ),
+        ],
+        onChanged: (v) {
+          setState(() => _bookId = v);
+          _loadChapters();
+        },
+      ),
+    );
+  }
+
+  Widget _buildChapterRow() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            const Expanded(
-              child: Text(
-                'عمليات بحث سابقة',
-                style: TextStyle(fontWeight: FontWeight.bold),
+        _filterRow(
+          icon: Icons.list,
+          label: 'في الأبواب',
+          child: DropdownButton<int?>(
+            isExpanded: true,
+            underline: const SizedBox.shrink(),
+            value: _chapterId,
+            hint: Text(_bookId == null ? 'اختر كتاباً أولاً' : 'جميع الأبواب'),
+            items: [
+              const DropdownMenuItem<int?>(
+                value: null,
+                child: Text('جميع الأبواب'),
               ),
-            ),
-            TextButton(
-              onPressed: () async {
-                await history.clear();
-                if (mounted) setState(() {});
-              },
-              child: const Text('مسح الكل'),
-            ),
-          ],
+              ..._chapters.map(
+                (c) => DropdownMenuItem<int?>(
+                  value: c.id,
+                  child: Text(c.title),
+                ),
+              ),
+            ],
+            onChanged: _bookId == null
+                ? null
+                : (v) => setState(() => _chapterId = v),
+          ),
         ),
-        ...history.entries.asMap().entries.map((e) {
-          final i = e.key;
-          final entry = e.value;
-          return ListTile(
-            title: Text(entry.label),
-            subtitle: Text(
-              '${_scopeLabel(entry.scope)}'
-              '${entry.semantic ? ' • دلالي معجمي' : ''}',
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete_outline),
-              onPressed: () async {
-                await history.removeAt(i);
-                if (mounted) setState(() {});
-              },
-            ),
-            onTap: () => _runHistory(entry),
-          );
-        }),
+        const Padding(
+          padding: EdgeInsets.only(bottom: 10),
+          child: Text(
+            'عناوين الأبواب إنجليزية في المصدر (لم تُترجم ولم تُخترع '
+            'عناوين عربية).',
+            style: TextStyle(fontSize: 12),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildHadithResults(SearchPage<SearchHit> page) {
+  Widget _buildNumberRow() {
+    return _filterRow(
+      icon: Icons.tag,
+      label: 'رقم الحديث',
+      child: TextField(
+        controller: _numberController,
+        keyboardType: TextInputType.number,
+        decoration: const InputDecoration(
+          hintText: '...',
+          border: InputBorder.none,
+        ),
+        textInputAction: TextInputAction.search,
+        onSubmitted: (_) => _run(),
+      ),
+    );
+  }
+
+  Widget _buildNarratorRow() {
+    final available = widget.db.narratorsAvailable;
+    final label = !available
+        ? 'حزمة الرواة بانتظار الموافقة'
+        : (_narratorName ?? 'اختر راوياً');
+    return _filterRow(
+      icon: Icons.person,
+      label: 'الراوي',
+      onTap: _pickNarrator,
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: available
+                    ? Theme.of(context).textTheme.bodyMedium?.color
+                    : SunnatiColors.inkMuted,
+              ),
+            ),
+          ),
+          if (_narratorName != null)
+            IconButton(
+              icon: const Icon(Icons.close, size: 20),
+              tooltip: 'مسح اختيار الراوي',
+              onPressed: () => setState(() => _narratorName = null),
+            )
+          else
+            const Icon(Icons.arrow_drop_down),
+        ],
+      ),
+    );
+  }
+
+  /// Pink «بحث» button, as in mockup screen 4 (pink accent on the
+  /// petrol/ivory/gold identity — the theme's blush pink).
+  Widget _buildSearchButton() {
+    return FilledButton.icon(
+      onPressed: () => _run(),
+      style: FilledButton.styleFrom(
+        backgroundColor: SunnatiColors.blush,
+        foregroundColor: SunnatiColors.petrol,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+      ),
+      icon: const Icon(Icons.search),
+      label: const Text(
+        'بحث',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+      ),
+    );
+  }
+
+  Widget _buildResults(SearchPage<SearchHit> page) {
     if (!widget.db.isAvailable) {
       return const EmptyLibraryCard(
         title: 'البحث غير متوفر بعد',
         detail: 'المكتبة قيد الاستيراد — لا توجد نصوص للبحث فيها بعد.',
       );
     }
+    if (_numberNotFound.isNotEmpty) {
+      return Center(child: Text(_numberNotFound));
+    }
     if (page.items.isEmpty) {
       return const Center(child: Text('لا توجد نتائج مطابقة.'));
     }
+    final note = page.semanticNote;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Text('النتائج: ${page.total} حديثاً'),
+        // Real result count from the query — never an invented number.
+        Text(
+          'نتائج البحث (${page.total})',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
+        const SizedBox(height: 8),
+        if (note.isNotEmpty)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(note),
+            ),
+          ),
         ...page.items.map((hit) {
           final h = hit.hadith;
           return Card(
             child: ListTile(
-              title: Text(h.text, maxLines: 2, overflow: TextOverflow.ellipsis),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${_bookName(h.bookId)} — حديث ${h.num} — '
-                    '${h.chapterTitle}',
-                  ),
-                  const Text('المصدر: $_kLibrarySource'),
-                  if (hit.tier == 'semantic' || hit.tier == 'phrase')
-                    Text(
-                      hit.tier == 'phrase'
-                          ? 'مطابقة عبارة حرفية'
-                          : 'نتيجة دلالية معجمية (جذر/مرادف)',
-                      style: const TextStyle(fontStyle: FontStyle.italic),
-                    ),
-                ],
+              leading: const Icon(
+                Icons.menu_book,
+                color: SunnatiColors.gold,
               ),
-              trailing: IconButton(
-                icon: const Icon(Icons.compare_arrows),
-                tooltip: 'روايات مشابهة',
-                onPressed: () => _showSimilar(h),
+              title: Text(
+                h.text,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle: Text(
+                '${_bookName(h.bookId)} — حديث ${h.num}'
+                '${h.chapterTitle.isNotEmpty ? ' — ${h.chapterTitle}' : ''}',
               ),
               onTap: () {
                 Navigator.of(context).push(
@@ -510,45 +497,6 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 );
               },
-            ),
-          );
-        }),
-      ],
-    );
-  }
-
-  Widget _buildCommentaryResults(SearchPage<Commentary> page) {
-    if (!widget.db.isAvailable) {
-      return const EmptyLibraryCard(
-        title: 'البحث غير متوفر بعد',
-        detail: 'المكتبة قيد الاستيراد — لا توجد شروح للبحث فيها بعد.',
-      );
-    }
-    if (page.items.isEmpty) {
-      return const Center(child: Text('لا توجد نتائج مطابقة.'));
-    }
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Text('النتائج: ${page.total} شرحاً (HadeethEnc)'),
-        ),
-        ...page.items.map((c) {
-          return Card(
-            child: ListTile(
-              title: Text(
-                c.explanation.isNotEmpty ? c.explanation : c.text,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(c.title.isNotEmpty ? c.title : c.hadithKey),
-                  if (c.gradeAr.isNotEmpty) Text('الدرجة: ${c.gradeAr}'),
-                  Text('المصدر: ${c.source} — ${c.attribution}'),
-                ],
-              ),
             ),
           );
         }),
@@ -577,6 +525,101 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Narrator picker dialog: search + list over the verified installed
+/// narrators only ([SunnatiDatabase.listNarrators] /
+/// [SunnatiDatabase.searchNarrators]). Returns the picked narrator's
+/// display name, '' to clear the choice, or null when dismissed.
+class _NarratorPickerDialog extends StatefulWidget {
+  const _NarratorPickerDialog({required this.db});
+
+  final SunnatiDatabase db;
+
+  @override
+  State<_NarratorPickerDialog> createState() => _NarratorPickerDialogState();
+}
+
+class _NarratorPickerDialogState extends State<_NarratorPickerDialog> {
+  final _queryController = TextEditingController();
+  late List<Narrator> _shown;
+
+  @override
+  void initState() {
+    super.initState();
+    _shown = widget.db.listNarrators(limit: 100);
+  }
+
+  void _onQueryChanged(String query) {
+    setState(() {
+      _shown = query.trim().isEmpty
+          ? widget.db.listNarrators(limit: 100)
+          : widget.db.searchNarrators(query.trim());
+    });
+  }
+
+  @override
+  void dispose() {
+    _queryController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('اختر راوياً'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _queryController,
+              decoration: const InputDecoration(
+                hintText: 'ابحث باسم الراوي...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: _onQueryChanged,
+            ),
+            const SizedBox(height: 8),
+            Flexible(
+              child: _shown.isEmpty
+                  ? const Text('لا يوجد راوٍ موثّق بهذا الاسم.')
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _shown.length,
+                      itemBuilder: (context, i) {
+                        final n = _shown[i];
+                        return ListTile(
+                          title: Text(n.displayName),
+                          subtitle: Text(
+                            [
+                              if (n.kunya.isNotEmpty) n.kunya,
+                              if (n.hasStatus) n.status,
+                            ].join(' — '),
+                          ),
+                          onTap: () =>
+                              Navigator.of(context).pop(n.displayName),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(''),
+          child: const Text('مسح اختيار الراوي'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('إلغاء'),
+        ),
+      ],
     );
   }
 }

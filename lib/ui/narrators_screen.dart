@@ -5,6 +5,7 @@ import '../data/database.dart';
 import '../models/narrator.dart';
 import 'narrator_detail_screen.dart';
 import 'widgets/empty_library.dart';
+import 'widgets/sunnati_bottom_nav.dart';
 
 /// Narrators encyclopedia (master prompt §10) — Phase 5.
 ///
@@ -78,6 +79,13 @@ class _NarratorsScreenState extends State<NarratorsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('موسوعة الرواة')),
+      // Shared bottom nav (mockup: الرئيسية active on the narrators
+      // encyclopedia entry). Tapping a tab replaces the stack with a
+      // fresh shell on that tab — see `sunnatiGoToTab`.
+      bottomNavigationBar: SunnatiBottomNav(
+        currentIndex: 2,
+        onTap: (index) => sunnatiGoToTab(context, index),
+      ),
       body: Column(
         children: [
           Padding(
