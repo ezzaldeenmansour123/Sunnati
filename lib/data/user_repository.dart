@@ -16,6 +16,7 @@ import '../models/user_data.dart';
 const String _kUserDataKey = 'sunnati_user_data_v1';
 const String _kThemeModeKey = 'sunnati_theme_mode';
 const String _kFontScaleKey = 'sunnati_font_scale';
+const String _kWelcomeSeenKey = 'sunnati_welcome_seen';
 
 /// Maximum backup string accepted on import (1 MiB).
 const int kMaxUserBackupBytes = 1024 * 1024;
@@ -124,5 +125,17 @@ class UserRepository {
   Future<void> setFontScale(double scale) async {
     final clamped = scale.clamp(0.85, 1.6).toDouble();
     await _prefs.setDouble(_kFontScaleKey, clamped);
+  }
+
+  // ---- First-run welcome (user order 2026-11-26 ~17:51) ----
+
+  /// Whether the first-run welcome screen has been shown. Defaults to
+  /// false — a fresh install shows the welcome once, then never again.
+  bool get welcomeSeen => _prefs.getBool(_kWelcomeSeenKey) ?? false;
+
+  /// Mark the welcome as seen (called when the user taps
+  /// «ابدأ تصفح سُنَّتي» on [WelcomeScreen]).
+  Future<void> setWelcomeSeen() async {
+    await _prefs.setBool(_kWelcomeSeenKey, true);
   }
 }

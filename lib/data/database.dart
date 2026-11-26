@@ -1,21 +1,37 @@
 /// Local SQLite library database.
 ///
 /// The library database is built in CI by `tools/build_db.py` from the
-/// licensed source (`quranlab/hadith`, pinned revision) and PUBLISHED by
-/// CI to the `library-v1` GitHub release — it is NOT embedded in the APK
-/// (rebuild 2026-11-26, external-download decision). After install the
-/// app downloads it once (`lib/ui/first_run_download_screen.dart`) into
-/// the app support directory, verifies it (SHA-256 + PRAGMA quick_check)
-/// and only then opens it. A device that already has a VALID installed
-/// copy (e.g. migrated from build 52, which copied the embedded asset)
-/// keeps using it as-is — no forced re-download (see
-/// [LibraryInstallDecision]).
+/// licensed source (`quranlab/hadith`, pinned revision) and EMBEDDED in
+/// the APK as a Flutter asset (`assets/sunnati.db` — owner decision
+/// 2026-11-26 16:54: the library ships inside the app, no mandatory
+/// download). On first run [SunnatiDatabase.open] installs it from the
+/// asset into the app support directory ([installEmbeddedLibrary]:
+/// atomic temp-file install + verification — SHA-256 + PRAGMA
+/// quick_check + hadith count — before the rename) and only then opens
+/// it. A device that already has a VALID installed copy (e.g. migrated
+/// from build 52/75/81) keeps using it as-is — no forced re-download,
+/// no re-install (see [LibraryInstallDecision]). CI also publishes the
+/// same file to the `library-v1` GitHub release as an external copy for
+/// reference/recovery; the app downloads it ONLY on the recovery screen
+/// ([FirstRunDownloadScreen]), when the embedded install failed.
 ///
-/// There is NO code path in this file that loads `sunnati.db` from
-/// Flutter assets: the embedded-asset copy was removed with the
-/// external-download decision. `assets/assistant_phrasings.json` is the
-/// only data asset left in the APK, and it is loaded by
-/// `lib/assistant/phrasings.dart`, not here.
+/// `narrators.db` is EMBEDDED in the APK as a Flutter asset
+/// (`assets/narrators.db` — OWNER OVERRIDE 2026-11-26 17:51: the owner
+/// ordered «بجميع قواعده بكل شيء», explicitly overriding the KITAB
+/// gate and his earlier decision (7) not to distribute narrators.db
+/// before KITAB replies). On first run [SunnatiDatabase.open] installs
+/// it from the asset exactly like the library ([installEmbeddedNarrators]:
+/// atomic temp-file install + verification — SHA-256 + PRAGMA
+/// quick_check + narrator count — before the rename) and records it in
+/// `downloaded_libraries`. A device that already holds a valid copy
+/// (embedded install from an earlier build, or the legacy local copy
+/// from build 52) keeps using it as-is — no forced re-install, no
+/// re-download, no data loss. The KITAB confirmation request
+/// (kitab@aku.edu) is STILL unanswered and the content is CC BY-NC-SA
+/// 4.0 (OpenITI Taqrib al-Tahdhib, Awwama 1986) — a documented licence
+/// risk the owner accepted by his explicit order. The file is STILL
+/// never published as a standalone file to the public `library-v1`
+/// release. Nothing here invents a narrator, a grade, or a link.
 ///
 /// In Phase 1 the database contains the schema, the nine-books metadata and
 /// `meta` only — no hadith rows yet (full import is Phase 2/3). The app
@@ -27,22 +43,23 @@
 /// database (`narrators.db`, CC BY-NC-SA 4.0, OpenITI Taqrib al-Tahdhib)
 /// — never merged into this file, because this file's hadith content is
 /// ODbL/Unlicense and the two licences are incompatible. The narrators
-/// package is HELD BACK by the KITAB gate
-/// (`kNarratorsPackageHeldBack` in `lib/core/package_manifest.dart`):
-/// it is NOT distributed by this build, NOT offered for download, and
-/// there is no asset-install path for it. The ONLY narrators copy this
-/// build will ever use is a valid one ALREADY on the device from a
-/// previous install (legacy local copy, read-only, never re-distributed);
-/// when it is absent the app keeps working: narrator queries read the
-/// local (empty) `narrators` table and every screen reports honestly
-/// that no verified narrators are installed — with the registry's
-/// pending-approval reason. Nothing here invents a narrator, a grade,
-/// or a link.
+/// package is EMBEDDED in the APK by owner override 2026-11-26 17:51
+/// (see [kNarratorsPackageHeldBack] — now false): it installs from the
+/// embedded asset ([installEmbeddedNarrators]) on first run, exactly
+/// like the library. The ONLY other narrators copy this build will ever
+/// use is a valid one ALREADY on the device from a previous install
+/// (legacy local copy from build 52, read-only migration); when both
+/// are absent the app keeps working: narrator queries read the local
+/// (empty) `narrators` table and every screen reports honestly that no
+/// verified narrators are installed. Nothing here invents a narrator, a
+/// grade, or a link.
 library;
 
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -65,34 +82,76 @@ const String kDatabaseFileName = 'sunnati.db';
 /// Where the installed narrators database lives on the device.
 const String kNarratorsFileName = 'narrators.db';
 
+/// Flutter asset path of the embedded core library (owner decision
+/// 2026-11-26 16:54 — the library ships INSIDE the APK, no mandatory
+/// download; see `pubspec.yaml`). The CI-built `assets/sunnati.db` is
+/// the same file CI publishes to the `library-v1` release.
+const String kEmbeddedLibraryAssetPath = 'assets/sunnati.db';
+
+/// Flutter asset path of the embedded narrators database (OWNER
+/// OVERRIDE 2026-11-26 17:51 — the narrators ship INSIDE the APK by
+/// the owner's explicit order, overriding the KITAB gate; see
+/// `pubspec.yaml`). CI builds `assets/narrators.db` fresh each run
+/// with `tools/build_narrators_db.py`. Unlike the library it is NEVER
+/// published to the `library-v1` release.
+const String kEmbeddedNarratorsAssetPath = 'assets/narrators.db';
+
+/// Loads raw bytes for a Flutter asset path. Production uses the asset
+/// bundle ([rootBundle]); tests pass an in-memory loader so no real
+/// asset file is needed.
+typedef AssetBytesLoader = Future<Uint8List> Function(String assetPath);
+
 /// First-run / migration decision for the installed library file.
 /// Pure logic (see [decideLibraryInstall]) so it is unit-testable
 /// without a device, a database, or a network.
 enum LibraryInstallDecision {
   /// A valid installed copy exists: use it as-is. This is the migration
-  /// path for users of build 52 (whose install already holds a valid
-  /// `sunnati.db`): they are NEVER forced to re-download ~190 MB.
+  /// path for users of build 52/75/81 (whose install already holds a
+  /// valid `sunnati.db`): they are NEVER forced to re-download or
+  /// re-install ~190 MB.
   useExisting,
 
-  /// No installed copy exists: the first-run download screen must run.
+  /// No installed copy exists: install the library from the embedded
+  /// Flutter asset ([kEmbeddedLibraryAssetPath]) — no download.
+  installFromAsset,
+
+  /// An installed copy exists but fails verification: repair it from
+  /// the embedded asset (atomic, verified install over the corrupt
+  /// copy) — no download.
+  repairFromAsset,
+
+  /// No installed copy exists AND no embedded asset is available in
+  /// this build: the recovery download screen must run.
   needsDownload,
 
-  /// An installed copy exists but fails verification: delete it and
-  /// re-download (the first-run download screen must run).
+  /// An installed copy exists but fails verification AND no embedded
+  /// asset is available: delete it and re-download (the recovery
+  /// download screen must run).
   corruptNeedsRedownload,
 }
 
-/// Decide what to do with an installed library file, from two facts
-/// only: whether the file exists and whether it passed verification
-/// (SQLite header + `PRAGMA quick_check` + at least one hadith row).
-/// No I/O, no network — the caller supplies the facts.
+/// Decide what to do with an installed library file, from three facts:
+/// whether the file exists, whether it passed verification (SQLite
+/// header + `PRAGMA quick_check` + at least one hadith row), and
+/// whether the embedded asset is available in this build (true: the
+/// library ships inside the APK — owner decision 2026-11-26 16:54).
+/// No I/O, no network — the caller supplies the facts. A corrupt
+/// installed copy is repaired from the embedded asset (atomic install,
+/// verified before the rename); the recovery download is only the last
+/// resort when the asset itself is unavailable.
 LibraryInstallDecision decideLibraryInstall({
   required bool fileExists,
   required bool fileValid,
+  bool assetAvailable = true,
 }) {
+  if (fileExists && fileValid) return LibraryInstallDecision.useExisting;
+  if (assetAvailable) {
+    return fileExists
+        ? LibraryInstallDecision.repairFromAsset
+        : LibraryInstallDecision.installFromAsset;
+  }
   if (!fileExists) return LibraryInstallDecision.needsDownload;
-  if (!fileValid) return LibraryInstallDecision.corruptNeedsRedownload;
-  return LibraryInstallDecision.useExisting;
+  return LibraryInstallDecision.corruptNeedsRedownload;
 }
 
 /// Admin/download tables of schema v4 (Phases 7-8). These statements are
@@ -137,8 +196,7 @@ CREATE INDEX IF NOT EXISTS idx_staging_kind ON admin_staging(kind);
 
 /// Schema-v4 columns added to `downloaded_libraries` (column → SQL
 /// definition). Applied only when missing.
-const Map<String, String> kDownloadedLibrariesV4Columns =
-    <String, String>{
+const Map<String, String> kDownloadedLibrariesV4Columns = <String, String>{
   'source': "TEXT NOT NULL DEFAULT ''",
   'license': "TEXT NOT NULL DEFAULT ''",
   'download_url': "TEXT NOT NULL DEFAULT ''",
@@ -148,14 +206,13 @@ const Map<String, String> kDownloadedLibrariesV4Columns =
   'updated_at': "TEXT NOT NULL DEFAULT ''",
 };
 
-/// NOTE (rebuild 2026-11-26): there are NO asset paths for either
-/// database any more. `sunnati.db` is downloaded after install (see
-/// [kLibraryPackage]) and `narrators.db` is held back by the KITAB gate
-/// (see [kNarratorsPackageHeldBack]) — neither is loaded from Flutter
-/// assets by any code path. The integrator still has to remove the two
-/// entries from `pubspec.yaml` (see
-/// SUNNATI_REBUILD_WORK_B_2026-11-26.md); until then the asset entries
-/// are dead declarations that nothing reads.
+/// NOTE (embed 2026-11-26, owner decisions 16:54 + OVERRIDE 17:51):
+/// `sunnati.db` AND `narrators.db` are assets ([kEmbeddedLibraryAssetPath],
+/// [kEmbeddedNarratorsAssetPath]) — both ship inside the APK and install
+/// from the assets on first run (see [installEmbeddedLibrary] and
+/// [installEmbeddedNarrators]). The narrators embed is the owner's
+/// explicit 17:51 override of the KITAB gate; the file is still never
+/// published to the public `library-v1` release.
 
 /// One FTS hit row: the hadith plus the ranking inputs the search
 /// service needs (FTS5 rank, the indexed norm text, and — for the
@@ -244,18 +301,20 @@ class SunnatiDatabase {
   /// hadith rows.
   final bool isAvailable;
 
-  /// True when the first-run download screen must run: no installed
-  /// library file exists, or the installed copy failed verification and
-  /// was removed. False when a valid library is installed (including a
-  /// migrated build-52 copy) or when the database is present but empty.
+  /// True only when the embedded-library install failed (asset missing
+  /// or corrupt) and the recovery download screen must run. False when
+  /// a valid library is installed — including a copy installed from the
+  /// embedded asset on this boot and a migrated build-52/75/81 copy —
+  /// or when the database is present but empty.
   final bool libraryNeedsDownload;
 
-  /// True only when a narrators database ALREADY on the device from a
-  /// previous install (legacy local copy — NOT distributed by this
-  /// build) is verified and attached as `narrators_db`. False when no
-  /// such copy exists or it fails verification — narrator screens then
-  /// report honestly that no verified narrators are installed, with the
-  /// registry's pending-approval reason.
+  /// True only when a verified narrators database is installed and
+  /// attached as `narrators_db`: either installed from the embedded
+  /// asset on this boot ([installEmbeddedNarrators]) or a valid copy
+  /// ALREADY on the device from a previous install (legacy local copy
+  /// from build 52, kept as a migration). False when no such copy
+  /// exists or it fails verification — narrator screens then report
+  /// honestly that no verified narrators are installed.
   final bool narratorsAvailable;
 
   /// Human-readable status for the library screen, e.g. the reason the
@@ -285,11 +344,10 @@ class SunnatiDatabase {
       final sqlite = sqlite3.open(file.path, mode: OpenMode.readOnly);
       try {
         final result = sqlite.select('PRAGMA quick_check');
-        final quickOk = result.isNotEmpty &&
-            result.first['quick_check'].toString() == 'ok';
+        final quickOk =
+            result.isNotEmpty && result.first['quick_check'].toString() == 'ok';
         if (!quickOk) return false;
-        final countRow =
-            sqlite.select('SELECT COUNT(*) AS c FROM hadiths');
+        final countRow = sqlite.select('SELECT COUNT(*) AS c FROM hadiths');
         return ((countRow.first['c'] as int?) ?? 0) > 0;
       } finally {
         sqlite.dispose();
@@ -301,78 +359,145 @@ class SunnatiDatabase {
 
   /// Open the installed library database.
   ///
-  /// The library is NOT installed from assets any more: if no VALID
-  /// installed copy exists, this returns a database with [isAvailable]
-  /// == false and [libraryNeedsDownload] == true, and the caller (see
-  /// `lib/main.dart`) shows the first-run download screen instead of
-  /// crashing or pretending the library is there. A valid installed
-  /// copy — including one migrated from build 52 — is used as-is.
-  ///
   /// Never throws for a missing/corrupt install: it returns a database
   /// with [isAvailable] == false and [unavailableReason] set, so the UI
   /// can explain the state instead of crashing.
-  static Future<SunnatiDatabase> open() async {
+  /// Open the installed library, installing it from the embedded asset
+  /// on first run (owner decision 2026-11-26 16:54 — the library ships
+  /// INSIDE the APK, no mandatory download).
+  ///
+  ///   * valid installed copy (including a migrated build-52/75/81
+  ///     copy) → used as-is, never re-installed, never re-downloaded;
+  ///   * no installed copy → install from the embedded asset
+  ///     ([installEmbeddedLibrary]);
+  ///   * installed copy fails verification → repair from the embedded
+  ///     asset (atomic, verified install over the corrupt copy);
+  ///   * embedded install fails (asset missing/corrupt) → the recovery
+  ///     download screen ([libraryNeedsDownload] true) — never a
+  ///     silent dead shell.
+  ///
+  /// The narrators database follows the same shape (owner override
+  /// 2026-11-26 17:51): a valid installed copy (including the legacy
+  /// build-52 copy) is used as-is; otherwise it installs from the
+  /// embedded asset ([installEmbeddedNarrators]); when the embedded
+  /// install also fails the library still opens and narrator screens
+  /// report honestly that no verified narrators are installed.
+  ///
+  /// [supportDirOverride] and [assetLoaderOverride] exist for tests
+  /// only: they point the install at a temp directory and load the
+  /// asset bytes from memory, so no real asset file is needed.
+  static Future<SunnatiDatabase> open({
+    Directory? supportDirOverride,
+    AssetBytesLoader? assetLoaderOverride,
+  }) async {
     try {
-      final dir = await getApplicationSupportDirectory();
+      final dir = supportDirOverride ?? await getApplicationSupportDirectory();
       final file = installedLibraryFile(dir);
       final exists = await file.exists();
-      if (!exists) {
-        final db = SunnatiDatabase._(
-          null,
-          isAvailable: false,
-          libraryNeedsDownload: true,
+      final valid = exists && await _verifyFile(file);
+      final decision = decideLibraryInstall(
+        fileExists: exists,
+        fileValid: valid,
+      );
+      var tryAsset = decision == LibraryInstallDecision.installFromAsset ||
+          decision == LibraryInstallDecision.repairFromAsset;
+      final loadAsset = assetLoaderOverride ?? _loadEmbeddedAsset;
+      if (decision == LibraryInstallDecision.useExisting) {
+        final opened = await _openValidFile(
+          file,
+          dir,
+          loadAsset: loadAsset,
         );
-        db.unavailableReason =
-            'المكتبة غير منزّلة بعد — نزّلها عند أول تشغيل لتعمل دون إنترنت.';
-        return db;
+        if (opened != null) return opened;
+        // The header check passed but quick_check failed: the file was
+        // corrupt after all — repair from the embedded asset below.
+        tryAsset = true;
       }
-      if (!await _verifyFile(file)) {
-        // Corrupt install: remove it so the first-run download can
-        // replace it cleanly on the next run.
+      if (tryAsset) {
+        final installed = await installEmbeddedLibrary(
+          dir,
+          loadAsset: loadAsset,
+        );
+        if (installed != null) {
+          final opened = await _openValidFile(
+            installed.file,
+            dir,
+            sha256: installed.sha256,
+            loadAsset: loadAsset,
+          );
+          if (opened != null) return opened;
+        }
+        return _needsDownloadDb(
+          'تعذّر تثبيت المكتبة المضمّنة — تحقق من سلامة التثبيت، أو '
+          'نزّل المكتبة من شاشة الاسترداد.',
+        );
+      }
+      // needsDownload / corruptNeedsRedownload (no embedded asset in
+      // this build): remove a corrupt copy so the recovery download can
+      // replace it cleanly.
+      if (exists && !valid) {
         try {
           await file.delete();
         } catch (_) {}
-        final db = SunnatiDatabase._(
-          null,
-          isAvailable: false,
-          libraryNeedsDownload: true,
-        );
-        db.unavailableReason =
-            'تعذّر التحقق من سلامة المكتبة المثبّتة؛ ستُعاد محاولة التنزيل عند التشغيل التالي.';
-        return db;
       }
-      final sqlite = sqlite3.open(file.path);
+      return _needsDownloadDb(
+        'المكتبة غير مثبّتة بعد — نزّلها من شاشة الاسترداد لتعمل دون إنترنت.',
+      );
+    } catch (e) {
+      final db = SunnatiDatabase._(null, isAvailable: false);
+      db.unavailableReason = 'تعذّر فتح المكتبة: $e';
+      return db;
+    }
+  }
+
+  /// Open a library file that already passed the header check:
+  /// quick_check, schema v4, hadith count, narrators install/attach,
+  /// registry rows. Returns null ONLY when the file turns out corrupt
+  /// after all (quick_check fails or any open step throws) — the file
+  /// is then deleted so the caller can repair from the embedded asset.
+  /// [loadAsset] loads the embedded assets (production: the Flutter
+  /// asset bundle; tests: an in-memory loader) — it is used for the
+  /// narrators install when no valid installed narrators copy exists.
+  static Future<SunnatiDatabase?> _openValidFile(
+    File file,
+    Directory dir, {
+    String sha256 = '',
+    required AssetBytesLoader loadAsset,
+  }) async {
+    Database? sqlite;
+    try {
+      sqlite = sqlite3.open(file.path);
       final result = sqlite.select('PRAGMA quick_check');
-      final quickOk = result.isNotEmpty &&
-          result.first['quick_check'].toString() == 'ok';
+      final quickOk =
+          result.isNotEmpty && result.first['quick_check'].toString() == 'ok';
       if (!quickOk) {
         sqlite.dispose();
+        sqlite = null;
         try {
           await file.delete();
         } catch (_) {}
-        final db = SunnatiDatabase._(
-          null,
-          isAvailable: false,
-          libraryNeedsDownload: true,
-        );
-        db.unavailableReason = 'فشل فحص سلامة قاعدة بيانات المكتبة.';
-        return db;
+        return null;
       }
       // Schema v4 (Phases 7-8): admin + downloads-registry tables. The
       // published library DB ships as v2, so this runs on every open and
       // is idempotent — an already-migrated database is untouched.
       _ensureAdminSchema(sqlite);
-      final countRow =
-          sqlite.select('SELECT COUNT(*) AS c FROM hadiths');
+      final countRow = sqlite.select('SELECT COUNT(*) AS c FROM hadiths');
       final total = (countRow.first['c'] as int?) ?? 0;
-      // Phase 5 core (optional, never fatal): attach a narrators
-      // database ALREADY on the device from a previous install as
-      // `narrators_db` (legacy local copy only — this build distributes
-      // no narrators file and offers no narrators download; see
-      // [_attachLegacyNarratorsDb]). Without it every narrator query
-      // reads the local (empty) `narrators` table and the UI reports
-      // honestly that no verified narrators are installed.
-      final narrators = await _attachLegacyNarratorsDb(dir, sqlite);
+      // Phase 5 core (optional, never fatal): use the installed
+      // narrators database when one is valid (a copy installed from
+      // the embedded asset on an earlier boot, or the legacy local
+      // copy from build 52); otherwise install it from the embedded
+      // asset ([installEmbeddedNarrators] — owner override 2026-11-26
+      // 17:51) and attach it as `narrators_db`. Without it every
+      // narrator query reads the local (empty) `narrators` table and
+      // the UI reports honestly that no verified narrators are
+      // installed.
+      final narrators = await _installOrAttachNarrators(
+        dir,
+        sqlite,
+        loadAsset: loadAsset,
+      );
       final db = SunnatiDatabase._(
         sqlite,
         isAvailable: total > 0,
@@ -381,6 +506,13 @@ class SunnatiDatabase {
       if (!narrators.ok) {
         db.narratorsUnavailableReason = narrators.reason;
       }
+      if (narrators.installedFromAsset) {
+        _ensureNarratorsRegistryRow(
+          sqlite,
+          installedNarratorsFile(dir),
+          sha256: narrators.sha256,
+        );
+      }
       if (total == 0) {
         db.unavailableReason =
             'المكتبة تُبنى — الكتب التسعة قيد الاستيراد. لا توجد أحاديث بعد.';
@@ -388,25 +520,144 @@ class SunnatiDatabase {
         // Record the installed core library in the downloads registry
         // when no row exists yet (migration: build-52 users have a
         // valid library file but never downloaded it through this
-        // build, so no row was ever written). The SHA-256 is left
-        // empty for a migrated copy — it was never verified against a
-        // published hash by this build, and claiming one would be
+        // build, so no row was ever written). The SHA-256 is the real
+        // hash of an asset install when one just happened; for a
+        // migrated copy it stays empty — it was never verified against
+        // a published hash by this build, and claiming one would be
         // inventing data. A fresh download records its real hash
         // (see the first-run download screen).
-        _ensureLibraryRegistryRow(sqlite, file);
+        _ensureLibraryRegistryRow(sqlite, file, sha256: sha256);
       }
       return db;
-    } catch (e) {
-      final db = SunnatiDatabase._(null, isAvailable: false);
-      db.unavailableReason = 'تعذّر فتح المكتبة: $e';
-      return db;
+    } catch (_) {
+      // Any failure opening a header-valid file means corruption:
+      // delete it so the caller can repair from the embedded asset.
+      try {
+        sqlite?.dispose();
+      } catch (_) {}
+      try {
+        await file.delete();
+      } catch (_) {}
+      return null;
     }
+  }
+
+  /// Install the core library from the embedded Flutter asset
+  /// ([kEmbeddedLibraryAssetPath]) into [dir]. Returns the installed
+  /// file + its SHA-256, or null when the asset cannot be loaded or the
+  /// copy fails verification. Never throws. The install is atomic: the
+  /// bytes are written to a temp file, verified (SQLite header +
+  /// quick_check + hadith count — see [verifyLibraryFile]), and only
+  /// then renamed over the target — a failed install never leaves a
+  /// half-written library behind, and a corrupt installed copy is only
+  /// replaced by a verified one.
+  static Future<({File file, String sha256})?> installEmbeddedLibrary(
+    Directory dir, {
+    required AssetBytesLoader loadAsset,
+  }) async {
+    try {
+      final bytes = await loadAsset(kEmbeddedLibraryAssetPath);
+      final target = installedLibraryFile(dir);
+      final temp = File('${target.path}.embedded-tmp');
+      await temp.writeAsBytes(bytes, flush: true);
+      if (!await verifyLibraryFile(temp)) {
+        try {
+          await temp.delete();
+        } catch (_) {}
+        return null;
+      }
+      final hash = sha256.convert(bytes).toString();
+      await temp.rename(target.path);
+      return (file: target, sha256: hash);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Install the narrators database from the embedded Flutter asset
+  /// ([kEmbeddedNarratorsAssetPath]) into [dir]. Mirrors
+  /// [installEmbeddedLibrary]: atomic temp-file install + verification
+  /// ([verifyNarratorsFile]) before the rename, returns the installed
+  /// file + its SHA-256, or null when the asset cannot be loaded or the
+  /// copy fails verification. Never throws. Owner override 2026-11-26
+  /// 17:51 — the narrators ship inside the APK by the owner's explicit
+  /// order (KITAB gate overridden for the in-app copy); the file is
+  /// still never published to the public `library-v1` release.
+  static Future<({File file, String sha256})?> installEmbeddedNarrators(
+    Directory dir, {
+    required AssetBytesLoader loadAsset,
+  }) async {
+    try {
+      final bytes = await loadAsset(kEmbeddedNarratorsAssetPath);
+      final target = installedNarratorsFile(dir);
+      final temp = File('${target.path}.embedded-tmp');
+      await temp.writeAsBytes(bytes, flush: true);
+      if (!await verifyNarratorsFile(temp)) {
+        try {
+          await temp.delete();
+        } catch (_) {}
+        return null;
+      }
+      final hash = sha256.convert(bytes).toString();
+      await temp.rename(target.path);
+      return (file: target, sha256: hash);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Verify a narrators file WITHOUT opening it for use: SQLite header
+  /// + `PRAGMA quick_check` + at least one narrator row. Never throws.
+  static Future<bool> verifyNarratorsFile(File file) async {
+    if (!await _verifyFile(file)) return false;
+    try {
+      final sqlite = sqlite3.open(file.path, mode: OpenMode.readOnly);
+      try {
+        final result = sqlite.select('PRAGMA quick_check');
+        final quickOk =
+            result.isNotEmpty && result.first['quick_check'].toString() == 'ok';
+        if (!quickOk) return false;
+        final countRow = sqlite.select('SELECT COUNT(*) AS c FROM narrators');
+        return ((countRow.first['c'] as int?) ?? 0) > 0;
+      } finally {
+        sqlite.dispose();
+      }
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Default asset loader: the embedded library from the Flutter asset
+  /// bundle (production). Tests pass their own loader.
+  static Future<Uint8List> _loadEmbeddedAsset(String assetPath) async {
+    final data = await rootBundle.load(assetPath);
+    return data.buffer.asUint8List();
+  }
+
+  /// Unavailable-database result for the recovery path: the embedded
+  /// install failed and the first-run (recovery) download screen must
+  /// run. Never a silent dead shell.
+  static SunnatiDatabase _needsDownloadDb(String reason) {
+    final db = SunnatiDatabase._(
+      null,
+      isAvailable: false,
+      libraryNeedsDownload: true,
+    );
+    db.unavailableReason = reason;
+    return db;
   }
 
   /// Insert the `downloaded_libraries` row for the core library when
   /// none exists (migration case). Best-effort and never throws: a
-  /// registry failure must never break opening the library.
-  static void _ensureLibraryRegistryRow(Database sqlite, File file) {
+  /// registry failure must never break opening the library. [sha256]
+  /// is the real hash of an asset install when one just happened;
+  /// empty for a migrated copy (never verified against a published
+  /// hash by this build — claiming one would be inventing data).
+  static void _ensureLibraryRegistryRow(
+    Database sqlite,
+    File file, {
+    String sha256 = '',
+  }) {
     try {
       final existing = sqlite.select(
         'SELECT COUNT(*) AS c FROM downloaded_libraries '
@@ -425,7 +676,7 @@ class SunnatiDatabase {
           kLibraryPackage.displayName,
           '1.0.0',
           size,
-          '',
+          sha256,
           'installed',
           now,
           'quranlab/hadith',
@@ -442,35 +693,155 @@ class SunnatiDatabase {
     }
   }
 
-  /// Attach a narrators database ALREADY on the device from a previous
-  /// install (legacy local copy) as `narrators_db` on [sqlite], after
-  /// verifying it (header + quick_check + at least one narrator row).
-  /// Best-effort and never throws.
+  /// Insert the `downloaded_libraries` row for the narrators package
+  /// when it was installed from the embedded asset in this boot (see
+  /// [_installOrAttachNarrators]). Best-effort and never throws.
+  /// [sha256] is the real hash of the asset install. The row records
+  /// source 'embedded-asset' and the CC BY-NC-SA 4.0 licence, so the
+  /// Downloads screen can tell an embedded install apart from a legacy
+  /// local copy (which has no row). A row is never rewritten: an
+  /// already-recorded install keeps its original hash.
+  static void _ensureNarratorsRegistryRow(
+    Database sqlite,
+    File file, {
+    String sha256 = '',
+  }) {
+    try {
+      final existing = sqlite.select(
+        'SELECT COUNT(*) AS c FROM downloaded_libraries '
+        "WHERE library_id = 'narrators'",
+      );
+      if (((existing.first['c'] as int?) ?? 0) > 0) return;
+      final size = file.lengthSync();
+      final now = DateTime.now().toUtc().toIso8601String();
+      sqlite.execute(
+        'INSERT INTO downloaded_libraries (library_id, name, version, '
+        'size_bytes, sha256, status, installed_at, source, license, '
+        'download_url, total_bytes, downloaded_bytes, manifest_json, '
+        'updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        <Object?>[
+          kNarratorsPackage.id,
+          kNarratorsPackage.displayName,
+          '1.0.0',
+          size,
+          sha256,
+          'installed',
+          now,
+          'embedded-asset',
+          'CC BY-NC-SA 4.0',
+          '',
+          size,
+          size,
+          '',
+          now,
+        ],
+      );
+    } catch (_) {
+      // Registry bookkeeping must never break the library open.
+    }
+  }
+
+  /// Make the narrators database available on [sqlite]: prefer a valid
+  /// installed copy (an earlier embedded install, or the legacy local
+  /// copy from build 52 — used as-is, never re-installed); otherwise
+  /// install it from the embedded asset ([installEmbeddedNarrators],
+  /// owner override 2026-11-26 17:51) and attach that. A corrupt
+  /// installed copy is repaired from the embedded asset (atomic,
+  /// verified install over it) — the embedded source exists now, so
+  /// the old "leave the corrupt file on disk" rule no longer applies;
+  /// only when the embedded install ALSO fails is the corrupt file
+  /// left on disk and reported as unavailable. Best-effort and never
+  /// throws: a narrators failure must never break opening the library.
+  /// [installedFromAsset] is true only when this boot installed the
+  /// file from the asset (so the caller records the registry row).
+  static Future<
+      ({
+        bool ok,
+        String reason,
+        bool installedFromAsset,
+        String sha256,
+      })> _installOrAttachNarrators(
+    Directory dir,
+    Database sqlite, {
+    required AssetBytesLoader loadAsset,
+  }) async {
+    const unavailable = (
+      ok: false,
+      reason: 'تعذّر تثبيت حزمة الرواة المضمّنة — أعد تثبيت التطبيق '
+          'أو تحقق من سلامة النسخة.',
+      installedFromAsset: false,
+      sha256: '',
+    );
+    final attached = await _attachInstalledNarratorsDb(dir, sqlite);
+    if (attached.ok) {
+      return (
+        ok: true,
+        reason: '',
+        installedFromAsset: false,
+        sha256: '',
+      );
+    }
+    // No valid installed copy (absent, empty or corrupt): install
+    // from the embedded asset and attach that.
+    final installed = await installEmbeddedNarrators(
+      dir,
+      loadAsset: loadAsset,
+    );
+    if (installed == null) {
+      // Keep the more specific reason when the installed copy was
+      // corrupt (the file is left on disk for inspection); otherwise
+      // the generic embedded-install reason above.
+      if (attached.reason.isNotEmpty && attached.reason != unavailable.reason) {
+        return (
+          ok: false,
+          reason: attached.reason,
+          installedFromAsset: false,
+          sha256: '',
+        );
+      }
+      return unavailable;
+    }
+    final reattached = await _attachInstalledNarratorsDb(dir, sqlite);
+    if (!reattached.ok) {
+      return (
+        ok: false,
+        reason: reattached.reason,
+        installedFromAsset: false,
+        sha256: '',
+      );
+    }
+    return (
+      ok: true,
+      reason: '',
+      installedFromAsset: true,
+      sha256: installed.sha256,
+    );
+  }
+
+  /// Attach the INSTALLED narrators database in [dir] as `narrators_db`
+  /// on [sqlite], after verifying it (header + quick_check + at least
+  /// one narrator row). Best-effort and never throws.
   ///
-  /// KITAB GATE — read carefully. This build distributes NO narrators
-  /// file, offers NO narrators download, and installs NOTHING from
-  /// assets: there is no source to reinstall a missing or corrupt copy
-  /// from while the gate is closed. The legacy copy is therefore kept
-  /// read-only and used as-is when it verifies, because deleting it
-  /// would destroy data the user already holds and that cannot be
-  /// re-fetched; a corrupt legacy copy is LEFT ON DISK (not deleted)
-  /// and reported as unavailable, so it can still be inspected or
-  /// repaired by hand. When no legacy copy exists the reason returned
-  /// is the registry's pending-approval reason
-  /// ([kNarratorsPackage.unavailableReason]), word for word.
-  static Future<({bool ok, String reason})> _attachLegacyNarratorsDb(
+  /// The installed copy is either an earlier embedded install or the
+  /// legacy local copy from build 52 (migration — used as-is, never
+  /// re-installed, never re-downloaded). A corrupt copy is reported as
+  /// unavailable (the caller repairs it from the embedded asset when
+  /// one is available); it is never deleted here, so it can still be
+  /// inspected by hand. An empty reason means "no file at all" — the
+  /// caller then tries the embedded install before giving up.
+  static Future<({bool ok, String reason})> _attachInstalledNarratorsDb(
     Directory dir,
     Database sqlite,
   ) async {
     final file = installedNarratorsFile(dir);
     if (!await file.exists()) {
-      return (ok: false, reason: kNarratorsPackage.unavailableReason);
+      return (ok: false, reason: '');
     }
     try {
       if (!await _verifyFile(file)) {
         return (
           ok: false,
-          reason: 'ملف قاعدة الرواة المحلي على الجهاز تالف ولا يمكن '
+          reason: 'ملف قاعدة الرواة على الجهاز تالف ولا يمكن '
               'فتحه — بقي الملف دون حذف.',
         );
       }
@@ -479,8 +850,8 @@ class SunnatiDatabase {
         'AS narrators_db',
       );
       final result = sqlite.select('PRAGMA narrators_db.quick_check');
-      final quickOk = result.isNotEmpty &&
-          result.first['quick_check'].toString() == 'ok';
+      final quickOk =
+          result.isNotEmpty && result.first['quick_check'].toString() == 'ok';
       if (!quickOk) {
         sqlite.execute('DETACH DATABASE narrators_db');
         return (ok: false, reason: 'فشل فحص سلامة قاعدة الرواة المحلية.');
@@ -710,8 +1081,7 @@ class SunnatiDatabase {
       conditions.add(g.sql);
       args.addAll(g.args);
     }
-    final filter =
-        conditions.isEmpty ? '' : ' AND ${conditions.join(' AND ')}';
+    final filter = conditions.isEmpty ? '' : ' AND ${conditions.join(' AND ')}';
     final List<Row> rows;
     if (!useSpans) {
       rows = db.select(
@@ -788,8 +1158,7 @@ class SunnatiDatabase {
       conditions.add(g.sql);
       args.addAll(g.args);
     }
-    final filter =
-        conditions.isEmpty ? '' : ' AND ${conditions.join(' AND ')}';
+    final filter = conditions.isEmpty ? '' : ' AND ${conditions.join(' AND ')}';
     final table = useSpans ? 'hadith_spans_fts' : 'hadiths_fts';
     final anti = antiMatch == null
         ? ''
@@ -900,9 +1269,8 @@ class SunnatiDatabase {
     final db = _db;
     if (db == null || terms.isEmpty) return const <FtsHitRow>[];
     final col = useSpans ? 'matn_norm' : 'norm';
-    final match = terms
-        .map((t) => '{$col} : "${t.replaceAll('"', '')}"*')
-        .join(' OR ');
+    final match =
+        terms.map((t) => '{$col} : "${t.replaceAll('"', '')}"*').join(' OR ');
     return ftsSearch(match, useSpans: useSpans, limit: limit);
   }
 
@@ -914,9 +1282,7 @@ class SunnatiDatabase {
     int offset = 0,
   }) {
     final db = _db;
-    if (db == null ||
-        !hasCommentariesFts ||
-        ftsQuery.trim().isEmpty) {
+    if (db == null || !hasCommentariesFts || ftsQuery.trim().isEmpty) {
       return const <Commentary>[];
     }
     final rows = db.select(
@@ -938,9 +1304,7 @@ class SunnatiDatabase {
   /// Exact COUNT for [searchCommentariesFts].
   int countCommentariesFts(String ftsQuery) {
     final db = _db;
-    if (db == null ||
-        !hasCommentariesFts ||
-        ftsQuery.trim().isEmpty) {
+    if (db == null || !hasCommentariesFts || ftsQuery.trim().isEmpty) {
       return 0;
     }
     final row = db.select(
@@ -1184,10 +1548,8 @@ class SunnatiDatabase {
       lineage: base.lineage,
       country: base.country,
       birthYearHijri: base.birthYearHijri,
-      teachersIds:
-          teachersOfNarrator(id).map((n) => n.id).toList(),
-      studentsIds:
-          studentsOfNarrator(id).map((n) => n.id).toList(),
+      teachersIds: teachersOfNarrator(id).map((n) => n.id).toList(),
+      studentsIds: studentsOfNarrator(id).map((n) => n.id).toList(),
     );
   }
 
@@ -1391,7 +1753,12 @@ class SunnatiDatabase {
   List<NarratorSaying> narratorSayings(int narratorId) {
     final db = _db;
     if (db == null) return const <NarratorSaying>[];
-    if (narratorsAvailable) {
+    // Guarded: an attached narrators DB without these tables falls
+    // through to the local table instead of crashing the narrator
+    // page (a missing table must never take a screen down).
+    if (narratorsAvailable &&
+        _attachedTableExists('narrator_grades') &&
+        _attachedTableExists('scholars')) {
       final rows = db.select(
         'SELECT s.name_ar AS scholar, g.grade_raw AS saying, '
         "g.source || ' — ' || g.source_ref AS source "
@@ -1499,6 +1866,24 @@ class SunnatiDatabase {
     return ((rows.first['c'] as int?) ?? 0) > 0;
   }
 
+  /// Same check against the ATTACHED narrators database
+  /// (`narrators_db.sqlite_master`). False when no narrators DB is
+  /// attached, or when the query itself fails — never throws.
+  bool _attachedTableExists(String name) {
+    final db = _db;
+    if (db == null || !narratorsAvailable) return false;
+    try {
+      final rows = db.select(
+        'SELECT COUNT(*) AS c FROM narrators_db.sqlite_master '
+        "WHERE type = 'table' AND name = ?",
+        <Object?>[name],
+      );
+      return ((rows.first['c'] as int?) ?? 0) > 0;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// One hadith's recorded graders' opinions, from `hadith_grades`
   /// (Phase 6). Every opinion is returned verbatim with its kind and
   /// source — conflicting opinions are ALL shown, never collapsed into
@@ -1568,9 +1953,12 @@ class SunnatiDatabase {
   }
 
   /// Installed HadeethEnc commentary rows (3,574 in the shipped DB).
+  /// Guarded: a library without the table reports 0 instead of
+  /// crashing the reader's first paint.
   int commentaryCount() {
     final db = _db;
     if (db == null) return 0;
+    if (!_tableExists('commentaries')) return 0;
     final row = db.select('SELECT COUNT(*) AS c FROM commentaries');
     return (row.first['c'] as int?) ?? 0;
   }
