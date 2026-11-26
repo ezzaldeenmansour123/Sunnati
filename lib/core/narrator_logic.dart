@@ -2,9 +2,11 @@
 ///
 /// Used by the interactive isnad, the narrator card, the encyclopedia and
 /// the "men assistant". Everything here is deterministic and unit-tested;
-/// no data is invented: a name becomes tappable only when a verified chain
-/// row links it to a narrator id, and a status is ranked only when its
-/// wording matches one of the eight documented verdicts below.
+/// no data is invented: a name is rendered as a narrator name whenever a
+/// parser row names it (one-color rule, user decision 2026-11-26 15:03 —
+/// every parsed name in one style, all tappable), and a status is shown
+/// only when a verified chain row links it to a narrator id, ranked only
+/// when its wording matches one of the eight documented verdicts below.
 library;
 
 import 'normalize.dart';
@@ -93,7 +95,8 @@ class IsnadNameMatch {
   final String name;
 
   /// Verified narrator id from the `chains` table, or null for an
-  /// unverified parser name (which must never become tappable).
+  /// unverified parser name (tappable under the one-color rule; the tap
+  /// shows the honest no-biography sheet, never a status).
   final int? narratorId;
 
   /// Exact character offsets of this name inside the hadith text, from
@@ -107,7 +110,10 @@ class IsnadNameMatch {
   final int? endChar;
 
   /// True only for a `linked_verified` row. Unverified parser names
-  /// (`needs_review` / `unlinked`) are false and never tappable.
+  /// (`needs_review` / `unlinked`) are false: they carry no verified id,
+  /// so a tap on them shows the honest no-biography sheet and never a
+  /// status — but under the one-color rule they are still rendered in
+  /// the single narrator-name style and remain tappable.
   final bool verified;
 
   /// True when both offsets are present (validity is checked again
@@ -115,15 +121,38 @@ class IsnadNameMatch {
   bool get hasOffsets => startChar != null && endChar != null;
 }
 
-/// One slice of a hadith text: plain text, or a tappable narrator name.
+/// One slice of a hadith text: plain text, or a parsed narrator name.
+///
+/// ONE-COLOR RULE (user decision 2026-11-26 15:03): every parsed
+/// narrator name — verified or not — is a narrator-name span
+/// ([isNarratorName] true) and the widget renders all of them in the
+/// single narrator-name style (petrol + gold underline) and makes them
+/// all tappable. Verified and unverified names differ ONLY in what the
+/// tap shows (see [narratorTapOutcome]): a verified name shows its
+/// status (or the pending-approval sheet when the package is held);
+/// an unverified name shows the honest «لا توجد ترجمة موثّقة بعد»
+/// sheet and never a status.
+///
+/// [isNarrator] keeps its old meaning (verified only: a non-null
+/// [narratorId]) so existing callers/tests that count verified links
+/// keep working; use [isNarratorName] for styling and tappability.
 class IsnadSpan {
-  const IsnadSpan({required this.text, this.narratorId});
+  const IsnadSpan({
+    required this.text,
+    this.narratorId,
+    this.isNarratorName = false,
+  });
 
   final String text;
 
-  /// Non-null only for a confirmed narrator name.
+  /// Non-null only for a confirmed (verified) narrator name.
   final int? narratorId;
 
+  /// True for every parsed narrator name in this slice, verified or
+  /// unverified. Plain text is false.
+  final bool isNarratorName;
+
+  /// True only for a verified narrator name.
   bool get isNarrator => narratorId != null;
 }
 
@@ -218,10 +247,13 @@ NormalizedText normalizeForMatching(String input) {
 /// be treated as verified positioning.
 ///
 /// Only verified entries ([IsnadNameMatch.verified] with a non-null
-/// [IsnadNameMatch.narratorId]) become tappable. Unverified parser names
-/// are sliced at their exact offsets too, but as PLAIN text: they never
-/// look tappable and never open a sheet. Names not in [confirmed] are
-/// never made tappable — no linking by mere similarity.
+/// [IsnadNameMatch.narratorId]) carry a narrator id. EVERY parsed entry
+/// — verified or unverified — becomes a narrator-name span
+/// ([IsnadSpan.isNarratorName] true) at its exact offsets, in the single
+/// narrator-name style, tappable under the one-color rule; what the tap
+/// shows is decided by [narratorTapOutcome], never by the style. Names
+/// not in [confirmed] are never made narrator names — no linking by
+/// mere similarity.
 List<IsnadSpan> buildIsnadSpans(String text, List<IsnadNameMatch> confirmed) {
   if (text.isEmpty || confirmed.isEmpty) {
     return <IsnadSpan>[IsnadSpan(text: text)];
@@ -248,8 +280,15 @@ List<IsnadSpan> buildIsnadSpansWithOffsets(
   if (text.isEmpty || confirmed.isEmpty) {
     return <IsnadSpan>[IsnadSpan(text: text)];
   }
-  // Placed ranges: (start, end, narratorId or null for plain).
-  final placed = <({int start, int end, int? narratorId})>[];
+  // Placed ranges: (start, end, narratorId or null, narrator-name?).
+  // Every placed parser row is a narrator name (one-color rule);
+  // only verified rows carry a narrator id.
+  final placed = <({
+    int start,
+    int end,
+    int? narratorId,
+    bool isNarratorName,
+  })>[];
 
   bool overlaps(int start, int end) {
     for (final p in placed) {
@@ -284,19 +323,22 @@ List<IsnadSpan> buildIsnadSpansWithOffsets(
       (
         start: start,
         end: end,
-        narratorId:
-            entry.verified ? entry.narratorId : null,
+        narratorId: entry.verified ? entry.narratorId : null,
+        // One-color rule: an unverified parser name is still a
+        // narrator name (same style, tappable); it just has no id,
+        // so its tap shows the honest no-biography sheet.
+        isNarratorName: true,
       ),
     );
   }
 
-  // 2. Name-only verified entries, by normalised search into the gaps.
+  // 2. Name-only entries, by normalised search into the gaps.
   // LOWER-CONFIDENCE fallback (see [buildIsnadSpans]): only for rows
-  // without usable stored offsets.
+  // without usable stored offsets. Verified rows carry their id;
+  // unverified rows are placed as narrator names with no id.
   final normalized = normalizeForMatching(text);
   for (final entry in confirmed) {
     if (offsetResolved.contains(entry)) continue;
-    if (!entry.verified || entry.narratorId == null) continue;
     final needle = normalizeArabic(entry.name);
     if (needle.isEmpty) continue;
     var at = normalized.text.indexOf(needle);
@@ -311,7 +353,14 @@ List<IsnadSpan> buildIsnadSpansWithOffsets(
             ? normalized.origins[after]
             : text.length;
         if (!overlaps(start, end)) {
-          placed.add((start: start, end: end, narratorId: entry.narratorId));
+          placed.add(
+            (
+              start: start,
+              end: end,
+              narratorId: entry.verified ? entry.narratorId : null,
+              isNarratorName: true,
+            ),
+          );
           break;
         }
       }
@@ -331,6 +380,7 @@ List<IsnadSpan> buildIsnadSpansWithOffsets(
       IsnadSpan(
         text: text.substring(p.start, p.end),
         narratorId: p.narratorId,
+        isNarratorName: p.isNarratorName,
       ),
     );
     cursor = p.end;
@@ -345,12 +395,15 @@ List<IsnadSpan> buildIsnadSpansWithOffsets(
 /// Normalised name-search span building.
 ///
 /// LOWER-CONFIDENCE fallback: used only when no entry carries stored
-/// offsets. Only names in [confirmed] become tappable, in chain order;
-/// each name is matched once, scanning forward from the previous match,
-/// so the same name appearing twice links only its first occurrence in
-/// isnad order and a name that does not occur in the text yields no span
-/// at all. Names not in [confirmed] are never made tappable — no linking
-/// by mere similarity.
+/// offsets. Every name in [confirmed] becomes a narrator-name span, in
+/// chain order; each name is matched once, scanning forward from the
+/// previous match, so the same name appearing twice links only its first
+/// occurrence in isnad order and a name that does not occur in the text
+/// yields no span at all. Verified names carry their id; unverified
+/// names are narrator-name spans with no id (one-color rule: same
+/// style, tappable, honest no-biography sheet on tap). Names not in
+/// [confirmed] are never made narrator names — no linking by mere
+/// similarity.
 List<IsnadSpan> _buildIsnadSpansByName(
   String text,
   List<IsnadNameMatch> confirmed,
@@ -360,7 +413,6 @@ List<IsnadSpan> _buildIsnadSpansByName(
   var searchFrom = 0;
   final normalized = normalizeForMatching(text);
   for (final entry in confirmed) {
-    if (!entry.verified || entry.narratorId == null) continue;
     final needle = normalizeArabic(entry.name);
     if (needle.isEmpty) continue;
     var at = normalized.text.indexOf(needle, searchFrom);
@@ -389,7 +441,8 @@ List<IsnadSpan> _buildIsnadSpansByName(
     spans.add(
       IsnadSpan(
         text: text.substring(found.start, found.end),
-        narratorId: entry.narratorId,
+        narratorId: entry.verified ? entry.narratorId : null,
+        isNarratorName: true,
       ),
     );
     cursor = found.end;

@@ -53,6 +53,22 @@ abstract final class SunnatiColors {
   /// Pale pink — tiny touches only (faint floral corners/backgrounds).
   static const Color blush = Color(0xFFE8CFC8);
 
+  /// Rose-pink accent — the mockup's accent (design basis 2026-11-26,
+  /// the جامع الكتب التسعة interfaces): pills, the active bottom-nav
+  /// item, section-header actions and the home shortcut cards. Petrol
+  /// stays the primary; pink is the accent, never a second primary and
+  /// never a dominant green (there is no green in this palette at all).
+  static const Color rose = Color(0xFFD95F73);
+
+  /// Deeper rose for active labels / text on light rose surfaces.
+  static const Color roseDark = Color(0xFFB84A5E);
+
+  /// Light rose surface for the home shortcut cards (mockup screen 1).
+  static const Color roseSurface = Color(0xFFFBE7E7);
+
+  /// Pale rose fill for pills and the home quote card.
+  static const Color roseSoft = Color(0xFFF6D9DC);
+
   /// Night-mode background (very dark petrol).
   static const Color nightBackground = Color(0xFF0C1F27);
 
@@ -136,4 +152,42 @@ abstract final class SunnatiTheme {
       textTheme: base.textTheme.apply(fontSizeFactor: fontScale),
     );
   }
+}
+
+/// Shared text styles for the mockup screens (single source of truth
+/// next to the colours — widgets must not re-declare these sizes).
+abstract final class SunnatiText {
+  /// Section header, e.g. «آخر الأحاديث» (mockup screen 1).
+  static const TextStyle sectionTitle = TextStyle(
+    fontSize: 17,
+    fontWeight: FontWeight.bold,
+    color: SunnatiColors.ink,
+  );
+
+  /// Rose action next to a section header, e.g. «عرض الكل».
+  static const TextStyle sectionAction = TextStyle(
+    fontSize: 13,
+    fontWeight: FontWeight.bold,
+    color: SunnatiColors.roseDark,
+  );
+
+  /// Label under an icon on a home shortcut card.
+  static const TextStyle cardLabel = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: SunnatiColors.ink,
+  );
+
+  /// Book title in the Nine Books list (mockup screen 2).
+  static const TextStyle bookTitle = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+    color: SunnatiColors.ink,
+  );
+
+  /// Book author line under the title.
+  static const TextStyle bookAuthor = TextStyle(
+    fontSize: 13,
+    color: SunnatiColors.inkMuted,
+  );
 }
