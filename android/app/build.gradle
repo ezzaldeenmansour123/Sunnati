@@ -38,6 +38,32 @@ android {
     }
 
     signingConfigs {
+        // Stable debug keystore — committed in the repo at tools/debug.keystore
+        // (owner decision 2026-11-26). Why: every GitHub runner generates a
+        // FRESH ~/.android/debug.keystore, so each CI build used to carry a
+        // DIFFERENT signature and Android refused to install it over the
+        // previous build ("package appears to be invalid"), forcing the user
+        // to uninstall and lose favorites/notes. This committed keystore is
+        // used for the debug signing config, so every CI build — debug or
+        // release-without-secrets — shares ONE signature and installs as a
+        // normal update. It is a DEBUG (trial) key with the public standard
+        // Android credentials (storePassword "android", alias
+        // "androiddebugkey", keyPassword "android"): install identity only,
+        // no security. A real release key (GitHub Secrets, see SIGNING.md)
+        // still takes precedence below and must replace it before any store
+        // release. NOTE: the build signed with the lost per-run key
+        // (build 81) still needs ONE final uninstall first; updates work
+        // forever after that. If the file is ever absent, the config falls
+        // back to AGP's default per-machine debug keystore.
+        debug {
+            def stableDebugKeystore = rootProject.file("tools/debug.keystore")
+            if (stableDebugKeystore.exists()) {
+                storeFile stableDebugKeystore
+                storePassword "android"
+                keyAlias "androiddebugkey"
+                keyPassword "android"
+            }
+        }
         release {
             if (keystorePropertiesFile.exists()) {
                 keyAlias keystoreProperties["keyAlias"]
