@@ -1,12 +1,17 @@
-/// Isnad tree — Phase 5.
+/// Isnad tree — mockup screen 7 (شجرة الإسناد).
 ///
-/// A vertical chain (narrator ↓ … ↓ Companion ↓ the Prophet ﷺ) built
-/// from verified `chains` rows. Tapping a confirmed narrator opens his
-/// card; tapping an unconfirmed link explains that no verified narrator
-/// is recorded for it. Confirmed and incomplete links are styled
-/// differently, and the whole tree zooms/pans through [InteractiveViewer].
-/// With no chain rows the widget shows an honest empty state instead of
-/// a fabricated chain.
+/// Layout follows the mockup exactly: a vertical chain of rounded nodes
+/// connected by lines, top = first link of the chain list down to a final
+/// «الحديث» node. A node shows the narrator name and, underneath it in
+/// parentheses, the tier label ONLY when the tier is actually known from
+/// the database (verified narrator with a recorded tier); unverified nodes
+/// show the name only, never an invented tier. Tapping reuses the
+/// existing honest-ladder tap logic: a confirmed narrator opens his card,
+/// a verified link whose narrators package is held back shows the pending
+/// sheet with no status, and anything else shows the honest
+/// «no verified biography» sheet. The whole tree zooms/pans through
+/// [InteractiveViewer]. With no chain rows the widget shows an honest
+/// empty state instead of a fabricated chain.
 library;
 
 import 'package:material_ui/material_ui.dart';
@@ -38,12 +43,9 @@ class IsnadTree extends StatelessWidget {
     final nodes = <Widget>[];
     for (var i = 0; i < links.length; i++) {
       nodes.add(_ChainNode(db: db, link: links[i]));
-      if (i < links.length - 1) {
-        nodes.add(const _Connector());
-      }
+      nodes.add(const _Connector());
     }
-    nodes.add(const _Connector());
-    nodes.add(const _ProphetNode());
+    nodes.add(const _HadithNode());
     return InteractiveViewer(
       minScale: 0.5,
       maxScale: 2.5,
@@ -63,10 +65,11 @@ class _Connector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 2),
-        child: Icon(Icons.arrow_downward, color: SunnatiColors.gold),
+    return Center(
+      child: Container(
+        width: 2,
+        height: 20,
+        color: SunnatiColors.gold,
       ),
     );
   }
@@ -78,96 +81,153 @@ class _ChainNode extends StatelessWidget {
   final SunnatiDatabase db;
   final ChainLink link;
 
+  /// Name to show: the verified narrator's name, else the name exactly
+  /// as printed in the hadith text, else the honest placeholder.
+  String get _name {
+    if (link.isConfirmed) return link.displayName;
+    if (link.narratorText.isNotEmpty) return link.narratorText;
+    return link.displayName;
+  }
+
+  /// Tier label, only when actually known from the database: a verified
+  /// narrator's recorded tier, else the recorded link type (e.g. صحابي).
+  /// Null means: show the name only.
+  String? get _tierLabel {
+    if (link.isConfirmed) {
+      final narrator = link.narrator!;
+      if (narrator.tier.isNotEmpty) return narrator.tier;
+      if (link.linkType.isNotEmpty) return link.linkType;
+      return null;
+    }
+    return null;
+  }
+
+  void _onTap(BuildContext context) {
+    if (link.isConfirmed) {
+      showNarratorSheetById(context, db, link.narratorId!);
+    } else if (link.isVerifiedLink) {
+      // Honest-ladder rung (b): verified link, package held back.
+      // No status, no scholar, no source is shown.
+      showNarratorPendingSheet(
+        context,
+        narratorName: _name,
+        verifiedLinkKnown: true,
+      );
+    } else {
+      // Honest-ladder rung (c): no verified biography (yet).
+      showUnverifiedNarratorSheet(context, narratorName: _name);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     final confirmed = link.isConfirmed;
     // Verified link whose narrator row cannot load because the
     // narrators package is held back (KITAB gate): NOT an unconfirmed
-    // link — say so explicitly and show no status (integrator fix
-    // 2026-11-26; Worker C §4). isVerifiedLink is true only for
-    // match_status 'linked_verified' with a narrator id.
+    // link — say so explicitly and show no status. isVerifiedLink is
+    // true only for match_status 'linked_verified' with a narrator id.
     final verifiedHeld = !confirmed && link.isVerifiedLink;
+    final tierLabel = _tierLabel;
     return Card(
-      color: confirmed ? null : SunnatiColors.goldSoft,
-      child: ListTile(
-        leading: Icon(
-          link.isCompanion ? Icons.star_outline : Icons.person_outline,
-          color: confirmed ? SunnatiColors.petrol : SunnatiColors.inkMuted,
-        ),
-        title: Text(
-          link.displayName,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: confirmed ? colors.primary : SunnatiColors.inkMuted,
-            decoration: confirmed ? TextDecoration.underline : null,
-            decorationColor: SunnatiColors.gold,
-          ),
-        ),
-        subtitle: Text(
-          [
-            if (link.isCompanion) 'صحابي',
-            if (confirmed && link.narrator!.hasStatus)
-              link.narrator!.status,
-            if (verifiedHeld)
-              'رابط موثّق — حزمة الرواة قيد انتظار الموافقة',
-            if (!confirmed && !verifiedHeld)
-              'رابط غير مكتمل — لا يوجد راوٍ موثّق',
-            if (link.source.isNotEmpty) 'المصدر: ${link.source}',
-          ].join(' — '),
-        ),
-        trailing: confirmed
-            ? const Icon(Icons.open_in_new, size: 18)
-            : const Icon(Icons.help_outline, size: 18),
-        onTap: () {
-          if (confirmed) {
-            showNarratorSheetById(context, db, link.narratorId!);
-          } else if (verifiedHeld) {
-            // Honest-ladder rung (b): verified link, package held back.
-            // No status, no scholar, no source is shown.
-            showNarratorPendingSheet(context, verifiedLinkKnown: true);
-          } else {
-            showDialog<void>(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('رابط غير مكتمل'),
-                content: const Text(
-                  'هذا الموضع من السلسلة مسجّل دون راوٍ موثّق في المصدر المستورد — لا يُعرض فيه اسم غير مؤكد.',
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('حسناً'),
+      color: confirmed ? SunnatiColors.blush : SunnatiColors.goldSoft,
+      child: InkWell(
+        onTap: () => _onTap(context),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    link.isCompanion
+                        ? Icons.star_outline
+                        : Icons.person_outline,
+                    color: confirmed
+                        ? SunnatiColors.petrol
+                        : SunnatiColors.inkMuted,
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      _name,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: confirmed
+                            ? SunnatiColors.petrol
+                            : SunnatiColors.inkMuted,
+                      ),
+                    ),
                   ),
                 ],
               ),
-            );
-          }
-        },
+              if (tierLabel != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    '($tierLabel)',
+                    style: const TextStyle(color: SunnatiColors.inkMuted),
+                  ),
+                ),
+              if (verifiedHeld)
+                const Padding(
+                  padding: EdgeInsets.only(top: 4),
+                  child: Text(
+                    'رابط موثّق — حزمة الرواة قيد انتظار الموافقة',
+                    style: TextStyle(
+                      color: SunnatiColors.inkMuted,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              if (!confirmed && !verifiedHeld)
+                const Padding(
+                  padding: EdgeInsets.only(top: 4),
+                  child: Text(
+                    'رابط غير مكتمل — لا يوجد راوٍ موثّق',
+                    style: TextStyle(
+                      color: SunnatiColors.inkMuted,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-class _ProphetNode extends StatelessWidget {
-  const _ProphetNode();
+/// Final node of the tree, as in the mockup: the hadith itself.
+class _HadithNode extends StatelessWidget {
+  const _HadithNode();
 
   @override
   Widget build(BuildContext context) {
     return const Card(
       color: SunnatiColors.petrol,
-      child: ListTile(
-        leading: Icon(Icons.menu_book, color: Colors.white),
-        title: Text(
-          'النبي ﷺ',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        subtitle: Text(
-          'نهاية السند',
-          style: TextStyle(color: Colors.white70),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.menu_book, color: Colors.white),
+            SizedBox(width: 8),
+            Text(
+              'الحديث',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
       ),
     );
