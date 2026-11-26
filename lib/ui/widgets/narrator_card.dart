@@ -12,6 +12,7 @@ library;
 
 import 'package:material_ui/material_ui.dart';
 
+import '../../core/narrator_logic.dart';
 import '../../core/theme.dart';
 import '../../data/database.dart';
 import '../../models/narrator.dart';
@@ -62,27 +63,111 @@ Future<void> showNarratorSheet(
 }
 
 /// Same as [showNarratorSheet], loading the narrator by id first. When
-/// the id has no verified row, the sheet honestly says so.
+/// the id has no verified row, the sheet honestly says so. When the
+/// narrators package is not installed, the sheet says the package is
+/// pending approval and shows NO status — a missing package must never
+/// look like "no biography".
 Future<void> showNarratorSheetById(
   BuildContext context,
   SunnatiDatabase db,
   int narratorId,
 ) async {
+  if (!db.narratorsAvailable) {
+    return showNarratorPendingSheet(context);
+  }
   final narrator = db.narratorById(narratorId);
   if (!context.mounted) return;
   if (narrator == null) {
-    return showModalBottomSheet<void>(
-      context: context,
-      builder: (context) => const Padding(
-        padding: EdgeInsets.all(24),
-        child: Text(
-          'لم تتوفر ترجمة موثّقة لهذا الراوي بعد.',
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
+    return showUnverifiedNarratorSheet(context);
   }
   return showNarratorSheet(context, db, narrator);
+}
+
+/// Honest-ladder rung (b): a verified link exists, but the narrators
+/// package is held back pending approval, so no status may be shown.
+///
+/// Call [showNarratorPendingSheet] only for a name known to carry a
+/// verified link when [verifiedLinkKnown] is true (the sheet then states
+/// that link fact and nothing more); with [verifiedLinkKnown] false it
+/// states only that the package is pending and no status is shown.
+/// Either way NO status, NO scholar, NO source is invented.
+Future<void> showNarratorPendingSheet(
+  BuildContext context, {
+  String narratorName = '',
+  bool verifiedLinkKnown = false,
+}) {
+  return showModalBottomSheet<void>(
+    context: context,
+    builder: (context) => Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (narratorName.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                narratorName,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: SunnatiColors.petrol,
+                ),
+              ),
+            ),
+          const Text(
+            kNarratorsPendingApprovalMessage,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            verifiedLinkKnown
+                ? 'لهذا السند روابط موثّقة، لكن حالة الرواة غير متاحة بعد — لم تُعرض أي حالة هنا.'
+                : 'لم تُعرض أي حالة هنا — حزمة الرواة لم تُثبَّت بعد.',
+            style: const TextStyle(color: SunnatiColors.inkMuted),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// Honest-ladder rung (c): no verified link / no verified biography for
+/// this narrator (yet). Shows [kNoVerifiedBiographyMessage] and nothing
+/// else — no status is guessed from the name.
+Future<void> showUnverifiedNarratorSheet(
+  BuildContext context, {
+  String narratorName = '',
+}) {
+  return showModalBottomSheet<void>(
+    context: context,
+    builder: (context) => Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (narratorName.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                narratorName,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: SunnatiColors.petrol,
+                ),
+              ),
+            ),
+          const Text(
+            kNoVerifiedBiographyMessage,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    ),
+  );
 }
 
 class NarratorCard extends StatefulWidget {

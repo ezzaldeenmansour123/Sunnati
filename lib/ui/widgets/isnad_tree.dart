@@ -82,6 +82,12 @@ class _ChainNode extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final confirmed = link.isConfirmed;
+    // Verified link whose narrator row cannot load because the
+    // narrators package is held back (KITAB gate): NOT an unconfirmed
+    // link — say so explicitly and show no status (integrator fix
+    // 2026-11-26; Worker C §4). isVerifiedLink is true only for
+    // match_status 'linked_verified' with a narrator id.
+    final verifiedHeld = !confirmed && link.isVerifiedLink;
     return Card(
       color: confirmed ? null : SunnatiColors.goldSoft,
       child: ListTile(
@@ -103,7 +109,10 @@ class _ChainNode extends StatelessWidget {
             if (link.isCompanion) 'صحابي',
             if (confirmed && link.narrator!.hasStatus)
               link.narrator!.status,
-            if (!confirmed) 'رابط غير مكتمل — لا يوجد راوٍ موثّق',
+            if (verifiedHeld)
+              'رابط موثّق — حزمة الرواة قيد انتظار الموافقة',
+            if (!confirmed && !verifiedHeld)
+              'رابط غير مكتمل — لا يوجد راوٍ موثّق',
             if (link.source.isNotEmpty) 'المصدر: ${link.source}',
           ].join(' — '),
         ),
@@ -113,6 +122,10 @@ class _ChainNode extends StatelessWidget {
         onTap: () {
           if (confirmed) {
             showNarratorSheetById(context, db, link.narratorId!);
+          } else if (verifiedHeld) {
+            // Honest-ladder rung (b): verified link, package held back.
+            // No status, no scholar, no source is shown.
+            showNarratorPendingSheet(context, verifiedLinkKnown: true);
           } else {
             showDialog<void>(
               context: context,
