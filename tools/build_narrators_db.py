@@ -358,8 +358,13 @@ def main():
 
     size = OUT.stat().st_size
     sha = hashlib.sha256(OUT.read_bytes()).hexdigest()
+    # Bare hash only (same convention as build_db.py line 1496): the
+    # workflow verifies `sha256sum | cut -d' ' -f1` against this file,
+    # and the app validates it with /^[0-9a-f]{64}$/. Writing the
+    # `sha256sum` format (`hash  filename`) breaks both — that was the
+    # run #96 CI failure (exit 1 on the `test` line, DB itself fine).
     (OUT.parent / "narrators.db.sha256").write_text(
-        sha + "  narrators.db\n", encoding="utf-8")
+        sha + "\n", encoding="utf-8")
     log = {
         "built": "2026-11-26",
         "file": str(OUT),
