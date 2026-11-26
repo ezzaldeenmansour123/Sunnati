@@ -7,6 +7,8 @@
 /// Dart/Flutter toolchain is installed locally — see
 /// SUNNATI_PHASE6_ASSISTANT_REPORT_2026-11-26.md. Run with
 /// `flutter test test/assistant_test.dart` in CI.
+library;
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sunnati/assistant/explanation_template.dart';
 import 'package:sunnati/assistant/intent.dart';
