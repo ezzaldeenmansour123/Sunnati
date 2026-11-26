@@ -29,9 +29,12 @@ android {
         minSdk 21
         targetSdk 36
         // Single source of truth for versionCode/versionName is pubspec.yaml;
-        // Flutter injects them via flutterVersionCode / flutterVersionName.
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        // the Flutter Gradle plugin reads them from local.properties into the
+        // `flutter` extension — Flutter 3.50 template form. The old bare
+        // `flutterVersionCode` project property no longer exists (run #44
+        // failed here: "Could not get unknown property 'flutterVersionCode'").
+        versionCode flutter.versionCode
+        versionName flutter.versionName
     }
 
     signingConfigs {
