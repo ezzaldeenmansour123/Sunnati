@@ -1,6 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:sunnati/core/narrator_logic.dart';
 import 'package:sunnati/core/text_compare.dart';
+import 'package:sunnati/core/theme.dart';
+import 'package:sunnati/ui/widgets/isnad_text.dart';
 
 // NOTE: the chains below are test-only fixtures invented for the tests —
 // they are never shipped in the app, which links names only from verified
@@ -195,7 +198,7 @@ void main() {
       expect(spans.map((s) => s.text).join(), edge);
     });
 
-    test('unverified offset names stay plain text, never tappable', () {
+    test('unverified offset names are narrator-name spans, not verified links', () {
       final first = text.indexOf('شعبة');
       final zuhri = text.indexOf('الزهري');
       final spans = buildIsnadSpans(text, <IsnadNameMatch>[
@@ -291,6 +294,119 @@ void main() {
       );
       expect(c.identical, isTrue);
       expect(c.common, <String>['انما', 'الاعمال', 'بالنيات']);
+    });
+  });
+
+  // ONE-COLOR RULE (user decision 2026-11-26 15:03): every parsed
+  // narrator name — verified or not — is one narrator-name span in
+  // one style and tappable. The tap outcome (not the style) is what
+  // differs; see the ladder tests in narrators_test.dart.
+  group('one-color rule — every parsed name is a narrator-name span', () {
+    const text = 'حدثنا شعبة عن الزهري عن أنس بن مالك قال';
+
+    test('an unlinked offset name is a narrator-name span (no id)', () {
+      final first = text.indexOf('شعبة');
+      final zuhri = text.indexOf('الزهري');
+      final spans = buildIsnadSpans(text, <IsnadNameMatch>[
+        IsnadNameMatch(
+          name: 'شعبة',
+          narratorId: null,
+          startChar: first,
+          endChar: first + 'شعبة'.length,
+          verified: false,
+        ),
+        IsnadNameMatch(
+          name: 'الزهري',
+          narratorId: 2,
+          startChar: zuhri,
+          endChar: zuhri + 'الزهري'.length,
+        ),
+      ]);
+      final names = spans.where((s) => s.isNarratorName).toList();
+      expect(names.map((s) => s.text).toList(), <String>['شعبة', 'الزهري']);
+      // The unlinked name carries no id (so its tap shows the honest
+      // no-biography sheet), but it IS a narrator name — styled and
+      // tappable like the verified one.
+      expect(names.first.narratorId, isNull);
+      expect(names.first.isNarrator, isFalse);
+      expect(names.last.narratorId, 2);
+      expect(names.last.isNarrator, isTrue);
+      expect(spans.map((s) => s.text).join(), text);
+    });
+
+    test('all names in one chain share the narrator-name mark', () {
+      final first = text.indexOf('شعبة');
+      final zuhri = text.indexOf('الزهري');
+      final anas = text.indexOf('أنس بن مالك');
+      final spans = buildIsnadSpans(text, <IsnadNameMatch>[
+        IsnadNameMatch(
+          name: 'شعبة',
+          narratorId: null,
+          startChar: first,
+          endChar: first + 'شعبة'.length,
+          verified: false,
+        ),
+        IsnadNameMatch(
+          name: 'الزهري',
+          narratorId: 2,
+          startChar: zuhri,
+          endChar: zuhri + 'الزهري'.length,
+        ),
+        IsnadNameMatch(
+          name: 'أنس بن مالك',
+          narratorId: null,
+          startChar: anas,
+          endChar: anas + 'أنس بن مالك'.length,
+          verified: false,
+        ),
+      ]);
+      final names = spans.where((s) => s.isNarratorName).toList();
+      expect(names, hasLength(3));
+      // One mark for every name: no name is left plain, and the only
+      // verified link is still exactly one.
+      expect(spans.where((s) => s.isNarrator).toList(), hasLength(1));
+      expect(
+        spans.where((s) => !s.isNarratorName).map((s) => s.text).join(),
+        isNot(contains('شعبة')),
+      );
+      expect(spans.map((s) => s.text).join(), text);
+    });
+
+    test('name-only fallback: an unverified name is a narrator-name span',
+        () {
+      final spans = buildIsnadSpans(text, const <IsnadNameMatch>[
+        IsnadNameMatch(name: 'شعبة', narratorId: null, verified: false),
+        IsnadNameMatch(name: 'الزهري', narratorId: 2),
+      ]);
+      final names = spans.where((s) => s.isNarratorName).toList();
+      expect(names.map((s) => s.text).toList(), <String>['شعبة', 'الزهري']);
+      expect(names.first.narratorId, isNull);
+      expect(spans.map((s) => s.text).join(), text);
+    });
+
+    testWidgets(
+        'all narrator names share one style (petrol + gold underline)',
+        (tester) async {
+      TextStyle? first;
+      TextStyle? second;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) {
+              first = isnadNarratorNameStyle(context);
+              second = isnadNarratorNameStyle(context);
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      );
+      expect(first, isNotNull);
+      // The widget builds the style once and applies the same value
+      // to every name: one colour, one underline, no per-name style.
+      expect(first, second);
+      expect(first!.decoration, TextDecoration.underline);
+      expect(first!.decorationColor, SunnatiColors.gold);
+      expect(first!.fontWeight, FontWeight.bold);
     });
   });
 }

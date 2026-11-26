@@ -342,4 +342,38 @@ void main() {
       expect(open.displayName, 'راوٍ غير محدد في المصدر');
     });
   });
+
+  // ONE-COLOR RULE (user decision 2026-11-26 15:03): every parsed
+  // narrator name is tappable; the tap OUTCOME is what differs per
+  // rung — the style never does. The span side of the rule is tested
+  // in isnad_spans_test.dart; this group pins the outcome mapping.
+  group('one-color rule — tap outcome per rung', () {
+    test('rung (a): verified name + package installed -> status card', () {
+      expect(
+        narratorTapOutcome(verifiedLink: true, narratorsAvailable: true),
+        NarratorTapOutcome.showStatus,
+      );
+    });
+
+    test('rung (b): verified name + package held back -> pending, no status',
+        () {
+      expect(
+        narratorTapOutcome(verifiedLink: true, narratorsAvailable: false),
+        NarratorTapOutcome.pendingApproval,
+      );
+    });
+
+    test(
+        'rung (c): unlinked name -> honest no-biography sheet, never a status',
+        () {
+      expect(
+        narratorTapOutcome(verifiedLink: false, narratorsAvailable: true),
+        NarratorTapOutcome.noVerifiedBiography,
+      );
+      expect(
+        narratorTapOutcome(verifiedLink: false, narratorsAvailable: false),
+        NarratorTapOutcome.noVerifiedBiography,
+      );
+    });
+  });
 }
