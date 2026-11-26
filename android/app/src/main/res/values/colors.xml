@@ -2,4 +2,8 @@
 <resources>
     <!-- Warm ivory launch background (corrected identity: petrol + ivory + matte gold). -->
     <color name="launch_background">#F7F2E9</color>
+    <!-- Adaptive-icon background: the same warm ivory. The launcher
+         foreground (tools/make_icon_from_source.py) is the owner's v2
+         artwork on transparency, so the icon reads as one ivory tile. -->
+    <color name="ic_launcher_background">#F7F2E9</color>
 </resources>
