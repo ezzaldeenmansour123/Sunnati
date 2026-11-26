@@ -55,12 +55,13 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      - name: Analyse (must pass)
-        run: flutter analyze
-
-      - name: Test (must pass — test/ is never deleted)
-        run: flutter test
-
+      # Generated assets MUST exist before `flutter analyze`: pubspec
+      # declares assets/sunnati.db + assets/sunnati.db.sha256, and the
+      # analyzer fails the build (fatal warnings) when they are missing.
+      # Previously analyze ran first and every CI run failed in ~50 s
+      # with asset_does_not_exist warnings (run 45735236886, 2026-11-26).
+      # So: build the database, apply the links, fetch the font and
+      # generate the icon FIRST, then analyse and test.
       - name: Build the library database (Phases 2-3 — full import)
         run: |
           pip install pyarrow
@@ -99,6 +100,12 @@ jobs:
         run: |
           pip install Pillow
           python3 tools/make_icon.py --out android/app/src/main/res
+
+      - name: Analyse (must pass)
+        run: flutter analyze
+
+      - name: Test (must pass — test/ is never deleted)
+        run: flutter test
 
       - name: Ensure Gradle wrapper jar
         run: |
