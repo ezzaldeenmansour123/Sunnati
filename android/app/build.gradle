@@ -38,20 +38,18 @@ android {
     }
 
     signingConfigs {
-        // Stable debug keystore — the CI workflow installs it as
-        // ~/.android/debug.keystore (JKS, converted from the committed
-        // PKCS12 tools/debug.keystore) and android/key.properties points
-        // the release build at the same file, so every CI build shares
-        // ONE signature and installs as a normal update. Do NOT set
-        // storeFile here: AGP 9 treats the debug signing config
-        // specially — pointing it at the PKCS12 file made AGP silently
-        // REGENERATE the default debug keystore (runs #97/#98/#100/#102/
-        // #103 all shipped a fresh per-runner cert), which also poisoned
-        // the key.properties path, since it points at the same default
-        // location. Leaving the debug config at its default lets AGP use
-        // the workflow-installed JKS untouched. A real release key
-        // (GitHub Secrets, see SIGNING.md) still takes precedence via
-        // key.properties and must replace it before any store release.
+        // Stable debug keystore (tools/debug.keystore, fingerprint
+        // 70:85:3F:3B...): the CI workflow copies it to
+        // ~/.android/sunnati-debug.keystore and writes
+        // android/key.properties pointing at it. AGP 9 in this project
+        // nevertheless signs the release APK with a fresh per-runner
+        // certificate no matter which keystore the release config points
+        // at (runs #97-#110) — so push builds do NOT use this config at
+        // all: they build unsigned (see buildTypes below) and the
+        // workflow signs the APK once with apksigner. The debug config
+        // stays empty (default) and manages ~/.android/debug.keystore on
+        // its own. A real release key (GitHub Secrets, see SIGNING.md)
+        // still takes precedence via key.properties for tagged builds.
         // NOTE: the build signed with the lost per-run key (build 81)
         // still needs ONE final uninstall first; updates work forever
         // after that.
@@ -69,7 +67,19 @@ android {
 
     buildTypes {
         release {
-            signingConfig keystorePropertiesFile.exists() ? signingConfigs.release : signingConfigs.debug
+            // Signing is decided by the workflow, not here. Push builds
+            // (no release secrets: HAS_KEYSTORE != "true") build UNSIGNED:
+            // AGP 9 in this project signs the release APK with a fresh
+            // per-runner certificate no matter which keystore the release
+            // config points at (runs #97-#110), and re-signing that APK
+            // with apksigner produced a third mystery certificate (run
+            // #110). So the workflow signs the unsigned APK once with
+            // apksigner and the stable debug keystore. Tagged builds with
+            // real secrets (HAS_KEYSTORE == "true") keep Gradle signing
+            // with the release keystore.
+            if (System.getenv("HAS_KEYSTORE") == "true" && keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             shrinkResources false
         }
