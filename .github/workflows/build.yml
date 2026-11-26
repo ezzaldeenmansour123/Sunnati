@@ -287,13 +287,73 @@ jobs:
         # app-release.apk (68.8MB) and Verify could not find the split name).
         run: flutter build apk --release --target-platform android-arm64 --split-per-abi
 
+      - name: Check keystores AFTER the build (signing diagnostic)
+        # Runs #97-#108 all shipped a fresh cert despite a correct
+        # keystore + correct RESOLVED config before the build — even run
+        # #108, whose release config pointed at a separate file AGP's
+        # debug machinery never touches. This step captures the state
+        # right after AGP's build: the APK certificate as AGP signed it,
+        # and both keystore files. Comparing these three fingerprints
+        # with the pre-build ones shows whether the build itself changed
+        # a keystore file, and whether the APK was signed with the debug
+        # keystore instead of the release one.
+        run: |
+          APK=build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          echo "APK certificate as built by AGP (before re-signing):"
+          python3 tools/cert_fp.py "$APK" || echo "Could not read APK certificate."
+          echo "Stable keystore (release config target):"
+          keytool -list -v -keystore ~/.android/sunnati-debug.keystore -storepass android | grep -E "SHA256:|Alias name:" || echo "MISSING: ~/.android/sunnati-debug.keystore"
+          ls -l ~/.android/sunnati-debug.keystore
+          echo "Default debug keystore (AGP-managed):"
+          if [ -f ~/.android/debug.keystore ]; then
+            keytool -list -v -keystore ~/.android/debug.keystore -storepass android | grep -E "SHA256:|Alias name:" || echo "Could not read ~/.android/debug.keystore"
+            ls -l ~/.android/debug.keystore
+          else
+            echo "No ~/.android/debug.keystore (AGP did not create one)."
+          fi
+
+      - name: Re-sign APK with the stable keystore (apksigner)
+        # AGP 9 in this project signs the release APK with a fresh
+        # per-runner certificate no matter which keystore the release
+        # config points at (runs #97-#108, nine fresh certs). Until that
+        # is root-caused, sign the built APK explicitly with apksigner
+        # and the committed stable debug keystore (public debug
+        # credentials, install identity only). apksigner replaces the
+        # existing v2 block, so the delivered APK carries the stable
+        # certificate and installs as a normal update over any earlier
+        # stably-signed build. The Verify step below gates on the exact
+        # stable fingerprint — a wrong-cert build fails loudly here
+        # instead of shipping.
+        run: |
+          set -euo pipefail
+          APK=build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          APKSIGNER=""
+          for ROOT in "${ANDROID_HOME:-}" "${ANDROID_SDK_ROOT:-}" /usr/lib/android-sdk "$HOME/Android/Sdk"; do
+            [ -n "$ROOT" ] || continue
+            CAND=$(find "$ROOT/build-tools" -maxdepth 2 -name apksigner -type f 2>/dev/null | head -1)
+            if [ -n "$CAND" ]; then APKSIGNER="$CAND"; break; fi
+          done
+          if [ -z "$APKSIGNER" ]; then
+            echo "ERROR: apksigner not found under any Android SDK build-tools directory."
+            exit 1
+          fi
+          echo "Using apksigner: $APKSIGNER"
+          "$APKSIGNER" sign --ks tools/debug.keystore --ks-pass pass:android --key-pass pass:android --ks-key-alias androiddebugkey --v1-signing-enabled false --v2-signing-enabled true --v3-signing-enabled true "$APK"
+          echo "Re-signed with the stable keystore."
+
       - name: Verify APK + SHA-256 + signing certificate
         run: |
           APK=$(ls build/app/outputs/flutter-apk/app-arm64-v8a-release.apk)
           sha256sum "$APK" | tee "$APK.sha256"
           ls -l "$APK"
-          echo "APK signing certificate (SHA-256 fingerprint — compare with SIGNING.md):"
-          keytool -printcert -jarfile "$APK" 2>/dev/null | grep -E "SHA256:|Owner:" || echo "WARNING: could not read APK certificate."
+          echo "APK signing certificate (SHA-256 fingerprint — must be the stable debug keystore):"
+          FP=$(python3 tools/cert_fp.py "$APK")
+          echo "$FP"
+          EXPECTED="70:85:3F:3B:6D:86:6D:53:83:43:97:82:EF:10:D6:3A:85:C3:B1:F6:2C:8D:1A:1A:9A:90:D6:B8:68:68:56:D6"
+          case "$FP" in
+            *"$EXPECTED"*) echo "Certificate OK: stable signature." ;;
+            *) echo "ERROR: APK certificate is NOT the stable keystore ($EXPECTED). Do not deliver this build."; exit 1 ;;
+          esac
 
       - name: Guard — APK embeds the library AND narrators.db
         # Embed decisions (owner 2026-11-26 16:54 + OVERRIDE 17:51):
