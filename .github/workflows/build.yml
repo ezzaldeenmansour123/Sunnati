@@ -232,24 +232,28 @@ jobs:
 
       - name: Install stable debug keystore (shared CI signature)
         # The Gradle debug signing config (see android/app/build.gradle)
-        # is IGNORED by AGP 9 in this project — runs #97/#98/#100/#102
-        # all shipped a fresh per-runner cert despite a correct path,
-        # a correct file, and (run #102) a correct JKS at the default
-        # location. So use the PROVEN mechanism instead: the standard
-        # Flutter release-signing path via android/key.properties, which
-        # the workflow already supports for real release keys. This step
-        # converts the committed PKCS12 debug keystore to JKS, installs
-        # it as ~/.android/debug.keystore, and — only when no real
-        # key.properties exists (i.e. no release secrets) — writes a
-        # key.properties pointing at it. The APK stays debug-signed
-        # (public debug credentials, install identity only), but now
-        # with ONE stable signature, so it installs as a normal update.
-        # The tag guard above still blocks any tagged build without a
-        # real release keystore (HAS_KEYSTORE is never set here).
+        # is IGNORED by AGP 9 in this project, so use the standard
+        # Flutter release-signing path via android/key.properties (which
+        # the workflow already supports for real release keys). Run #106
+        # proved the remaining mismatches with its diagnostic lines:
+        # AGP resolves storeType=pkcs12 for BOTH signing configs, and
+        # its default debug config expects alias "AndroidDebugKey" —
+        # while the JKS we installed (runs #102-#106) fails to load as
+        # PKCS12 and is silently regenerated as a fresh key. So install
+        # the committed PKCS12 file DIRECTLY (no JKS conversion), with
+        # BOTH aliases present (androiddebugkey for key.properties,
+        # AndroidDebugKey for AGP's default debug config) — same key and
+        # certificate under both names, fingerprint unchanged. The APK
+        # stays debug-signed (public debug credentials, install identity
+        # only), but now with ONE stable signature, so it installs as a
+        # normal update. The tag guard above still blocks any tagged
+        # build without a real release keystore (HAS_KEYSTORE is never
+        # set here).
         run: |
           mkdir -p ~/.android
           rm -f ~/.android/debug.keystore
-          keytool -importkeystore -srckeystore tools/debug.keystore -srcstoretype PKCS12 -srcstorepass android -destkeystore ~/.android/debug.keystore -deststoretype JKS -deststorepass android -noprompt
+          keytool -importkeystore -srckeystore tools/debug.keystore -srcstoretype PKCS12 -srcstorepass android -srcalias androiddebugkey -destkeystore ~/.android/debug.keystore -deststoretype PKCS12 -deststorepass android -destalias androiddebugkey -noprompt
+          keytool -importkeystore -srckeystore tools/debug.keystore -srcstoretype PKCS12 -srcstorepass android -srcalias androiddebugkey -destkeystore ~/.android/debug.keystore -deststoretype PKCS12 -deststorepass android -destalias AndroidDebugKey -noprompt
           keytool -list -v -keystore ~/.android/debug.keystore -storepass android | grep -E "SHA256:|Alias name:"
           if [ ! -f android/key.properties ]; then
             {
