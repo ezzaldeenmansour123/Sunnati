@@ -1,0 +1,43 @@
+name: sunnati
+description: "سُنَّتي | SUNNATI — السنة النبوية بين يديك، بفهم موثّق وذكاء متقدم. مكتبة حديثية عربية دون إنترنت، الكتب التسعة."
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  sqlite3: ^2.4.6
+  sqlite3_flutter_libs: ^0.5.0
+  path_provider: ^2.1.2
+  shared_preferences: ^2.2.2
+  share_plus: ^10.0.0
+  crypto: ^3.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/sunnati.db
+    - assets/sunnati.db.sha256
+    # Phase 5 core (optional asset): the derived narrators database
+    # (CC BY-NC-SA 4.0, OpenITI Taqrib al-Tahdhib). The app installs it
+    # when present and works without it when absent.
+    - assets/narrators.db
+    - assets/narrators.db.sha256
+    - assets/assistant_phrasings.json
+  fonts:
+    # Amiri (SIL OFL 1.1) — يُحمَّل في CI من مصدر موثّق (انظر .github/workflows/build.yml).
+    # إن غاب الخط في بيئة البناء سقط Flutter تلقائياً إلى خط النظام؛ لا يُسلَّم APK بخط غير مرخّص.
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/Amiri-Regular.ttf
+        - asset: assets/fonts/Amiri-Bold.ttf
+          weight: 700
