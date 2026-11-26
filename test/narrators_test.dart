@@ -134,6 +134,176 @@ void main() {
     });
   });
 
+  group('Honest ladder — narratorTapOutcome + exact Arabic copy', () {
+    test('exact strings are used verbatim, never paraphrased', () {
+      expect(
+        kNarratorsPendingApprovalMessage,
+        'حزمة الرواة قيد انتظار الموافقة — الحالة غير متاحة بعد',
+      );
+      expect(
+        kNoVerifiedBiographyMessage,
+        'لا توجد ترجمة موثّقة لهذا الراوي بعد.',
+      );
+      expect(
+        kNoVerifiedChainMessage,
+        'أسماء الرواة غير مرتبطة بعد — لا توجد بيانات سلسلة موثّقة لهذا الحديث.',
+      );
+      expect(
+        kIsnadNotParsedMessage,
+        'إسناد هذا الحديث لم يُحلَّل بعد — لا توجد أسماء رواة موثّقة لهذا الحديث.',
+      );
+    });
+
+    test('verified link + package installed -> show the status', () {
+      expect(
+        narratorTapOutcome(
+            verifiedLink: true, narratorsAvailable: true),
+        NarratorTapOutcome.showStatus,
+      );
+    });
+
+    test('verified link + package held back -> pending, NO status', () {
+      expect(
+        narratorTapOutcome(
+            verifiedLink: true, narratorsAvailable: false),
+        NarratorTapOutcome.pendingApproval,
+      );
+    });
+
+    test('no verified link -> no biography, whether or not installed', () {
+      expect(
+        narratorTapOutcome(
+            verifiedLink: false, narratorsAvailable: true),
+        NarratorTapOutcome.noVerifiedBiography,
+      );
+      expect(
+        narratorTapOutcome(
+            verifiedLink: false, narratorsAvailable: false),
+        NarratorTapOutcome.noVerifiedBiography,
+      );
+    });
+  });
+
+  group('HadithCoverageState — reader line, four honest states', () {
+    test('verified narrators attached -> verifiedAvailable', () {
+      expect(
+        hadithCoverageState(
+          hasVerifiedNarrators: true,
+          hasVerifiedLinks: true,
+          hasParserRows: true,
+        ),
+        HadithCoverageState.verifiedAvailable,
+      );
+    });
+
+    test('verified links but no attached narrator -> held back', () {
+      expect(
+        hadithCoverageState(
+          hasVerifiedNarrators: false,
+          hasVerifiedLinks: true,
+          hasParserRows: true,
+        ),
+        HadithCoverageState.verifiedHeldBack,
+      );
+    });
+
+    test('parser rows but zero verified links -> parserRowsNoVerified', () {
+      expect(
+        hadithCoverageState(
+          hasVerifiedNarrators: false,
+          hasVerifiedLinks: false,
+          hasParserRows: true,
+        ),
+        HadithCoverageState.parserRowsNoVerified,
+      );
+    });
+
+    test('no parser rows at all -> notParsed, never claims verification',
+        () {
+      expect(
+        hadithCoverageState(
+          hasVerifiedNarrators: false,
+          hasVerifiedLinks: false,
+          hasParserRows: false,
+        ),
+        HadithCoverageState.notParsed,
+      );
+    });
+  });
+
+  group('ChainLink — parser offsets and match_status', () {
+    test('parses narrator_text / start_char / end_char / match_status', () {
+      final link = ChainLink.fromRow(<String, Object?>{
+        'position': 1,
+        'narrator_id': 42,
+        'link_type': 'an',
+        'source': '',
+        'notes': '',
+        'narrator_text': 'الزُّهْرِيِّ',
+        'start_char': 12,
+        'end_char': 24,
+        'match_status': 'linked_verified',
+      });
+      expect(link.narratorText, 'الزُّهْرِيِّ');
+      expect(link.startChar, 12);
+      expect(link.endChar, 24);
+      expect(link.matchStatus, 'linked_verified');
+      expect(link.hasOffsets, isTrue);
+      expect(link.isVerifiedLink, isTrue);
+      expect(link.isUnverifiedParserName, isFalse);
+    });
+
+    test('unverified parser rows are plain names, never verified links', () {
+      final link = ChainLink.fromRow(<String, Object?>{
+        'position': 0,
+        'narrator_id': null,
+        'link_type': 'an',
+        'source': '',
+        'notes': '',
+        'narrator_text': 'سُفْيَانُ',
+        'start_char': 6,
+        'end_char': 13,
+        'match_status': 'needs_review',
+      });
+      expect(link.hasOffsets, isTrue);
+      expect(link.isVerifiedLink, isFalse);
+      expect(link.isUnverifiedParserName, isTrue);
+      expect(link.isConfirmed, isFalse);
+    });
+
+    test('old rows without the parser columns keep the old defaults', () {
+      final link = ChainLink.fromRow(<String, Object?>{
+        'position': 1,
+        'narrator_id': 1,
+        'link_type': '',
+        'source': '',
+        'notes': '',
+      });
+      expect(link.narratorText, '');
+      expect(link.startChar, isNull);
+      expect(link.endChar, isNull);
+      expect(link.matchStatus, '');
+      expect(link.hasOffsets, isFalse);
+      expect(link.isVerifiedLink, isFalse);
+      expect(link.isUnverifiedParserName, isFalse);
+    });
+
+    test('reversed offsets are not offsets', () {
+      final link = ChainLink.fromRow(<String, Object?>{
+        'position': 1,
+        'narrator_id': 1,
+        'link_type': '',
+        'source': '',
+        'notes': '',
+        'narrator_text': 'الزهري',
+        'start_char': 10,
+        'end_char': 5,
+        'match_status': 'linked_verified',
+      });
+      expect(link.hasOffsets, isFalse);
+    });
+  });
+
   group('ChainLink', () {
     test('a link with a narrator is confirmed; without one it is not', () {
       final narrator = Narrator.fromRow(<String, Object?>{

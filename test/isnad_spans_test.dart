@@ -98,6 +98,180 @@ void main() {
     });
   });
 
+  group('buildIsnadSpans — offset-based (stored start_char/end_char)', () {
+    // NOTE: offsets below are computed with indexOf inside each test so
+    // the test itself never hard-codes a hand-counted position; what the
+    // tests assert is that the builder honours the GIVEN offsets (not a
+    // re-derived name search) and slices the original text exactly.
+    const text = 'حدثنا شعبة عن شعبة عن الزهري قال';
+
+    test('repeated name: each occurrence gets its own span from its row', () {
+      final first = text.indexOf('شعبة');
+      final second = text.indexOf('شعبة', first + 1);
+      final zuhri = text.indexOf('الزهري');
+      final spans = buildIsnadSpans(text, <IsnadNameMatch>[
+        IsnadNameMatch(
+            name: 'شعبة', narratorId: 1, startChar: first, endChar: first + 'شعبة'.length),
+        IsnadNameMatch(
+            name: 'شعبة',
+            narratorId: 7,
+            startChar: second,
+            endChar: second + 'شعبة'.length),
+        IsnadNameMatch(
+            name: 'الزهري',
+            narratorId: 2,
+            startChar: zuhri,
+            endChar: zuhri + 6),
+      ]);
+      final linked = spans.where((s) => s.isNarrator).toList();
+      expect(linked.map((s) => s.narratorId).toList(), <int>[1, 7, 2]);
+      expect(linked.map((s) => s.text).toList(),
+          <String>['شعبة', 'شعبة', 'الزهري']);
+      expect(spans.map((s) => s.text).join(), text);
+    });
+
+    test('offsets win over name search: a later occurrence is linked', () {
+      // The name occurs twice; the offset points at the SECOND one, so
+      // only the second occurrence may be tappable — a name search
+      // would have linked the first.
+      final first = text.indexOf('شعبة');
+      final second = text.indexOf('شعبة', first + 1);
+      final spans = buildIsnadSpans(text, <IsnadNameMatch>[
+        IsnadNameMatch(
+            name: 'شعبة',
+            narratorId: 1,
+            startChar: second,
+            endChar: second + 'شعبة'.length),
+      ]);
+      final linked = spans.where((s) => s.isNarrator).toList();
+      expect(linked, hasLength(1));
+      expect(linked.first.text, 'شعبة');
+      // The plain span before it still contains the first occurrence.
+      expect(spans.first.text, contains('حدثنا شعبة عن '));
+      expect(spans.map((s) => s.text).join(), text);
+    });
+
+    test('diacritics: offset slices keep the vocalised text intact', () {
+      const vocalised =
+          'حَدَّثَنَا شُعْبَةُ عَنِ الزُّهْرِيِّ عَنْ أَنَسٍ قَالَ';
+      final shuba = vocalised.indexOf('شُعْبَةُ');
+      final zuhri = vocalised.indexOf('الزُّهْرِيِّ');
+      final spans = buildIsnadSpans(vocalised, <IsnadNameMatch>[
+        IsnadNameMatch(
+          name: 'شعبة',
+          narratorId: 1,
+          startChar: shuba,
+          endChar: shuba + 'شُعْبَةُ'.length,
+        ),
+        IsnadNameMatch(
+          name: 'الزهري',
+          narratorId: 2,
+          startChar: zuhri,
+          endChar: zuhri + 'الزُّهْرِيِّ'.length,
+        ),
+      ]);
+      final linked = spans.where((s) => s.isNarrator).toList();
+      expect(linked.map((s) => s.text).toList(),
+          <String>['شُعْبَةُ', 'الزُّهْرِيِّ']);
+      expect(spans.map((s) => s.text).join(), vocalised);
+    });
+
+    test('boundary cases: name at offset 0 and name ending at text end', () {
+      const edge = 'شعبة عن الزهري';
+      final spans = buildIsnadSpans(edge, <IsnadNameMatch>[
+        const IsnadNameMatch(
+            name: 'شعبة',
+            narratorId: 1,
+            startChar: 0,
+            endChar: 'شعبة'.length),
+        const IsnadNameMatch(
+            name: 'الزهري',
+            narratorId: 2,
+            startChar: 8,
+            endChar: edge.length),
+      ]);
+      final linked = spans.where((s) => s.isNarrator).toList();
+      expect(linked.map((s) => s.narratorId).toList(), <int>[1, 2]);
+      expect(spans.map((s) => s.text).join(), edge);
+    });
+
+    test('unverified offset names stay plain text, never tappable', () {
+      final first = text.indexOf('شعبة');
+      final zuhri = text.indexOf('الزهري');
+      final spans = buildIsnadSpans(text, <IsnadNameMatch>[
+        IsnadNameMatch(
+          name: 'شعبة',
+          narratorId: null,
+          startChar: first,
+          endChar: first + 'شعبة'.length,
+          verified: false,
+        ),
+        IsnadNameMatch(
+            name: 'الزهري',
+            narratorId: 2,
+            startChar: zuhri,
+            endChar: zuhri + 6),
+      ]);
+      final linked = spans.where((s) => s.isNarrator).toList();
+      expect(linked.map((s) => s.narratorId).toList(), <int>[2]);
+      expect(spans.any((s) => s.text == 'شعبة' && s.isNarrator), isFalse);
+      expect(spans.map((s) => s.text).join(), text);
+    });
+
+    test('unusable offsets fall back to name search, never placed blindly',
+        () {
+      final spans = buildIsnadSpans(text, <IsnadNameMatch>[
+        // Reversed offsets.
+        const IsnadNameMatch(
+            name: 'الزهري', narratorId: 2, startChar: 10, endChar: 5),
+        // End beyond the text.
+        const IsnadNameMatch(
+            name: 'شعبة',
+            narratorId: 1,
+            startChar: 0,
+            endChar: text.length + 99),
+      ]);
+      final linked = spans.where((s) => s.isNarrator).toList();
+      expect(linked.map((s) => s.narratorId).toList(), <int>[1, 2]);
+      expect(linked.map((s) => s.text).toList(),
+          <String>['شعبة', 'الزهري']);
+      expect(spans.map((s) => s.text).join(), text);
+    });
+
+    test('overlapping offset rows: earliest start wins, no double cover',
+        () {
+      final first = text.indexOf('شعبة');
+      final spans = buildIsnadSpans(text, <IsnadNameMatch>[
+        IsnadNameMatch(
+            name: 'شعبة', narratorId: 1, startChar: first, endChar: first + 'شعبة'.length),
+        // Same span claimed again by another row.
+        IsnadNameMatch(
+            name: 'شعبة', narratorId: 7, startChar: first, endChar: first + 'شعبة'.length),
+      ]);
+      final linked = spans.where((s) => s.isNarrator).toList();
+      expect(linked, hasLength(1));
+      expect(linked.first.narratorId, 1);
+      expect(spans.map((s) => s.text).join(), text);
+    });
+
+    test('mixed rows: offset rows placed first, name-only rows fill gaps',
+        () {
+      final zuhri = text.indexOf('الزهري');
+      final spans = buildIsnadSpans(text, <IsnadNameMatch>[
+        IsnadNameMatch(
+            name: 'الزهري',
+            narratorId: 2,
+            startChar: zuhri,
+            endChar: zuhri + 6),
+        // No offsets: lower-confidence name search.
+        const IsnadNameMatch(name: 'شعبة', narratorId: 1),
+      ]);
+      final linked = spans.where((s) => s.isNarrator).toList();
+      expect(linked.map((s) => s.narratorId).toList(), <int>[1, 2]);
+      expect(spans.map((s) => s.text).join(), text);
+    });
+  });
+
   group('compareVariantTexts', () {
     test('separates shared words from words only in one wording', () {
       final c = compareVariantTexts(
