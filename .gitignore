@@ -1,0 +1,33 @@
+# SUNNATI .gitignore — Phase 1
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+*.iml
+.idea/
+.vscode/
+*.log
+
+# Android signing — NEVER commit a keystore or its passwords.
+android/app/keystore.jks
+android/app/*.jks
+android/key.properties
+android/app/key.properties
+*.keystore
+key.properties
+
+# Built artefacts (rebuilt in CI — see tools/build_db.py and build.yml)
+assets/sunnati.db
+assets/sunnati.db.sha256
+assets/fonts/Amiri-Regular.ttf
+assets/fonts/Amiri-Bold.ttf
+android/app/src/main/res/mipmap-*/ic_launcher.png
+
+# Local tooling
+local.properties
+__pycache__/
+*.pyc
