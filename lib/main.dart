@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'core/theme.dart';
 import 'data/database.dart';
 import 'data/user_repository.dart';
+import 'ui/first_run_download_screen.dart';
 import 'ui/home_screen.dart';
 
 /// SUNNATI — entry point (thin by design).
@@ -54,6 +55,16 @@ class _SunnatiAppState extends State<SunnatiApp> {
     }
   }
 
+  /// Re-run boot after the first-run download completes: re-open the
+  /// database (now installed + verified) and show the home screen.
+  void _onLibraryInstalled() {
+    setState(() {
+      _db = null;
+      _userRepo = null;
+    });
+    _boot();
+  }
+
   ThemeMode get _effectiveThemeMode {
     switch (_themeMode) {
       case 'light':
@@ -86,16 +97,24 @@ class _SunnatiAppState extends State<SunnatiApp> {
           ? _BootError(message: _error!)
           : db == null || repo == null
               ? const _BootLoading()
-              : HomeScreen(
-                  db: db,
-                  userRepo: repo,
-                  onThemeModeChanged: (mode) {
-                    setState(() => _themeMode = mode);
-                  },
-                  onFontScaleChanged: (scale) {
-                    setState(() => _fontScale = scale);
-                  },
-                ),
+              // External-download decision (rebuild 2026-11-26): no
+              // valid library installed → blocking first-run download.
+              // A migrated build-52 copy opens normally and never lands
+              // here (see SunnatiDatabase.open).
+              : db.libraryNeedsDownload
+                  ? FirstRunDownloadScreen(
+                      onInstalled: _onLibraryInstalled,
+                    )
+                  : HomeScreen(
+                      db: db,
+                      userRepo: repo,
+                      onThemeModeChanged: (mode) {
+                        setState(() => _themeMode = mode);
+                      },
+                      onFontScaleChanged: (scale) {
+                        setState(() => _fontScale = scale);
+                      },
+                    ),
     );
   }
 }
