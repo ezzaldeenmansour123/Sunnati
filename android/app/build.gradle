@@ -56,7 +56,14 @@ android {
         // forever after that. If the file is ever absent, the config falls
         // back to AGP's default per-machine debug keystore.
         debug {
-            def stableDebugKeystore = rootProject.file("tools/debug.keystore")
+            // Path is relative to the Gradle root project (android/), so
+            // the repo-root tools/ dir is one level up. (Was
+            // rootProject.file("tools/debug.keystore") — that resolves to
+            // android/tools/debug.keystore, which does not exist, so the
+            // `if` was silently false and every CI build fell back to a
+            // fresh per-runner debug keystore. Run #97 proved it: its APK
+            // cert was 8A:C8:39:95..., not this keystore's 70:85:3F:3B....)
+            def stableDebugKeystore = rootProject.file("../tools/debug.keystore")
             if (stableDebugKeystore.exists()) {
                 storeFile stableDebugKeystore
                 storePassword "android"
