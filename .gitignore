@@ -19,6 +19,11 @@ android/key.properties
 android/app/key.properties
 *.keystore
 key.properties
+# EXCEPTION: the committed stable DEBUG keystore (public standard Android
+# debug credentials — install identity only, no security). It MUST be in
+# the repo so every CI build shares one signature (see
+# android/app/build.gradle). Release keystores stay out, always.
+!tools/debug.keystore
 
 # Built artefacts (rebuilt in CI — see tools/build_db.py and build.yml)
 assets/sunnati.db

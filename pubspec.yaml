@@ -30,10 +30,21 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    # NOTE (rebuild 2026-11-26): the library (sunnati.db) is downloaded
-    # after install from the library-v1 release, and narrators.db is held
-    # back by the KITAB gate — neither is embedded any more. Only the
-    # assistant phrasings stay embedded (small, needed offline).
+    # NOTE (embed 2026-11-26, owner decision 16:54 + OVERRIDE 17:51):
+    # the core library (sunnati.db) AND the narrators DB
+    # (narrators.db) ship INSIDE the APK — CI builds both fresh each
+    # run into assets/ (see .github/workflows/build.yml) and the app
+    # installs them from the assets on first run. The 17:51 owner
+    # order («بجميع قواعده بكل شيء») EXPLICITLY overrides the KITAB
+    # gate for the in-app copy: narrators.db is embedded by his direct
+    # order although the KITAB confirmation request is still
+    # unanswered (CC BY-NC-SA 4.0 risk — documented in the app's
+    # Sources screen and in lib/data/database.dart). narrators.db is
+    # STILL never published as a standalone file to the public
+    # library-v1 release. The assistant phrasings stay embedded
+    # (small, needed offline).
+    - assets/sunnati.db
+    - assets/narrators.db
     - assets/assistant_phrasings.json
     # Home brand header image (owner's v2 icon, 512 px legacy PNG).
     - assets/app_icon.png
