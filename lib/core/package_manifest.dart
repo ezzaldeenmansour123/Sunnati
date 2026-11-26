@@ -314,17 +314,24 @@ bool isUpdateAvailable(String installedVersion, String availableVersion) {
 
 // ---- External core packages (rebuild 2026-11-26) ----
 //
-// Binding decision: the library data is NO LONGER embedded in the APK.
-// After install the app downloads the core library from the `library-v1`
-// GitHub release (see `.github/workflows/build.yml`, step "Publish
-// library data package (library-v1)"). Exactly two external packages
-// exist; no other download URL exists anywhere in the app.
+// The core library (sunnati.db) is EMBEDDED in the APK (owner decision
+// 2026-11-26 16:54): it installs from the asset on first run, no
+// download. CI also publishes the same file to the `library-v1` GitHub
+// release (see `.github/workflows/build.yml`, step "Publish library
+// data package (library-v1)") as an external copy for
+// reference/recovery only; the app downloads it ONLY on the recovery
+// screen, when the embedded install failed.
 //
-// The narrators package is HELD BACK by the KITAB gate (see
-// [kNarratorsPackageHeldBack]): its URL is recorded here so the target
-// is unambiguous when the gate clears, but `available` is false and no
-// code path offers or starts its download until the flag is cleared by
-// an explicit owner decision.
+// The narrators package (narrators.db) is EMBEDDED in the APK too —
+// OWNER OVERRIDE 2026-11-26 17:51 («بجميع قواعده بكل شيء»): the owner
+// explicitly overrode the KITAB gate for the in-app copy, although the
+// KITAB confirmation request (kitab@aku.edu) is still unanswered and
+// the content is CC BY-NC-SA 4.0 (documented licence risk — see the
+// Sources screen). It is NOT an external download: no code path offers
+// or starts a narrators download. Its URL below is recorded for
+// identity only — the file must NEVER be published to the public
+// `library-v1` release (guard (a) in `.github/workflows/build.yml`
+// fails the build if any upload names it).
 
 /// GitHub release tag that carries the published library data.
 const String kLibraryReleaseTag = 'library-v1';
@@ -334,8 +341,16 @@ const String kLibraryDownloadBaseUrl =
     'https://github.com/ezzaldeenmansour123/Sunnati/releases/download/'
     'library-v1';
 
-/// KITAB gate: do not publish/distribute narrators.db until KITAB replies or the owner decides.
-const bool kNarratorsPackageHeldBack = true;
+/// KITAB gate — OVERRIDDEN by the owner 2026-11-26 17:51: the owner
+/// ordered narrators.db EMBEDDED in the app («بجميع قواعده بكل شيء»),
+/// explicitly overriding the earlier decision (7) not to distribute it
+/// before KITAB replies. The confirmation request to kitab@aku.edu is
+/// still unanswered and the content is CC BY-NC-SA 4.0 — the licence
+/// risk is documented, not hidden (see the Sources screen and
+/// `lib/data/database.dart`). The flag stays as the single switch: it
+/// is false while the embedded copy ships. The file is STILL never
+/// published as a standalone file to the public `library-v1` release.
+const bool kNarratorsPackageHeldBack = false;
 
 /// One externally-downloaded core package: a single file published on a
 /// GitHub release, verified against its `.sha256` sidecar before use.
@@ -384,21 +399,26 @@ class ExternalPackage {
   final String unavailableReason;
 }
 
-/// The core library: the Nine Books (sunnati.db), published by CI to
-/// `library-v1`. Required and available.
+/// The core library: the Nine Books (sunnati.db). EMBEDDED in the APK
+/// (owner decision 2026-11-26 16:54 — no mandatory download); CI also
+/// publishes the same file to `library-v1` as an external copy for
+/// reference/recovery, which the recovery screen downloads only when
+/// the embedded install failed. Not required as a download.
 const ExternalPackage kLibraryPackage = ExternalPackage(
   id: 'library',
   fileName: 'sunnati.db',
   displayName: 'المكتبة الأساسية — الكتب التسعة',
   url: 'https://github.com/ezzaldeenmansour123/Sunnati/releases/download/library-v1/sunnati.db',
   sha256Url: 'https://github.com/ezzaldeenmansour123/Sunnati/releases/download/library-v1/sunnati.db.sha256',
-  required: true,
+  required: false,
   available: true,
 );
 
 /// The narrators package (narrators.db, OpenITI Taqrib, CC BY-NC-SA 4.0).
-/// HELD BACK by the KITAB gate: not available, not offered for download,
-/// never published — until KITAB replies or the owner decides.
+/// EMBEDDED in the APK by owner override 2026-11-26 17:51 (see
+/// [kNarratorsPackageHeldBack]): available as an embedded asset, never
+/// as a download. The URL is recorded for identity only and must never
+/// be published to `library-v1` (CI guard (a) enforces this).
 const ExternalPackage kNarratorsPackage = ExternalPackage(
   id: 'narrators',
   fileName: 'narrators.db',
@@ -406,9 +426,7 @@ const ExternalPackage kNarratorsPackage = ExternalPackage(
   url: 'https://github.com/ezzaldeenmansour123/Sunnati/releases/download/library-v1/narrators.db',
   sha256Url: 'https://github.com/ezzaldeenmansour123/Sunnati/releases/download/library-v1/narrators.db.sha256',
   required: false,
-  available: false,
-  unavailableReason:
-      'حزمة الرواة قيد انتظار الموافقة — ستتوفر حالتها فور اعتمادها',
+  available: true,
 );
 
 /// Exactly the two external packages above — no other download exists.

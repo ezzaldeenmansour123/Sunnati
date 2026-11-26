@@ -1,12 +1,14 @@
 /// Pure narrator logic — no Flutter dependency.
 ///
-/// Used by the interactive isnad, the narrator card, the encyclopedia and
+/// Used by the interactive isnad, the isnad tree, the encyclopedia and
 /// the "men assistant". Everything here is deterministic and unit-tested;
 /// no data is invented: a name is rendered as a narrator name whenever a
 /// parser row names it (one-color rule, user decision 2026-11-26 15:03 —
-/// every parsed name in one style, all tappable), and a status is shown
-/// only when a verified chain row links it to a narrator id, ranked only
-/// when its wording matches one of the eight documented verdicts below.
+/// every parsed name in one style, all tappable; the colour is the
+/// single distinctive RED of user decision 2026-11-26 17:23), and a
+/// status is shown only when a verified chain row links it to a
+/// narrator id, ranked only when its wording matches one of the eight
+/// documented verdicts below.
 library;
 
 import 'normalize.dart';
@@ -36,11 +38,16 @@ const String kIsnadNotParsedMessage =
 /// What tapping a narrator name must show, decided from facts only.
 ///
 /// * [showStatus] — a verified link and the narrators package is
-///   installed: show the status chip + scholar/source + sayings.
+///   installed: show the status + source as an INLINE LINE embedded in
+///   the hadith text itself, right under the tapped name (user decision
+///   2026-11-26 17:23, superseding the 16:49 small-card design and the
+///   build-81 details sheet). Never a popup card/sheet, never the full
+///   details page, never a navigation.
 /// * [pendingApproval] — a verified link but the narrators package is
-///   held back: show [kNarratorsPendingApprovalMessage] and NO status.
+///   held back: show [kNarratorsPendingApprovalMessage] as an inline
+///   line and NO status.
 /// * [noVerifiedBiography] — no verified link: show
-///   [kNoVerifiedBiographyMessage] and nothing else.
+///   [kNoVerifiedBiographyMessage] as an inline line and nothing else.
 enum NarratorTapOutcome { showStatus, pendingApproval, noVerifiedBiography }
 
 /// Pure decision for the honest ladder (unit-tested, no widgets).
@@ -51,6 +58,92 @@ NarratorTapOutcome narratorTapOutcome({
   if (!verifiedLink) return NarratorTapOutcome.noVerifiedBiography;
   if (!narratorsAvailable) return NarratorTapOutcome.pendingApproval;
   return NarratorTapOutcome.showStatus;
+}
+
+/// A verified narrator row exists but records no status wording.
+const String kNoRecordedStatusMessage =
+    'لا توجد حالة مسجّلة لهذا الراوي بعد.';
+
+/// Data for the INLINE status line embedded in the hadith text itself,
+/// right under the tapped narrator name (user decision 2026-11-26
+/// 17:23): status + source only, never a popup card/sheet, never the
+/// full details page, never a navigation. The full narrator page stays
+/// available ONLY from the narrators encyclopedia.
+class InlineNarratorStatus {
+  const InlineNarratorStatus({
+    required this.name,
+    this.status = '',
+    this.statusSource = '',
+    this.message = '',
+  });
+
+  /// Name exactly as tapped in the hadith text (empty for a
+  /// message-only line, e.g. from the reader's coverage line).
+  final String name;
+
+  /// The recorded status wording (e.g. `ثقة`), empty when no status
+  /// is recorded or the rung shows a message instead.
+  final String status;
+
+  /// Source of [status] (e.g. `تقريب التهذيب`), empty when unknown.
+  final String statusSource;
+
+  /// Honest message shown instead of a status (pending-approval /
+  /// no-verified-biography / no-recorded-status rungs).
+  final String message;
+
+  /// True when a status is available to show.
+  bool get hasStatus => status.isNotEmpty;
+}
+
+/// Display text of the inline status line for [status]: the status
+/// with its source (`ثقة — مصدر الحكم: تقريب التهذيب`) when a status
+/// exists, otherwise the honest [InlineNarratorStatus.message]. Pure
+/// and unit-tested — the same wording is used by the isnad text, the
+/// isnad tree and the reader's narrators list, so the line always
+/// reads the same everywhere.
+String inlineStatusLineText(InlineNarratorStatus status) {
+  if (status.hasStatus) {
+    if (status.statusSource.isEmpty) return status.status;
+    return '${status.status} — مصدر الحكم: ${status.statusSource}';
+  }
+  return status.message;
+}
+
+/// Build the inline status line's data from a tap outcome
+/// (pure, unit-tested). [status] / [statusSource] come from the
+/// verified narrator row and are only used on the showStatus rung;
+/// every other rung shows its honest message and no status.
+InlineNarratorStatus inlineStatusForTap({
+  required String name,
+  required NarratorTapOutcome outcome,
+  String status = '',
+  String statusSource = '',
+}) {
+  switch (outcome) {
+    case NarratorTapOutcome.showStatus:
+      if (status.isEmpty) {
+        return InlineNarratorStatus(
+          name: name,
+          message: kNoRecordedStatusMessage,
+        );
+      }
+      return InlineNarratorStatus(
+        name: name,
+        status: status,
+        statusSource: statusSource,
+      );
+    case NarratorTapOutcome.pendingApproval:
+      return InlineNarratorStatus(
+        name: name,
+        message: kNarratorsPendingApprovalMessage,
+      );
+    case NarratorTapOutcome.noVerifiedBiography:
+      return InlineNarratorStatus(
+        name: name,
+        message: kNoVerifiedBiographyMessage,
+      );
+  }
 }
 
 /// Coverage state of one hadith's isnad, for the reader's honest line.
@@ -96,7 +189,7 @@ class IsnadNameMatch {
 
   /// Verified narrator id from the `chains` table, or null for an
   /// unverified parser name (tappable under the one-color rule; the tap
-  /// shows the honest no-biography sheet, never a status).
+  /// shows the honest no-biography inline line, never a status).
   final int? narratorId;
 
   /// Exact character offsets of this name inside the hadith text, from
@@ -111,8 +204,8 @@ class IsnadNameMatch {
 
   /// True only for a `linked_verified` row. Unverified parser names
   /// (`needs_review` / `unlinked`) are false: they carry no verified id,
-  /// so a tap on them shows the honest no-biography sheet and never a
-  /// status — but under the one-color rule they are still rendered in
+  /// so a tap on them shows the honest no-biography inline line and never
+  /// a status — but under the one-color rule they are still rendered in
   /// the single narrator-name style and remain tappable.
   final bool verified;
 
@@ -126,12 +219,13 @@ class IsnadNameMatch {
 /// ONE-COLOR RULE (user decision 2026-11-26 15:03): every parsed
 /// narrator name — verified or not — is a narrator-name span
 /// ([isNarratorName] true) and the widget renders all of them in the
-/// single narrator-name style (petrol + gold underline) and makes them
+/// single narrator-name style (one distinctive red) and makes them
 /// all tappable. Verified and unverified names differ ONLY in what the
 /// tap shows (see [narratorTapOutcome]): a verified name shows its
-/// status (or the pending-approval sheet when the package is held);
+/// status in the inline line (or the pending-approval message
+/// when the package is held);
 /// an unverified name shows the honest «لا توجد ترجمة موثّقة بعد»
-/// sheet and never a status.
+/// inline line and never a status.
 ///
 /// [isNarrator] keeps its old meaning (verified only: a non-null
 /// [narratorId]) so existing callers/tests that count verified links
@@ -326,7 +420,7 @@ List<IsnadSpan> buildIsnadSpansWithOffsets(
         narratorId: entry.verified ? entry.narratorId : null,
         // One-color rule: an unverified parser name is still a
         // narrator name (same style, tappable); it just has no id,
-        // so its tap shows the honest no-biography sheet.
+        // so its tap shows the honest no-biography inline line.
         isNarratorName: true,
       ),
     );
@@ -401,7 +495,7 @@ List<IsnadSpan> buildIsnadSpansWithOffsets(
 /// occurrence in isnad order and a name that does not occur in the text
 /// yields no span at all. Verified names carry their id; unverified
 /// names are narrator-name spans with no id (one-color rule: same
-/// style, tappable, honest no-biography sheet on tap). Names not in
+/// style, tappable, honest no-biography inline line on tap). Names not in
 /// [confirmed] are never made narrator names — no linking by mere
 /// similarity.
 List<IsnadSpan> _buildIsnadSpansByName(

@@ -69,6 +69,15 @@ abstract final class SunnatiColors {
   /// Pale rose fill for pills and the home quote card.
   static const Color roseSoft = Color(0xFFF6D9DC);
 
+  /// Distinctive RED for narrator names inside a hadith text (user
+  /// decision 2026-11-26 17:23 — ONE red colour for every parsed
+  /// narrator name, all tappable). This is the ONLY red in the app
+  /// besides the rose accent, and it is NOT a palette change: the
+  /// petrol/ivory/matte-gold identity is untouched (palette decision
+  /// 2026-11-26 17:26 — «أبقِ البترولي وخذ التخطيط بس»). A deep red so
+  /// it reads clearly on ivory and is unmistakable next to petrol.
+  static const Color narratorRed = Color(0xFFB3261E);
+
   /// Night-mode background (very dark petrol).
   static const Color nightBackground = Color(0xFF0C1F27);
 
