@@ -64,6 +64,13 @@ android {
             // fresh per-runner debug keystore. Run #97 proved it: its APK
             // cert was 8A:C8:39:95..., not this keystore's 70:85:3F:3B....)
             def stableDebugKeystore = rootProject.file("../tools/debug.keystore")
+            // Diagnostic (run #98 still shipped a fresh cert despite the
+            // path fix — this line proves in the Gradle log what path was
+            // resolved and whether the file was seen). The workflow also
+            // installs this keystore as ~/.android/debug.keystore, so the
+            // default debug keystore is the stable one even if this
+            // assignment is ever ignored.
+            println("STABLE DEBUG KEYSTORE: ${stableDebugKeystore.absolutePath} exists=${stableDebugKeystore.exists()}")
             if (stableDebugKeystore.exists()) {
                 storeFile stableDebugKeystore
                 storePassword "android"
