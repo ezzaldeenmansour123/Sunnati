@@ -56,10 +56,12 @@ jobs:
         run: flutter pub get
 
       # The library database is built FIRST because the library-v1
-      # publish step below uploads it. (Rebuild 2026-11-26: the pubspec
-      # asset removal has landed, so analyse no longer needs the DB
-      # files present — the build order is kept because the publish
-      # step needs the freshly built database.)
+      # publish step below uploads it AND `flutter build apk` embeds
+      # it. (Embed 2026-11-26, owner decision 16:54: the library ships
+      # INSIDE the APK — the DB is built here into assets/sunnati.db,
+      # published to library-v1, and embedded via the pubspec asset
+      # entry. narrators.db is built by the next step from its vendored
+      # builder + data — owner override 2026-11-26 17:51.)
       - name: Build the library database (Phases 2-3 — full import)
         run: |
           pip install pyarrow
@@ -68,41 +70,58 @@ jobs:
             --log-json /tmp/sunnati-build-log.json
           ls -l assets/sunnati.db assets/sunnati.db.sha256
 
+      # The narrators database is built here into assets/narrators.db
+      # (OWNER OVERRIDE 2026-11-26 17:51 — the owner ordered it EMBEDDED
+      # in the APK, overriding the KITAB gate for the in-app copy).
+      # tools/build_narrators_db.py rebuilds the verified Phase 5 core
+      # (500 narrators / 500 grades / 7,808 identity matches) from its
+      # vendored inputs in tools/narrators-data/ and ASSERTS every
+      # count before writing; it never downloads anything. The built
+      # file is embedded via the pubspec asset entry and is NEVER
+      # uploaded to the library-v1 release (see the KITAB-gate guard
+      # below — the publish step uploads sunnati.db only).
+      - name: Build the narrators database (Phase 5 core — embedded)
+        run: |
+          python3 tools/build_narrators_db.py --out assets/narrators.db
+          test "$(sha256sum assets/narrators.db | cut -d' ' -f1)" = "$(cat assets/narrators.db.sha256)"
+          python3 -c "import sqlite3; c = sqlite3.connect('assets/narrators.db'); assert c.execute('SELECT COUNT(*) FROM narrators').fetchone()[0] == 500; assert c.execute('SELECT COUNT(*) FROM narrator_grades').fetchone()[0] == 500; assert c.execute(\"PRAGMA quick_check\").fetchone()[0] == 'ok'; print('narrators.db OK: 500 narrators, 500 grades, quick_check ok')"
+          ls -l assets/narrators.db assets/narrators.db.sha256
+
       - name: Apply verified isnad links (Phase 5 core — reviewed scope)
         # build_db.py creates the narrator tables EMPTY. Without this step
         # a CI-built library would ship 0 parser candidates and 0 verified
         # links, silently disabling tap-a-narrator. Seeds exactly the
         # reviewed scope (1,500-hadith sample) from tools/verified_links.json
-        # and FAILS the build on any count mismatch. Also verifies a
-        # locally present derived narrators DB against its SHA-256 when
-        # one exists (held-back build input — absent from the repo by the
-        # KITAB gate; absence never fails the build).
+        # and FAILS the build on any count mismatch. Also verifies the
+        # narrators DB built by the previous step against its SHA-256
+        # (embedded by owner override 2026-11-26 17:51; absence fails
+        # the build).
         run: |
           python3 tools/apply_verified_links.py --db assets/sunnati.db \
             --log-json /tmp/verified-links-log.json
           # The .sha256 assets hold a bare hash (see build_db.py: the app
           # compares the trimmed file content to the computed hash), so
           # verify by explicit comparison, not `sha256sum -c`.
-          # Held-back build input: assets/narrators.db is NOT in the repo
-          # any more (KITAB gate — deleted from tracking, see
-          # SUNNATI_REBUILD_WORK_B_2026-11-26.md). Verify it only when a
-          # local copy is present; its absence must never fail the build.
-          if [ -f assets/narrators.db ]; then
-            test "$(sha256sum assets/narrators.db | cut -d' ' -f1)" = "$(cat assets/narrators.db.sha256)"
-          else
-            echo "narrators.db absent (held back by the KITAB gate) — skipping its hash check."
-          fi
+          # narrators.db is built by the previous step (owner override
+          # 2026-11-26 17:51 — embedded in the APK): it MUST exist here
+          # and its hash MUST match, or the build fails. It is still
+          # never uploaded to any release (see the guard below).
+          test -f assets/narrators.db
+          test "$(sha256sum assets/narrators.db | cut -d' ' -f1)" = "$(cat assets/narrators.db.sha256)"
           test "$(sha256sum assets/sunnati.db | cut -d' ' -f1)" = "$(cat assets/sunnati.db.sha256)"
-          ls -l assets/sunnati.db
+          ls -l assets/sunnati.db assets/narrators.db
 
       # KITAB GATE — SAFETY NET. narrators.db (OpenITI Taqrib,
-      # CC BY-NC-SA 4.0) must NEVER be published/distributed in any form
-      # until KITAB replies or the owner decides. This step FAILS the
-      # build if (a) any `gh release upload` line in this workflow names
+      # CC BY-NC-SA 4.0) must NEVER be published/distributed as a
+      # standalone file in any form until KITAB replies — owner override
+      # 2026-11-26 17:51 covers ONLY the in-app embed inside the APK,
+      # never a public file release. This step FAILS the build if (a)
+      # any `gh release upload` line in this workflow names
       # narrators.db, or (b) the library-v1 release already carries a
-      # narrators asset. The local verify of assets/narrators.db in the
-      # step above is NOT a publication — it only checks the held-back
-      # build input that stays on disk.
+      # narrators asset. Building assets/narrators.db in CI and
+      # embedding it in the APK is NOT a publication under this guard
+      # — it is the owner's explicit order; the guard watches the
+      # release channel only.
       - name: Guard — narrators.db is NEVER published (KITAB gate)
         env:
           GH_TOKEN: ${{ github.token }}
@@ -118,13 +137,13 @@ jobs:
           fi
           echo 'KITAB gate guard OK: narrators.db is not published.'
 
-      # External-download decision (rebuild 2026-11-26): the APK no
-      # longer embeds sunnati.db. CI publishes the built, verified
-      # library + its SHA-256 sidecar to the `library-v1` release,
-      # which the app downloads once after install (see
-      # lib/core/package_manifest.dart: kLibraryPackage). Runs on every
-      # push to main so the download URL always serves the latest
-      # verified library; --clobber replaces the previous files.
+      # Embed decision (2026-11-26, owner 16:54): the APK embeds
+      # sunnati.db AND CI publishes the same built, verified library +
+      # its SHA-256 sidecar to the `library-v1` release as an external
+      # copy for reference/recovery (the app downloads it only on the
+      # recovery screen, when the embedded install failed). Runs on
+      # every push to main so the external copy always matches the
+      # embedded one; --clobber replaces the previous files.
       # narrators.db is NEVER uploaded here (see the guard step above).
       - name: Publish library data package (library-v1)
         env:
@@ -134,7 +153,7 @@ jobs:
           if ! gh release view library-v1 >/dev/null 2>&1; then
             gh release create library-v1 \
               --title 'SUNNATI library data v1' \
-              --notes 'Core library data (sunnati.db) for the SUNNATI app external download. Published by CI after the verified-links step. The narrators package is NOT published here (KITAB gate).'
+              --notes 'Core library data (sunnati.db) — the same file embedded in the SUNNATI APK; published by CI after the verified-links step as an external copy for reference/recovery. The narrators package is NOT published here (KITAB gate).'
           fi
           gh release upload library-v1 assets/sunnati.db assets/sunnati.db.sha256 --clobber
           gh release view library-v1 --json assets --jq '.assets[].name'
@@ -159,6 +178,17 @@ jobs:
 
       - name: Analyse (must pass)
         run: flutter analyze
+
+      - name: Install libsqlite3 (host SQLite for DB-backed tests)
+        # DB-backed tests open a real SQLite file through package:sqlite3,
+        # which loads `libsqlite3.so` on Linux. The ubuntu runner ships
+        # only libsqlite3.so.0 — the dev symlink is what the loader
+        # needs. No package download: the runtime library is already
+        # present; only the unversioned symlink is missing.
+        run: |
+          sudo ln -sf /usr/lib/x86_64-linux-gnu/libsqlite3.so.0 /usr/lib/x86_64-linux-gnu/libsqlite3.so
+          sudo ldconfig
+          test -f /usr/lib/x86_64-linux-gnu/libsqlite3.so
 
       - name: Test (must pass — test/ is never deleted)
         run: flutter test
@@ -218,6 +248,38 @@ jobs:
           echo "APK signing certificate (SHA-256 fingerprint — compare with SIGNING.md):"
           keytool -printcert -jarfile "$APK" 2>/dev/null | grep -E "SHA256:|Owner:" || echo "WARNING: could not read APK certificate."
 
+      - name: Guard — APK embeds the library AND narrators.db
+        # Embed decisions (owner 2026-11-26 16:54 + OVERRIDE 17:51):
+        # the APK MUST contain assets/sunnati.db (the library ships
+        # inside the app, ~190 MB uncompressed) AND assets/narrators.db
+        # (the narrators ship inside the app by the owner's explicit
+        # 17:51 order, overriding the KITAB gate for the in-app copy).
+        # The 50 MB floor is the tripwire: a ~25 MB APK means an asset
+        # did not embed. No upper bound — the owner accepted a bigger
+        # APK. narrators.db is still NEVER uploaded to the library-v1
+        # release (see the "NEVER published" guard above — the release
+        # channel is a different thing from the APK embed).
+        run: |
+          set -euo pipefail
+          APK=$(ls build/app/outputs/flutter-apk/app-arm64-v8a-release.apk)
+          echo "APK assets:"
+          unzip -l "$APK" | grep -E 'assets/' || true
+          if ! unzip -l "$APK" | grep -q 'assets/sunnati.db'; then
+            echo 'ERROR: APK does not embed assets/sunnati.db — the library must ship inside the APK (owner decision 2026-11-26 16:54).'
+            exit 1
+          fi
+          if ! unzip -l "$APK" | grep -q 'assets/narrators.db'; then
+            echo 'ERROR: APK does not embed assets/narrators.db — the narrators must ship inside the APK (owner override 2026-11-26 17:51).'
+            exit 1
+          fi
+          APK_BYTES=$(stat -c%s "$APK")
+          echo "APK size: $APK_BYTES bytes"
+          if [ "$APK_BYTES" -lt 50000000 ]; then
+            echo "ERROR: APK is only $APK_BYTES bytes — the ~190 MB library cannot be embedded in it. The asset must be missing from the build."
+            exit 1
+          fi
+          echo 'APK content guard OK: sunnati.db + narrators.db embedded.'
+
       - name: Upload APK artifact (push builds — verification only, no public release)
         # Push builds never publish a public release: a public release is
         # created only from a deliberate tag (after the signing secrets
@@ -241,11 +303,15 @@ jobs:
           body: |
             SUNNATI v1.0.0 — the Nine Books (65,712 hadiths) + 3,574
             HadeethEnc commentaries + 67,334 grader-attributed grades +
-            lexical semantic search. The core library is downloaded
-            once after install from the library-v1 data release; the
-            narrators package is held back pending approval and is not
-            in this release. Full build report:
-            SUNNATI_FULL_BUILD_REPORT_2026-11-26.md.
+            lexical semantic search. The core library is embedded in
+            the APK (no download needed); the same file is also
+            published to the library-v1 data release for
+            reference/recovery. The narrators package (500 verified
+            narrators from Taqrib al-Tahdhib, CC BY-NC-SA 4.0) is
+            embedded in the APK by the owner's order of 2026-11-26
+            (KITAB confirmation still unanswered — see Sources in the
+            app) and is never published as a standalone file. Full
+            build report: SUNNATI_FULL_BUILD_REPORT_2026-11-26.md.
             Device: Samsung Galaxy S22 Ultra (arm64-v8a).
           files: |
             build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
