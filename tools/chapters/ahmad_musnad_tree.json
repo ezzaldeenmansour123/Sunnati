@@ -1,0 +1,9336 @@
+{
+ "book": "مسند أحمد بن حنبل",
+ "book_title_source": "dataset row title",
+ "division": "MASANID (not abwab) — Musnad Ahmad has no abwab by owner decision; do NOT invent abwab.",
+ "source": {
+  "dataset": "Bayanat-Labs/arabic-wikisource-pd v0.1.0, dump arwikisource-20261001",
+  "row_id": "arwikisource-4294",
+  "url": "https://ar.wikisource.org/wiki/%D9%85%D8%B3%D9%86%D8%AF_%D8%A3%D8%AD%D9%85%D8%AF_%D8%A8%D9%86_%D8%AD%D9%86%D8%A8%D9%84",
+  "author": "أحمد بن حنبل",
+  "author_death_year": 855,
+  "words": 1506647,
+  "chars": 7390535,
+  "diacritization_ratio": 0.0,
+  "n_chapters": 753,
+  "proofreading": {
+   "scan_pages_transcluded": 0,
+   "scan_pages_missing": 0,
+   "quality_levels": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0
+   },
+   "index_pages": [],
+   "unresolved_transclusions": 0
+  },
+  "source_license": "CC BY-SA 4.0",
+  "source_license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "publication_year": null
+ },
+ "reading_order": "dataset chapter list is NOT in reading order; restored by sorting on first edition number",
+ "reading_order_dataset_orders": [
+  13,
+  14,
+  72,
+  73,
+  74,
+  75,
+  10,
+  58,
+  59,
+  60,
+  61,
+  62,
+  63,
+  64,
+  65,
+  66,
+  67,
+  68,
+  69,
+  70,
+  71,
+  17,
+  19,
+  15,
+  16,
+  21,
+  12,
+  9,
+  11,
+  8,
+  18,
+  20,
+  22,
+  23,
+  24,
+  25,
+  26,
+  27,
+  28,
+  29,
+  30,
+  31,
+  32,
+  33,
+  34,
+  35,
+  36,
+  37,
+  38,
+  39,
+  40,
+  41,
+  42,
+  43,
+  44,
+  45,
+  46,
+  47,
+  48,
+  49,
+  50,
+  51,
+  52,
+  53,
+  54,
+  55,
+  56,
+  57,
+  719,
+  720,
+  721,
+  722,
+  723,
+  724,
+  725,
+  726,
+  727,
+  728,
+  729,
+  730,
+  731,
+  732,
+  733,
+  734,
+  735,
+  736,
+  737,
+  738,
+  739,
+  740,
+  741,
+  742,
+  743,
+  744,
+  745,
+  746,
+  747,
+  748,
+  749,
+  750,
+  751,
+  99,
+  337,
+  338,
+  339,
+  340,
+  341,
+  342,
+  343,
+  344,
+  345,
+  346,
+  347,
+  348,
+  349,
+  350,
+  351,
+  352,
+  353,
+  354,
+  355,
+  356,
+  357,
+  358,
+  359,
+  360,
+  361,
+  362,
+  363,
+  364,
+  365,
+  366,
+  367,
+  368,
+  369,
+  370,
+  371,
+  372,
+  373,
+  374,
+  375,
+  376,
+  377,
+  378,
+  379,
+  380,
+  381,
+  382,
+  383,
+  384,
+  385,
+  386,
+  387,
+  388,
+  323,
+  324,
+  325,
+  326,
+  327,
+  328,
+  329,
+  330,
+  331,
+  332,
+  333,
+  334,
+  335,
+  336,
+  389,
+  390,
+  391,
+  392,
+  393,
+  394,
+  395,
+  396,
+  397,
+  398,
+  399,
+  400,
+  401,
+  402,
+  403,
+  404,
+  405,
+  406,
+  407,
+  408,
+  409,
+  410,
+  411,
+  412,
+  413,
+  414,
+  703,
+  704,
+  705,
+  706,
+  707,
+  708,
+  709,
+  710,
+  711,
+  712,
+  713,
+  714,
+  715,
+  716,
+  718,
+  717,
+  313,
+  207,
+  237,
+  308,
+  2,
+  3,
+  1,
+  5,
+  4,
+  251,
+  156,
+  132,
+  294,
+  275,
+  209,
+  185,
+  194,
+  199,
+  182,
+  187,
+  282,
+  293,
+  147,
+  128,
+  114,
+  305,
+  258,
+  159,
+  106,
+  82,
+  93,
+  135,
+  753,
+  121,
+  283,
+  127,
+  125,
+  110,
+  268,
+  291,
+  123,
+  278,
+  245,
+  104,
+  239,
+  126,
+  271,
+  144,
+  287,
+  154,
+  122,
+  277,
+  320,
+  269,
+  276,
+  267,
+  97,
+  262,
+  244,
+  191,
+  155,
+  255,
+  87,
+  84,
+  139,
+  138,
+  263,
+  174,
+  304,
+  290,
+  95,
+  79,
+  90,
+  113,
+  322,
+  234,
+  296,
+  298,
+  109,
+  134,
+  226,
+  229,
+  321,
+  264,
+  241,
+  319,
+  309,
+  83,
+  81,
+  752,
+  166,
+  299,
+  86,
+  129,
+  80,
+  284,
+  312,
+  91,
+  295,
+  196,
+  197,
+  236,
+  131,
+  274,
+  165,
+  146,
+  219,
+  238,
+  307,
+  297,
+  118,
+  240,
+  233,
+  254,
+  222,
+  98,
+  306,
+  193,
+  214,
+  230,
+  140,
+  103,
+  137,
+  101,
+  164,
+  188,
+  252,
+  253,
+  216,
+  259,
+  272,
+  201,
+  202,
+  141,
+  115,
+  142,
+  105,
+  242,
+  302,
+  270,
+  157,
+  281,
+  220,
+  178,
+  184,
+  173,
+  92,
+  102,
+  217,
+  211,
+  208,
+  168,
+  162,
+  223,
+  314,
+  286,
+  151,
+  163,
+  247,
+  235,
+  303,
+  250,
+  203,
+  311,
+  161,
+  292,
+  100,
+  228,
+  246,
+  198,
+  285,
+  189,
+  190,
+  183,
+  149,
+  200,
+  300,
+  265,
+  150,
+  192,
+  111,
+  89,
+  210,
+  273,
+  279,
+  232,
+  88,
+  212,
+  231,
+  195,
+  160,
+  143,
+  107,
+  119,
+  186,
+  288,
+  179,
+  180,
+  301,
+  152,
+  124,
+  257,
+  158,
+  133,
+  94,
+  227,
+  206,
+  248,
+  266,
+  218,
+  315,
+  153,
+  170,
+  108,
+  145,
+  136,
+  215,
+  204,
+  310,
+  221,
+  130,
+  176,
+  117,
+  172,
+  96,
+  112,
+  317,
+  177,
+  76,
+  280,
+  224,
+  167,
+  261,
+  225,
+  249,
+  85,
+  78,
+  213,
+  77,
+  243,
+  260,
+  316,
+  148,
+  256,
+  181,
+  169,
+  318,
+  175,
+  116,
+  289,
+  205,
+  171,
+  120,
+  6,
+  7,
+  686,
+  687,
+  688,
+  689,
+  690,
+  691,
+  692,
+  693,
+  694,
+  695,
+  696,
+  697,
+  698,
+  699,
+  700,
+  701,
+  702,
+  589,
+  590,
+  591,
+  592,
+  593,
+  594,
+  595,
+  596,
+  597,
+  598,
+  599,
+  600,
+  601,
+  602,
+  603,
+  604,
+  605,
+  606,
+  607,
+  608,
+  609,
+  610,
+  611,
+  612,
+  613,
+  614,
+  615,
+  616,
+  617,
+  618,
+  619,
+  620,
+  621,
+  622,
+  623,
+  624,
+  625,
+  626,
+  640,
+  641,
+  642,
+  643,
+  644,
+  645,
+  646,
+  647,
+  648,
+  649,
+  650,
+  651,
+  652,
+  653,
+  654,
+  655,
+  656,
+  657,
+  658,
+  659,
+  660,
+  661,
+  662,
+  663,
+  664,
+  665,
+  666,
+  667,
+  668,
+  669,
+  670,
+  671,
+  672,
+  673,
+  674,
+  675,
+  676,
+  677,
+  678,
+  679,
+  680,
+  681,
+  682,
+  683,
+  684,
+  685,
+  555,
+  556,
+  557,
+  558,
+  559,
+  560,
+  561,
+  562,
+  563,
+  564,
+  565,
+  566,
+  567,
+  568,
+  569,
+  570,
+  571,
+  572,
+  573,
+  574,
+  575,
+  576,
+  577,
+  578,
+  579,
+  580,
+  581,
+  582,
+  583,
+  584,
+  585,
+  586,
+  587,
+  588,
+  415,
+  416,
+  417,
+  418,
+  419,
+  420,
+  421,
+  422,
+  423,
+  424,
+  425,
+  426,
+  427,
+  428,
+  429,
+  430,
+  431,
+  432,
+  433,
+  434,
+  435,
+  436,
+  437,
+  438,
+  439,
+  440,
+  441,
+  442,
+  443,
+  444,
+  445,
+  446,
+  447,
+  448,
+  449,
+  450,
+  451,
+  452,
+  453,
+  454,
+  455,
+  456,
+  457,
+  458,
+  459,
+  460,
+  461,
+  462,
+  463,
+  464,
+  465,
+  466,
+  467,
+  468,
+  469,
+  470,
+  471,
+  472,
+  473,
+  474,
+  475,
+  476,
+  477,
+  478,
+  479,
+  480,
+  481,
+  482,
+  483,
+  484,
+  485,
+  486,
+  487,
+  488,
+  489,
+  490,
+  491,
+  492,
+  493,
+  494,
+  495,
+  496,
+  497,
+  498,
+  499,
+  500,
+  501,
+  502,
+  503,
+  504,
+  505,
+  506,
+  507,
+  508,
+  509,
+  510,
+  511,
+  512,
+  513,
+  514,
+  515,
+  516,
+  517,
+  518,
+  519,
+  520,
+  521,
+  522,
+  523,
+  524,
+  525,
+  526,
+  527,
+  528,
+  529,
+  530,
+  531,
+  532,
+  533,
+  534,
+  535,
+  536,
+  537,
+  538,
+  539,
+  540,
+  541,
+  542,
+  543,
+  544,
+  545,
+  546,
+  547,
+  548,
+  549,
+  550,
+  551,
+  552,
+  553,
+  554,
+  627,
+  628,
+  629,
+  630,
+  631,
+  632,
+  633,
+  634,
+  635,
+  636,
+  637,
+  638,
+  639
+ ],
+ "n_top_level_masanid": 20,
+ "n_masanid_with_verified_title": 19,
+ "n_leaf_pages": 753,
+ "top_level": [
+  {
+   "musnad_title": "باب العشرة المبشرين",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    1,
+    1624
+   ],
+   "n_pages": 30,
+   "n_line_starts": 1624,
+   "evidence": "Page title «تكملة باب العشرة المبشرين» (1621-1624); the word «باب» is the source's own. Closing colophons: «آخر مسند أبي بكر» after 77, «آخر مسند عمر» after 367, «آخر مسند أمير المؤمنين علي» after 1308.",
+   "leaves": [
+    {
+     "leaf_title": "مسند أبو بكر الصديق",
+     "leaf_title_raw": "المجلد الأول/مسند أبو بكر الصديق (1)",
+     "part": null,
+     "dataset_chapter": 13,
+     "hadith_range": [
+      1,
+      35
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند أبو بكر الصديق",
+     "leaf_title_raw": "المجلد الأول/مسند أبو بكر الصديق (2)",
+     "part": null,
+     "dataset_chapter": 14,
+     "hadith_range": [
+      36,
+      77
+     ],
+     "n_line_starts": 42
+    },
+    {
+     "leaf_title": "مسند عمر بن الخطاب",
+     "leaf_title_raw": "المجلد الأول/مسند عمر بن الخطاب (1)",
+     "part": null,
+     "dataset_chapter": 72,
+     "hadith_range": [
+      78,
+      150
+     ],
+     "n_line_starts": 73
+    },
+    {
+     "leaf_title": "مسند عمر بن الخطاب",
+     "leaf_title_raw": "المجلد الأول/مسند عمر بن الخطاب (2)",
+     "part": null,
+     "dataset_chapter": 73,
+     "hadith_range": [
+      151,
+      241
+     ],
+     "n_line_starts": 91
+    },
+    {
+     "leaf_title": "مسند عمر بن الخطاب",
+     "leaf_title_raw": "المجلد الأول/مسند عمر بن الخطاب (3)",
+     "part": null,
+     "dataset_chapter": 74,
+     "hadith_range": [
+      242,
+      295
+     ],
+     "n_line_starts": 54
+    },
+    {
+     "leaf_title": "مسند عمر بن الخطاب",
+     "leaf_title_raw": "المجلد الأول/مسند عمر بن الخطاب (4)",
+     "part": null,
+     "dataset_chapter": 75,
+     "hadith_range": [
+      296,
+      367
+     ],
+     "n_line_starts": 72
+    },
+    {
+     "leaf_title": "حديث السقيفة",
+     "leaf_title_raw": "المجلد الأول/حديث السقيفة",
+     "part": null,
+     "dataset_chapter": 10,
+     "hadith_range": [
+      368,
+      375
+     ],
+     "n_line_starts": 8
+    },
+    {
+     "leaf_title": "مسند عثمان بن عفان",
+     "leaf_title_raw": "المجلد الأول/مسند عثمان بن عفان (1)",
+     "part": null,
+     "dataset_chapter": 58,
+     "hadith_range": [
+      376,
+      450
+     ],
+     "n_line_starts": 75
+    },
+    {
+     "leaf_title": "مسند عثمان بن عفان",
+     "leaf_title_raw": "المجلد الأول/مسند عثمان بن عفان (2)",
+     "part": null,
+     "dataset_chapter": 59,
+     "hadith_range": [
+      451,
+      529
+     ],
+     "n_line_starts": 79
+    },
+    {
+     "leaf_title": "مسند علي بن أبي طالب",
+     "leaf_title_raw": "المجلد الأول/مسند علي بن أبي طالب (1)",
+     "part": null,
+     "dataset_chapter": 60,
+     "hadith_range": [
+      530,
+      590
+     ],
+     "n_line_starts": 61
+    },
+    {
+     "leaf_title": "مسند علي بن أبي طالب",
+     "leaf_title_raw": "المجلد الأول/مسند علي بن أبي طالب (2)",
+     "part": null,
+     "dataset_chapter": 61,
+     "hadith_range": [
+      591,
+      650
+     ],
+     "n_line_starts": 60
+    },
+    {
+     "leaf_title": "مسند علي بن أبي طالب",
+     "leaf_title_raw": "المجلد الأول/مسند علي بن أبي طالب (3)",
+     "part": null,
+     "dataset_chapter": 62,
+     "hadith_range": [
+      651,
+      712
+     ],
+     "n_line_starts": 62
+    },
+    {
+     "leaf_title": "مسند علي بن أبي طالب",
+     "leaf_title_raw": "المجلد الأول/مسند علي بن أبي طالب (4)",
+     "part": null,
+     "dataset_chapter": 63,
+     "hadith_range": [
+      713,
+      770
+     ],
+     "n_line_starts": 58
+    },
+    {
+     "leaf_title": "مسند علي بن أبي طالب",
+     "leaf_title_raw": "المجلد الأول/مسند علي بن أبي طالب (5)",
+     "part": null,
+     "dataset_chapter": 64,
+     "hadith_range": [
+      771,
+      820
+     ],
+     "n_line_starts": 50
+    },
+    {
+     "leaf_title": "مسند علي بن أبي طالب",
+     "leaf_title_raw": "المجلد الأول/مسند علي بن أبي طالب (6)",
+     "part": null,
+     "dataset_chapter": 65,
+     "hadith_range": [
+      821,
+      895
+     ],
+     "n_line_starts": 75
+    },
+    {
+     "leaf_title": "مسند علي بن أبي طالب",
+     "leaf_title_raw": "المجلد الأول/مسند علي بن أبي طالب (7)",
+     "part": null,
+     "dataset_chapter": 66,
+     "hadith_range": [
+      896,
+      950
+     ],
+     "n_line_starts": 55
+    },
+    {
+     "leaf_title": "مسند علي بن أبي طالب",
+     "leaf_title_raw": "المجلد الأول/مسند علي بن أبي طالب (8)",
+     "part": null,
+     "dataset_chapter": 67,
+     "hadith_range": [
+      951,
+      1025
+     ],
+     "n_line_starts": 75
+    },
+    {
+     "leaf_title": "مسند علي بن أبي طالب",
+     "leaf_title_raw": "المجلد الأول/مسند علي بن أبي طالب (9)",
+     "part": null,
+     "dataset_chapter": 68,
+     "hadith_range": [
+      1026,
+      1106
+     ],
+     "n_line_starts": 81
+    },
+    {
+     "leaf_title": "مسند علي بن أبي طالب",
+     "leaf_title_raw": "المجلد الأول/مسند علي بن أبي طالب (10)",
+     "part": null,
+     "dataset_chapter": 69,
+     "hadith_range": [
+      1107,
+      1175
+     ],
+     "n_line_starts": 69
+    },
+    {
+     "leaf_title": "مسند علي بن أبي طالب",
+     "leaf_title_raw": "المجلد الأول/مسند علي بن أبي طالب (11)",
+     "part": null,
+     "dataset_chapter": 70,
+     "hadith_range": [
+      1176,
+      1233
+     ],
+     "n_line_starts": 58
+    },
+    {
+     "leaf_title": "مسند علي بن أبي طالب",
+     "leaf_title_raw": "المجلد الأول/مسند علي بن أبي طالب (12)",
+     "part": null,
+     "dataset_chapter": 71,
+     "hadith_range": [
+      1234,
+      1308
+     ],
+     "n_line_starts": 75
+    },
+    {
+     "leaf_title": "مسند أبي محمد طلحة بن عبيد الله",
+     "leaf_title_raw": "المجلد الأول/مسند أبي محمد طلحة بن عبيد الله",
+     "part": null,
+     "dataset_chapter": 17,
+     "hadith_range": [
+      1309,
+      1330
+     ],
+     "n_line_starts": 22
+    },
+    {
+     "leaf_title": "مسند الزبير بن العوام",
+     "leaf_title_raw": "المجلد الأول/مسند الزبير بن العوام",
+     "part": null,
+     "dataset_chapter": 19,
+     "hadith_range": [
+      1331,
+      1361
+     ],
+     "n_line_starts": 31
+    },
+    {
+     "leaf_title": "مسند أبي إسحاق سعد بن أبي وقاص",
+     "leaf_title_raw": "المجلد الأول/مسند أبي إسحاق سعد بن أبي وقاص (1)",
+     "part": null,
+     "dataset_chapter": 15,
+     "hadith_range": [
+      1362,
+      1440
+     ],
+     "n_line_starts": 79
+    },
+    {
+     "leaf_title": "مسند أبي إسحاق سعد بن أبي وقاص",
+     "leaf_title_raw": "المجلد الأول/مسند أبي إسحاق سعد بن أبي وقاص (2)",
+     "part": null,
+     "dataset_chapter": 16,
+     "hadith_range": [
+      1441,
+      1538
+     ],
+     "n_line_starts": 98
+    },
+    {
+     "leaf_title": "مسند سعيد بن زيد بن عمرو بن نفيل",
+     "leaf_title_raw": "المجلد الأول/مسند سعيد بن زيد بن عمرو بن نفيل",
+     "part": null,
+     "dataset_chapter": 21,
+     "hadith_range": [
+      1539,
+      1566
+     ],
+     "n_line_starts": 28
+    },
+    {
+     "leaf_title": "حديث عبد الرحمن بن عوف الزهري",
+     "leaf_title_raw": "المجلد الأول/حديث عبد الرحمن بن عوف الزهري",
+     "part": null,
+     "dataset_chapter": 12,
+     "hadith_range": [
+      1567,
+      1597
+     ],
+     "n_line_starts": 31
+    },
+    {
+     "leaf_title": "حديث أبي عبيدة بن الجراح",
+     "leaf_title_raw": "المجلد الأول/حديث أبي عبيدة بن الجراح",
+     "part": null,
+     "dataset_chapter": 9,
+     "hadith_range": [
+      1598,
+      1608
+     ],
+     "n_line_starts": 11
+    },
+    {
+     "leaf_title": "حديث عبد الرحمن بن أبي بكر",
+     "leaf_title_raw": "المجلد الأول/حديث عبد الرحمن بن أبي بكر",
+     "part": null,
+     "dataset_chapter": 11,
+     "hadith_range": [
+      1609,
+      1620
+     ],
+     "n_line_starts": 12
+    },
+    {
+     "leaf_title": "تكملة باب العشرة المبشرين",
+     "leaf_title_raw": "المجلد الأول/تكملة باب العشرة المبشرين",
+     "part": null,
+     "dataset_chapter": 8,
+     "hadith_range": [
+      1621,
+      1624
+     ],
+     "n_line_starts": 4
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند أهل البيت",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    1625,
+    1670
+   ],
+   "n_pages": 1,
+   "n_line_starts": 46,
+   "evidence": "Dataset page title.",
+   "leaves": [
+    {
+     "leaf_title": "مسند أهل البيت",
+     "leaf_title_raw": "المجلد الأول/مسند أهل البيت",
+     "part": null,
+     "dataset_chapter": 18,
+     "hadith_range": [
+      1625,
+      1670
+     ],
+     "n_line_starts": 46
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند بني هاشم",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    1671,
+    1740
+   ],
+   "n_pages": 1,
+   "n_line_starts": 70,
+   "evidence": "Dataset page title; span 1671-1740.",
+   "leaves": [
+    {
+     "leaf_title": "مسند بني هاشم",
+     "leaf_title_raw": "المجلد الأول/مسند بني هاشم",
+     "part": null,
+     "dataset_chapter": 20,
+     "hadith_range": [
+      1671,
+      1740
+     ],
+     "n_line_starts": 70
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند عبد الله بن العباس",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    1741,
+    3366
+   ],
+   "n_pages": 24,
+   "n_line_starts": 1626,
+   "evidence": "Dataset page titles «المجلد الأول/مسند عبد الله بن العباس (1-24)». Starts at 1741: «1741 أنبأنا أبو علي الحسن بن علي بن محمد بن المذهب...» is the first line of the (1) page (the pilot draft said 1742 — that was the verb-pattern missing the أنبأنا start).",
+   "leaves": [
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (1)",
+     "part": null,
+     "dataset_chapter": 22,
+     "hadith_range": [
+      1741,
+      1810
+     ],
+     "n_line_starts": 70
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (2)",
+     "part": null,
+     "dataset_chapter": 23,
+     "hadith_range": [
+      1811,
+      1876
+     ],
+     "n_line_starts": 66
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (3)",
+     "part": null,
+     "dataset_chapter": 24,
+     "hadith_range": [
+      1877,
+      1950
+     ],
+     "n_line_starts": 74
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (4)",
+     "part": null,
+     "dataset_chapter": 25,
+     "hadith_range": [
+      1951,
+      2013
+     ],
+     "n_line_starts": 63
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (5)",
+     "part": null,
+     "dataset_chapter": 26,
+     "hadith_range": [
+      2014,
+      2084
+     ],
+     "n_line_starts": 71
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (6)",
+     "part": null,
+     "dataset_chapter": 27,
+     "hadith_range": [
+      2085,
+      2151
+     ],
+     "n_line_starts": 67
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (7)",
+     "part": null,
+     "dataset_chapter": 28,
+     "hadith_range": [
+      2152,
+      2220
+     ],
+     "n_line_starts": 69
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (8)",
+     "part": null,
+     "dataset_chapter": 29,
+     "hadith_range": [
+      2221,
+      2269
+     ],
+     "n_line_starts": 49
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (9)",
+     "part": null,
+     "dataset_chapter": 30,
+     "hadith_range": [
+      2270,
+      2325
+     ],
+     "n_line_starts": 56
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (10)",
+     "part": null,
+     "dataset_chapter": 31,
+     "hadith_range": [
+      2326,
+      2375
+     ],
+     "n_line_starts": 50
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (11)",
+     "part": null,
+     "dataset_chapter": 32,
+     "hadith_range": [
+      2376,
+      2444
+     ],
+     "n_line_starts": 69
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (12)",
+     "part": null,
+     "dataset_chapter": 33,
+     "hadith_range": [
+      2445,
+      2520
+     ],
+     "n_line_starts": 76
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (13)",
+     "part": null,
+     "dataset_chapter": 34,
+     "hadith_range": [
+      2521,
+      2584
+     ],
+     "n_line_starts": 64
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (14)",
+     "part": null,
+     "dataset_chapter": 35,
+     "hadith_range": [
+      2585,
+      2640
+     ],
+     "n_line_starts": 56
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (15)",
+     "part": null,
+     "dataset_chapter": 36,
+     "hadith_range": [
+      2641,
+      2681
+     ],
+     "n_line_starts": 41
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (16)",
+     "part": null,
+     "dataset_chapter": 37,
+     "hadith_range": [
+      2682,
+      2754
+     ],
+     "n_line_starts": 73
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (17)",
+     "part": null,
+     "dataset_chapter": 38,
+     "hadith_range": [
+      2755,
+      2800
+     ],
+     "n_line_starts": 46
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (18)",
+     "part": null,
+     "dataset_chapter": 39,
+     "hadith_range": [
+      2801,
+      2850
+     ],
+     "n_line_starts": 50
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (19)",
+     "part": null,
+     "dataset_chapter": 40,
+     "hadith_range": [
+      2851,
+      2919
+     ],
+     "n_line_starts": 69
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (20)",
+     "part": null,
+     "dataset_chapter": 41,
+     "hadith_range": [
+      2920,
+      2996
+     ],
+     "n_line_starts": 77
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (21)",
+     "part": null,
+     "dataset_chapter": 42,
+     "hadith_range": [
+      2997,
+      3089
+     ],
+     "n_line_starts": 93
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (22)",
+     "part": null,
+     "dataset_chapter": 43,
+     "hadith_range": [
+      3090,
+      3160
+     ],
+     "n_line_starts": 71
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (23)",
+     "part": null,
+     "dataset_chapter": 44,
+     "hadith_range": [
+      3161,
+      3256
+     ],
+     "n_line_starts": 96
+    },
+    {
+     "leaf_title": "مسند عبد الله بن العباس",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن العباس (24)",
+     "part": null,
+     "dataset_chapter": 45,
+     "hadith_range": [
+      3257,
+      3366
+     ],
+     "n_line_starts": 110
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند عبد الله بن مسعود",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    3367,
+    4215
+   ],
+   "n_pages": 12,
+   "n_line_starts": 849,
+   "evidence": "Dataset page titles «المجلد الأول/مسند عبد الله بن مسعود (1-12)».",
+   "leaves": [
+    {
+     "leaf_title": "مسند عبد الله بن مسعود",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن مسعود (1)",
+     "part": null,
+     "dataset_chapter": 46,
+     "hadith_range": [
+      3367,
+      3442
+     ],
+     "n_line_starts": 76
+    },
+    {
+     "leaf_title": "مسند عبد الله بن مسعود",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن مسعود (2)",
+     "part": null,
+     "dataset_chapter": 47,
+     "hadith_range": [
+      3443,
+      3524
+     ],
+     "n_line_starts": 82
+    },
+    {
+     "leaf_title": "مسند عبد الله بن مسعود",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن مسعود (3)",
+     "part": null,
+     "dataset_chapter": 48,
+     "hadith_range": [
+      3525,
+      3575
+     ],
+     "n_line_starts": 51
+    },
+    {
+     "leaf_title": "مسند عبد الله بن مسعود",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن مسعود (4)",
+     "part": null,
+     "dataset_chapter": 49,
+     "hadith_range": [
+      3576,
+      3614
+     ],
+     "n_line_starts": 39
+    },
+    {
+     "leaf_title": "مسند عبد الله بن مسعود",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن مسعود (5)",
+     "part": null,
+     "dataset_chapter": 50,
+     "hadith_range": [
+      3615,
+      3689
+     ],
+     "n_line_starts": 75
+    },
+    {
+     "leaf_title": "مسند عبد الله بن مسعود",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن مسعود (6)",
+     "part": null,
+     "dataset_chapter": 51,
+     "hadith_range": [
+      3690,
+      3740
+     ],
+     "n_line_starts": 51
+    },
+    {
+     "leaf_title": "مسند عبد الله بن مسعود",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن مسعود (7)",
+     "part": null,
+     "dataset_chapter": 52,
+     "hadith_range": [
+      3741,
+      3791
+     ],
+     "n_line_starts": 51
+    },
+    {
+     "leaf_title": "مسند عبد الله بن مسعود",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن مسعود (8)",
+     "part": null,
+     "dataset_chapter": 53,
+     "hadith_range": [
+      3792,
+      3869
+     ],
+     "n_line_starts": 78
+    },
+    {
+     "leaf_title": "مسند عبد الله بن مسعود",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن مسعود (9)",
+     "part": null,
+     "dataset_chapter": 54,
+     "hadith_range": [
+      3870,
+      3950
+     ],
+     "n_line_starts": 81
+    },
+    {
+     "leaf_title": "مسند عبد الله بن مسعود",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن مسعود (10)",
+     "part": null,
+     "dataset_chapter": 55,
+     "hadith_range": [
+      3951,
+      4054
+     ],
+     "n_line_starts": 104
+    },
+    {
+     "leaf_title": "مسند عبد الله بن مسعود",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن مسعود (11)",
+     "part": null,
+     "dataset_chapter": 56,
+     "hadith_range": [
+      4055,
+      4125
+     ],
+     "n_line_starts": 71
+    },
+    {
+     "leaf_title": "مسند عبد الله بن مسعود",
+     "leaf_title_raw": "المجلد الأول/مسند عبد الله بن مسعود (12)",
+     "part": null,
+     "dataset_chapter": 57,
+     "hadith_range": [
+      4126,
+      4215
+     ],
+     "n_line_starts": 90
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند عبد الله بن عمر بن الخطاب",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    4216,
+    6187
+   ],
+   "n_pages": 24,
+   "n_line_starts": 1972,
+   "evidence": "Dataset page titles «مسند عبد الله بن عمر بن الخطاب/1-24»; closing colophon «آخر مسند عبد الله بن عمر» after 6187.",
+   "leaves": [
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/1",
+     "part": 1,
+     "dataset_chapter": 719,
+     "hadith_range": [
+      4216,
+      4285
+     ],
+     "n_line_starts": 70
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/2",
+     "part": 2,
+     "dataset_chapter": 720,
+     "hadith_range": [
+      4286,
+      4390
+     ],
+     "n_line_starts": 105
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/3",
+     "part": 3,
+     "dataset_chapter": 721,
+     "hadith_range": [
+      4391,
+      4489
+     ],
+     "n_line_starts": 99
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/4",
+     "part": 4,
+     "dataset_chapter": 722,
+     "hadith_range": [
+      4490,
+      4550
+     ],
+     "n_line_starts": 61
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/5",
+     "part": 5,
+     "dataset_chapter": 723,
+     "hadith_range": [
+      4551,
+      4615
+     ],
+     "n_line_starts": 65
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/6",
+     "part": 6,
+     "dataset_chapter": 724,
+     "hadith_range": [
+      4616,
+      4689
+     ],
+     "n_line_starts": 74
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/7",
+     "part": 7,
+     "dataset_chapter": 725,
+     "hadith_range": [
+      4690,
+      4755
+     ],
+     "n_line_starts": 66
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/8",
+     "part": 8,
+     "dataset_chapter": 726,
+     "hadith_range": [
+      4756,
+      4825
+     ],
+     "n_line_starts": 70
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/9",
+     "part": 9,
+     "dataset_chapter": 727,
+     "hadith_range": [
+      4826,
+      4919
+     ],
+     "n_line_starts": 94
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/10",
+     "part": 10,
+     "dataset_chapter": 728,
+     "hadith_range": [
+      4920,
+      5020
+     ],
+     "n_line_starts": 101
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/11",
+     "part": 11,
+     "dataset_chapter": 729,
+     "hadith_range": [
+      5021,
+      5115
+     ],
+     "n_line_starts": 95
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/12",
+     "part": 12,
+     "dataset_chapter": 730,
+     "hadith_range": [
+      5116,
+      5229
+     ],
+     "n_line_starts": 114
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/13",
+     "part": 13,
+     "dataset_chapter": 731,
+     "hadith_range": [
+      5230,
+      5320
+     ],
+     "n_line_starts": 91
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/14",
+     "part": 14,
+     "dataset_chapter": 732,
+     "hadith_range": [
+      5321,
+      5410
+     ],
+     "n_line_starts": 90
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/15",
+     "part": 15,
+     "dataset_chapter": 733,
+     "hadith_range": [
+      5411,
+      5529
+     ],
+     "n_line_starts": 119
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/16",
+     "part": 16,
+     "dataset_chapter": 734,
+     "hadith_range": [
+      5530,
+      5600
+     ],
+     "n_line_starts": 71
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/17",
+     "part": 17,
+     "dataset_chapter": 735,
+     "hadith_range": [
+      5601,
+      5690
+     ],
+     "n_line_starts": 90
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/18",
+     "part": 18,
+     "dataset_chapter": 736,
+     "hadith_range": [
+      5691,
+      5789
+     ],
+     "n_line_starts": 99
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/19",
+     "part": 19,
+     "dataset_chapter": 737,
+     "hadith_range": [
+      5790,
+      5850
+     ],
+     "n_line_starts": 61
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/20",
+     "part": 20,
+     "dataset_chapter": 738,
+     "hadith_range": [
+      5851,
+      5900
+     ],
+     "n_line_starts": 50
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/21",
+     "part": 21,
+     "dataset_chapter": 739,
+     "hadith_range": [
+      5901,
+      5969
+     ],
+     "n_line_starts": 69
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/22",
+     "part": 22,
+     "dataset_chapter": 740,
+     "hadith_range": [
+      5970,
+      6045
+     ],
+     "n_line_starts": 76
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/23",
+     "part": 23,
+     "dataset_chapter": 741,
+     "hadith_range": [
+      6046,
+      6100
+     ],
+     "n_line_starts": 55
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمر بن الخطاب",
+     "leaf_title_raw": "مسند عبد الله بن عمر بن الخطاب/24",
+     "part": 24,
+     "dataset_chapter": 742,
+     "hadith_range": [
+      6101,
+      6187
+     ],
+     "n_line_starts": 87
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند عبد الله بن عمرو بن العاص",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    6188,
+    6806
+   ],
+   "n_pages": 9,
+   "n_line_starts": 619,
+   "evidence": "Dataset page titles «مسند عبد الله بن عمرو بن العاص/1-9».",
+   "leaves": [
+    {
+     "leaf_title": "مسند عبد الله بن عمرو بن العاص",
+     "leaf_title_raw": "مسند عبد الله بن عمرو بن العاص/1",
+     "part": 1,
+     "dataset_chapter": 743,
+     "hadith_range": [
+      6188,
+      6230
+     ],
+     "n_line_starts": 43
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمرو بن العاص",
+     "leaf_title_raw": "مسند عبد الله بن عمرو بن العاص/2",
+     "part": 2,
+     "dataset_chapter": 744,
+     "hadith_range": [
+      6231,
+      6285
+     ],
+     "n_line_starts": 55
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمرو بن العاص",
+     "leaf_title_raw": "مسند عبد الله بن عمرو بن العاص/3",
+     "part": 3,
+     "dataset_chapter": 745,
+     "hadith_range": [
+      6286,
+      6339
+     ],
+     "n_line_starts": 54
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمرو بن العاص",
+     "leaf_title_raw": "مسند عبد الله بن عمرو بن العاص/4",
+     "part": 4,
+     "dataset_chapter": 746,
+     "hadith_range": [
+      6340,
+      6415
+     ],
+     "n_line_starts": 76
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمرو بن العاص",
+     "leaf_title_raw": "مسند عبد الله بن عمرو بن العاص/5",
+     "part": 5,
+     "dataset_chapter": 747,
+     "hadith_range": [
+      6416,
+      6485
+     ],
+     "n_line_starts": 70
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمرو بن العاص",
+     "leaf_title_raw": "مسند عبد الله بن عمرو بن العاص/6",
+     "part": 6,
+     "dataset_chapter": 748,
+     "hadith_range": [
+      6486,
+      6579
+     ],
+     "n_line_starts": 94
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمرو بن العاص",
+     "leaf_title_raw": "مسند عبد الله بن عمرو بن العاص/7",
+     "part": 7,
+     "dataset_chapter": 749,
+     "hadith_range": [
+      6580,
+      6650
+     ],
+     "n_line_starts": 71
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمرو بن العاص",
+     "leaf_title_raw": "مسند عبد الله بن عمرو بن العاص/8",
+     "part": 8,
+     "dataset_chapter": 750,
+     "hadith_range": [
+      6651,
+      6736
+     ],
+     "n_line_starts": 86
+    },
+    {
+     "leaf_title": "مسند عبد الله بن عمرو بن العاص",
+     "leaf_title_raw": "مسند عبد الله بن عمرو بن العاص/9",
+     "part": 9,
+     "dataset_chapter": 751,
+     "hadith_range": [
+      6737,
+      6806
+     ],
+     "n_line_starts": 70
+    }
+   ]
+  },
+  {
+   "musnad_title": "حديث أبي رمثة",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    6807,
+    6821
+   ],
+   "n_pages": 1,
+   "n_line_starts": 15,
+   "evidence": "Single leaf page; no group title in the source for this entry.",
+   "leaves": [
+    {
+     "leaf_title": "حديث أبي رمثة",
+     "leaf_title_raw": "حديث أبي رمثة",
+     "part": null,
+     "dataset_chapter": 99,
+     "hadith_range": [
+      6807,
+      6821
+     ],
+     "n_line_starts": 15
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند أبي هريرة",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    6822,
+    10561
+   ],
+   "n_pages": 52,
+   "n_line_starts": 3740,
+   "evidence": "Dataset page titles «مسند أبي هريرة/1-52»; colophon «هذا آخر مسند أبي هريرة» after 10561.",
+   "leaves": [
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/1",
+     "part": 1,
+     "dataset_chapter": 337,
+     "hadith_range": [
+      6822,
+      6890
+     ],
+     "n_line_starts": 69
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/2",
+     "part": 2,
+     "dataset_chapter": 338,
+     "hadith_range": [
+      6891,
+      6959
+     ],
+     "n_line_starts": 69
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/3",
+     "part": 3,
+     "dataset_chapter": 339,
+     "hadith_range": [
+      6960,
+      7020
+     ],
+     "n_line_starts": 61
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/4",
+     "part": 4,
+     "dataset_chapter": 340,
+     "hadith_range": [
+      7021,
+      7070
+     ],
+     "n_line_starts": 50
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/5",
+     "part": 5,
+     "dataset_chapter": 341,
+     "hadith_range": [
+      7071,
+      7144
+     ],
+     "n_line_starts": 74
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/6",
+     "part": 6,
+     "dataset_chapter": 342,
+     "hadith_range": [
+      7145,
+      7215
+     ],
+     "n_line_starts": 71
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/7",
+     "part": 7,
+     "dataset_chapter": 343,
+     "hadith_range": [
+      7216,
+      7275
+     ],
+     "n_line_starts": 60
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/8",
+     "part": 8,
+     "dataset_chapter": 344,
+     "hadith_range": [
+      7276,
+      7354
+     ],
+     "n_line_starts": 79
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/9",
+     "part": 9,
+     "dataset_chapter": 345,
+     "hadith_range": [
+      7355,
+      7415
+     ],
+     "n_line_starts": 61
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/10",
+     "part": 10,
+     "dataset_chapter": 346,
+     "hadith_range": [
+      7416,
+      7490
+     ],
+     "n_line_starts": 75
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/11",
+     "part": 11,
+     "dataset_chapter": 347,
+     "hadith_range": [
+      7491,
+      7579
+     ],
+     "n_line_starts": 89
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/12",
+     "part": 12,
+     "dataset_chapter": 348,
+     "hadith_range": [
+      7580,
+      7630
+     ],
+     "n_line_starts": 51
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/13",
+     "part": 13,
+     "dataset_chapter": 349,
+     "hadith_range": [
+      7631,
+      7700
+     ],
+     "n_line_starts": 70
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/14",
+     "part": 14,
+     "dataset_chapter": 350,
+     "hadith_range": [
+      7701,
+      7784
+     ],
+     "n_line_starts": 84
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/15",
+     "part": 15,
+     "dataset_chapter": 351,
+     "hadith_range": [
+      7785,
+      7850
+     ],
+     "n_line_starts": 66
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/16",
+     "part": 16,
+     "dataset_chapter": 352,
+     "hadith_range": [
+      7851,
+      7920
+     ],
+     "n_line_starts": 70
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/17",
+     "part": 17,
+     "dataset_chapter": 353,
+     "hadith_range": [
+      7921,
+      7989
+     ],
+     "n_line_starts": 69
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/18",
+     "part": 18,
+     "dataset_chapter": 354,
+     "hadith_range": [
+      7990,
+      8040
+     ],
+     "n_line_starts": 51
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/19",
+     "part": 19,
+     "dataset_chapter": 355,
+     "hadith_range": [
+      8041,
+      8110
+     ],
+     "n_line_starts": 70
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/20",
+     "part": 20,
+     "dataset_chapter": 356,
+     "hadith_range": [
+      8111,
+      8199
+     ],
+     "n_line_starts": 89
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/21",
+     "part": 21,
+     "dataset_chapter": 357,
+     "hadith_range": [
+      8200,
+      8285
+     ],
+     "n_line_starts": 86
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/22",
+     "part": 22,
+     "dataset_chapter": 358,
+     "hadith_range": [
+      8286,
+      8371
+     ],
+     "n_line_starts": 86
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/23",
+     "part": 23,
+     "dataset_chapter": 359,
+     "hadith_range": [
+      8372,
+      8474
+     ],
+     "n_line_starts": 103
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/24",
+     "part": 24,
+     "dataset_chapter": 360,
+     "hadith_range": [
+      8475,
+      8520
+     ],
+     "n_line_starts": 46
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/25",
+     "part": 25,
+     "dataset_chapter": 361,
+     "hadith_range": [
+      8521,
+      8570
+     ],
+     "n_line_starts": 50
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/26",
+     "part": 26,
+     "dataset_chapter": 362,
+     "hadith_range": [
+      8571,
+      8629
+     ],
+     "n_line_starts": 59
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/27",
+     "part": 27,
+     "dataset_chapter": 363,
+     "hadith_range": [
+      8630,
+      8710
+     ],
+     "n_line_starts": 81
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/28",
+     "part": 28,
+     "dataset_chapter": 364,
+     "hadith_range": [
+      8711,
+      8785
+     ],
+     "n_line_starts": 75
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/29",
+     "part": 29,
+     "dataset_chapter": 365,
+     "hadith_range": [
+      8786,
+      8874
+     ],
+     "n_line_starts": 89
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/30",
+     "part": 30,
+     "dataset_chapter": 366,
+     "hadith_range": [
+      8875,
+      8960
+     ],
+     "n_line_starts": 86
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/31",
+     "part": 31,
+     "dataset_chapter": 367,
+     "hadith_range": [
+      8961,
+      9039
+     ],
+     "n_line_starts": 79
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/32",
+     "part": 32,
+     "dataset_chapter": 368,
+     "hadith_range": [
+      9040,
+      9100
+     ],
+     "n_line_starts": 61
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/33",
+     "part": 33,
+     "dataset_chapter": 369,
+     "hadith_range": [
+      9101,
+      9150
+     ],
+     "n_line_starts": 50
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/34",
+     "part": 34,
+     "dataset_chapter": 370,
+     "hadith_range": [
+      9151,
+      9229
+     ],
+     "n_line_starts": 79
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/35",
+     "part": 35,
+     "dataset_chapter": 371,
+     "hadith_range": [
+      9230,
+      9300
+     ],
+     "n_line_starts": 71
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/36",
+     "part": 36,
+     "dataset_chapter": 372,
+     "hadith_range": [
+      9301,
+      9371
+     ],
+     "n_line_starts": 71
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/37",
+     "part": 37,
+     "dataset_chapter": 373,
+     "hadith_range": [
+      9372,
+      9459
+     ],
+     "n_line_starts": 88
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/38",
+     "part": 38,
+     "dataset_chapter": 374,
+     "hadith_range": [
+      9460,
+      9540
+     ],
+     "n_line_starts": 81
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/39",
+     "part": 39,
+     "dataset_chapter": 375,
+     "hadith_range": [
+      9541,
+      9629
+     ],
+     "n_line_starts": 89
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/40",
+     "part": 40,
+     "dataset_chapter": 376,
+     "hadith_range": [
+      9630,
+      9695
+     ],
+     "n_line_starts": 66
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/41",
+     "part": 41,
+     "dataset_chapter": 377,
+     "hadith_range": [
+      9696,
+      9767
+     ],
+     "n_line_starts": 72
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/42",
+     "part": 42,
+     "dataset_chapter": 378,
+     "hadith_range": [
+      9768,
+      9859
+     ],
+     "n_line_starts": 92
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/43",
+     "part": 43,
+     "dataset_chapter": 379,
+     "hadith_range": [
+      9860,
+      9940
+     ],
+     "n_line_starts": 81
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/44",
+     "part": 44,
+     "dataset_chapter": 380,
+     "hadith_range": [
+      9941,
+      10005
+     ],
+     "n_line_starts": 65
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/45",
+     "part": 45,
+     "dataset_chapter": 381,
+     "hadith_range": [
+      10006,
+      10109
+     ],
+     "n_line_starts": 104
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/46",
+     "part": 46,
+     "dataset_chapter": 382,
+     "hadith_range": [
+      10110,
+      10175
+     ],
+     "n_line_starts": 66
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/47",
+     "part": 47,
+     "dataset_chapter": 383,
+     "hadith_range": [
+      10176,
+      10249
+     ],
+     "n_line_starts": 74
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/48",
+     "part": 48,
+     "dataset_chapter": 384,
+     "hadith_range": [
+      10250,
+      10300
+     ],
+     "n_line_starts": 51
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/49",
+     "part": 49,
+     "dataset_chapter": 385,
+     "hadith_range": [
+      10301,
+      10360
+     ],
+     "n_line_starts": 60
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/50",
+     "part": 50,
+     "dataset_chapter": 386,
+     "hadith_range": [
+      10361,
+      10429
+     ],
+     "n_line_starts": 69
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/51",
+     "part": 51,
+     "dataset_chapter": 387,
+     "hadith_range": [
+      10430,
+      10490
+     ],
+     "n_line_starts": 61
+    },
+    {
+     "leaf_title": "مسند أبي هريرة",
+     "leaf_title_raw": "مسند أبي هريرة/52",
+     "part": 52,
+     "dataset_chapter": 388,
+     "hadith_range": [
+      10491,
+      10561
+     ],
+     "n_line_starts": 71
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند أبي سعيد الخدري",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    10562,
+    11502
+   ],
+   "n_pages": 14,
+   "n_line_starts": 941,
+   "evidence": "Dataset page titles «مسند أبي سعيد الخدري/1-14».",
+   "leaves": [
+    {
+     "leaf_title": "مسند أبي سعيد الخدري",
+     "leaf_title_raw": "مسند أبي سعيد الخدري/1",
+     "part": 1,
+     "dataset_chapter": 323,
+     "hadith_range": [
+      10562,
+      10615
+     ],
+     "n_line_starts": 54
+    },
+    {
+     "leaf_title": "مسند أبي سعيد الخدري",
+     "leaf_title_raw": "مسند أبي سعيد الخدري/2",
+     "part": 2,
+     "dataset_chapter": 324,
+     "hadith_range": [
+      10616,
+      10675
+     ],
+     "n_line_starts": 60
+    },
+    {
+     "leaf_title": "مسند أبي سعيد الخدري",
+     "leaf_title_raw": "مسند أبي سعيد الخدري/3",
+     "part": 3,
+     "dataset_chapter": 325,
+     "hadith_range": [
+      10676,
+      10739
+     ],
+     "n_line_starts": 64
+    },
+    {
+     "leaf_title": "مسند أبي سعيد الخدري",
+     "leaf_title_raw": "مسند أبي سعيد الخدري/4",
+     "part": 4,
+     "dataset_chapter": 326,
+     "hadith_range": [
+      10740,
+      10780
+     ],
+     "n_line_starts": 41
+    },
+    {
+     "leaf_title": "مسند أبي سعيد الخدري",
+     "leaf_title_raw": "مسند أبي سعيد الخدري/5",
+     "part": 5,
+     "dataset_chapter": 327,
+     "hadith_range": [
+      10781,
+      10860
+     ],
+     "n_line_starts": 80
+    },
+    {
+     "leaf_title": "مسند أبي سعيد الخدري",
+     "leaf_title_raw": "مسند أبي سعيد الخدري/6",
+     "part": 6,
+     "dataset_chapter": 328,
+     "hadith_range": [
+      10861,
+      10939
+     ],
+     "n_line_starts": 79
+    },
+    {
+     "leaf_title": "مسند أبي سعيد الخدري",
+     "leaf_title_raw": "مسند أبي سعيد الخدري/7",
+     "part": 7,
+     "dataset_chapter": 329,
+     "hadith_range": [
+      10940,
+      11005
+     ],
+     "n_line_starts": 66
+    },
+    {
+     "leaf_title": "مسند أبي سعيد الخدري",
+     "leaf_title_raw": "مسند أبي سعيد الخدري/8",
+     "part": 8,
+     "dataset_chapter": 330,
+     "hadith_range": [
+      11006,
+      11090
+     ],
+     "n_line_starts": 85
+    },
+    {
+     "leaf_title": "مسند أبي سعيد الخدري",
+     "leaf_title_raw": "مسند أبي سعيد الخدري/9",
+     "part": 9,
+     "dataset_chapter": 331,
+     "hadith_range": [
+      11091,
+      11169
+     ],
+     "n_line_starts": 79
+    },
+    {
+     "leaf_title": "مسند أبي سعيد الخدري",
+     "leaf_title_raw": "مسند أبي سعيد الخدري/10",
+     "part": 10,
+     "dataset_chapter": 332,
+     "hadith_range": [
+      11170,
+      11245
+     ],
+     "n_line_starts": 76
+    },
+    {
+     "leaf_title": "مسند أبي سعيد الخدري",
+     "leaf_title_raw": "مسند أبي سعيد الخدري/11",
+     "part": 11,
+     "dataset_chapter": 333,
+     "hadith_range": [
+      11246,
+      11329
+     ],
+     "n_line_starts": 84
+    },
+    {
+     "leaf_title": "مسند أبي سعيد الخدري",
+     "leaf_title_raw": "مسند أبي سعيد الخدري/12",
+     "part": 12,
+     "dataset_chapter": 334,
+     "hadith_range": [
+      11330,
+      11380
+     ],
+     "n_line_starts": 51
+    },
+    {
+     "leaf_title": "مسند أبي سعيد الخدري",
+     "leaf_title_raw": "مسند أبي سعيد الخدري/13",
+     "part": 13,
+     "dataset_chapter": 335,
+     "hadith_range": [
+      11381,
+      11435
+     ],
+     "n_line_starts": 55
+    },
+    {
+     "leaf_title": "مسند أبي سعيد الخدري",
+     "leaf_title_raw": "مسند أبي سعيد الخدري/14",
+     "part": 14,
+     "dataset_chapter": 336,
+     "hadith_range": [
+      11436,
+      11502
+     ],
+     "n_line_starts": 67
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند أنس بن مالك",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    11503,
+    13597
+   ],
+   "n_pages": 26,
+   "n_line_starts": 2095,
+   "evidence": "Dataset page titles «مسند أنس بن مالك/1-26».",
+   "leaves": [
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/1",
+     "part": 1,
+     "dataset_chapter": 389,
+     "hadith_range": [
+      11503,
+      11580
+     ],
+     "n_line_starts": 78
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/2",
+     "part": 2,
+     "dataset_chapter": 390,
+     "hadith_range": [
+      11581,
+      11640
+     ],
+     "n_line_starts": 60
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/3",
+     "part": 3,
+     "dataset_chapter": 391,
+     "hadith_range": [
+      11641,
+      11749
+     ],
+     "n_line_starts": 109
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/4",
+     "part": 4,
+     "dataset_chapter": 392,
+     "hadith_range": [
+      11750,
+      11810
+     ],
+     "n_line_starts": 61
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/5",
+     "part": 5,
+     "dataset_chapter": 393,
+     "hadith_range": [
+      11811,
+      11895
+     ],
+     "n_line_starts": 85
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/6",
+     "part": 6,
+     "dataset_chapter": 394,
+     "hadith_range": [
+      11896,
+      11969
+     ],
+     "n_line_starts": 74
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/7",
+     "part": 7,
+     "dataset_chapter": 395,
+     "hadith_range": [
+      11970,
+      12030
+     ],
+     "n_line_starts": 61
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/8",
+     "part": 8,
+     "dataset_chapter": 396,
+     "hadith_range": [
+      12031,
+      12120
+     ],
+     "n_line_starts": 90
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/9",
+     "part": 9,
+     "dataset_chapter": 397,
+     "hadith_range": [
+      12121,
+      12209
+     ],
+     "n_line_starts": 89
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/10",
+     "part": 10,
+     "dataset_chapter": 398,
+     "hadith_range": [
+      12210,
+      12270
+     ],
+     "n_line_starts": 61
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/11",
+     "part": 11,
+     "dataset_chapter": 399,
+     "hadith_range": [
+      12271,
+      12345
+     ],
+     "n_line_starts": 75
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/12",
+     "part": 12,
+     "dataset_chapter": 400,
+     "hadith_range": [
+      12346,
+      12459
+     ],
+     "n_line_starts": 114
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/13",
+     "part": 13,
+     "dataset_chapter": 401,
+     "hadith_range": [
+      12460,
+      12515
+     ],
+     "n_line_starts": 56
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/14",
+     "part": 14,
+     "dataset_chapter": 402,
+     "hadith_range": [
+      12516,
+      12570
+     ],
+     "n_line_starts": 55
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/15",
+     "part": 15,
+     "dataset_chapter": 403,
+     "hadith_range": [
+      12571,
+      12654
+     ],
+     "n_line_starts": 84
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/16",
+     "part": 16,
+     "dataset_chapter": 404,
+     "hadith_range": [
+      12655,
+      12727
+     ],
+     "n_line_starts": 73
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/17",
+     "part": 17,
+     "dataset_chapter": 405,
+     "hadith_range": [
+      12728,
+      12794
+     ],
+     "n_line_starts": 67
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/18",
+     "part": 18,
+     "dataset_chapter": 406,
+     "hadith_range": [
+      12795,
+      12865
+     ],
+     "n_line_starts": 71
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/19",
+     "part": 19,
+     "dataset_chapter": 407,
+     "hadith_range": [
+      12866,
+      12945
+     ],
+     "n_line_starts": 80
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/20",
+     "part": 20,
+     "dataset_chapter": 408,
+     "hadith_range": [
+      12946,
+      13049
+     ],
+     "n_line_starts": 104
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/21",
+     "part": 21,
+     "dataset_chapter": 409,
+     "hadith_range": [
+      13050,
+      13120
+     ],
+     "n_line_starts": 71
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/22",
+     "part": 22,
+     "dataset_chapter": 410,
+     "hadith_range": [
+      13121,
+      13200
+     ],
+     "n_line_starts": 80
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/23",
+     "part": 23,
+     "dataset_chapter": 411,
+     "hadith_range": [
+      13201,
+      13299
+     ],
+     "n_line_starts": 99
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/24",
+     "part": 24,
+     "dataset_chapter": 412,
+     "hadith_range": [
+      13300,
+      13390
+     ],
+     "n_line_starts": 91
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/25",
+     "part": 25,
+     "dataset_chapter": 413,
+     "hadith_range": [
+      13391,
+      13490
+     ],
+     "n_line_starts": 100
+    },
+    {
+     "leaf_title": "مسند أنس بن مالك",
+     "leaf_title_raw": "مسند أنس بن مالك/26",
+     "part": 26,
+     "dataset_chapter": 414,
+     "hadith_range": [
+      13491,
+      13597
+     ],
+     "n_line_starts": 107
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند جابر بن عبد الله",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    13598,
+    14760
+   ],
+   "n_pages": 14,
+   "n_line_starts": 1163,
+   "evidence": "Dataset page titles «مسند جابر بن عبد الله/1-14»; colophon «آخر مسند جابر بن عبد الله الأنصاري» after 14760.",
+   "leaves": [
+    {
+     "leaf_title": "مسند جابر بن عبد الله",
+     "leaf_title_raw": "مسند جابر بن عبد الله/1",
+     "part": 1,
+     "dataset_chapter": 703,
+     "hadith_range": [
+      13598,
+      13670
+     ],
+     "n_line_starts": 73
+    },
+    {
+     "leaf_title": "مسند جابر بن عبد الله",
+     "leaf_title_raw": "مسند جابر بن عبد الله/2",
+     "part": 2,
+     "dataset_chapter": 704,
+     "hadith_range": [
+      13671,
+      13760
+     ],
+     "n_line_starts": 90
+    },
+    {
+     "leaf_title": "مسند جابر بن عبد الله",
+     "leaf_title_raw": "مسند جابر بن عبد الله/3",
+     "part": 3,
+     "dataset_chapter": 705,
+     "hadith_range": [
+      13761,
+      13859
+     ],
+     "n_line_starts": 99
+    },
+    {
+     "leaf_title": "مسند جابر بن عبد الله",
+     "leaf_title_raw": "مسند جابر بن عبد الله/4",
+     "part": 4,
+     "dataset_chapter": 706,
+     "hadith_range": [
+      13860,
+      13933
+     ],
+     "n_line_starts": 74
+    },
+    {
+     "leaf_title": "مسند جابر بن عبد الله",
+     "leaf_title_raw": "مسند جابر بن عبد الله/5",
+     "part": 5,
+     "dataset_chapter": 707,
+     "hadith_range": [
+      13934,
+      14000
+     ],
+     "n_line_starts": 67
+    },
+    {
+     "leaf_title": "مسند جابر بن عبد الله",
+     "leaf_title_raw": "مسند جابر بن عبد الله/6",
+     "part": 6,
+     "dataset_chapter": 708,
+     "hadith_range": [
+      14001,
+      14119
+     ],
+     "n_line_starts": 119
+    },
+    {
+     "leaf_title": "مسند جابر بن عبد الله",
+     "leaf_title_raw": "مسند جابر بن عبد الله/7",
+     "part": 7,
+     "dataset_chapter": 709,
+     "hadith_range": [
+      14120,
+      14185
+     ],
+     "n_line_starts": 66
+    },
+    {
+     "leaf_title": "مسند جابر بن عبد الله",
+     "leaf_title_raw": "مسند جابر بن عبد الله/8",
+     "part": 8,
+     "dataset_chapter": 710,
+     "hadith_range": [
+      14186,
+      14255
+     ],
+     "n_line_starts": 70
+    },
+    {
+     "leaf_title": "مسند جابر بن عبد الله",
+     "leaf_title_raw": "مسند جابر بن عبد الله/9",
+     "part": 9,
+     "dataset_chapter": 711,
+     "hadith_range": [
+      14256,
+      14339
+     ],
+     "n_line_starts": 84
+    },
+    {
+     "leaf_title": "مسند جابر بن عبد الله",
+     "leaf_title_raw": "مسند جابر بن عبد الله/10",
+     "part": 10,
+     "dataset_chapter": 712,
+     "hadith_range": [
+      14340,
+      14440
+     ],
+     "n_line_starts": 101
+    },
+    {
+     "leaf_title": "مسند جابر بن عبد الله",
+     "leaf_title_raw": "مسند جابر بن عبد الله/11",
+     "part": 11,
+     "dataset_chapter": 713,
+     "hadith_range": [
+      14441,
+      14554
+     ],
+     "n_line_starts": 114
+    },
+    {
+     "leaf_title": "مسند جابر بن عبد الله",
+     "leaf_title_raw": "مسند جابر بن عبد الله/12",
+     "part": 12,
+     "dataset_chapter": 714,
+     "hadith_range": [
+      14555,
+      14616
+     ],
+     "n_line_starts": 62
+    },
+    {
+     "leaf_title": "مسند جابر بن عبد الله",
+     "leaf_title_raw": "مسند جابر بن عبد الله/13",
+     "part": 13,
+     "dataset_chapter": 715,
+     "hadith_range": [
+      14617,
+      14688
+     ],
+     "n_line_starts": 72
+    },
+    {
+     "leaf_title": "مسند جابر بن عبد الله",
+     "leaf_title_raw": "مسند جابر بن عبد الله/14",
+     "part": 14,
+     "dataset_chapter": 716,
+     "hadith_range": [
+      14689,
+      14760
+     ],
+     "n_line_starts": 72
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند المكيين",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    14761,
+    15507
+   ],
+   "n_pages": 255,
+   "n_line_starts": 747,
+   "evidence": "Closing colophon in the text after 15507: «هذا آخر مسند المكيين، وبنهايته تم المجلد الثالث من مسند الإمام أحمد والحمد لله». No opening heading in the source; start (14761) by contiguity after جابر (ends 14760). 254 leaf entries on 255 pages («حديث/أحاديث X»).",
+   "leaves": [
+    {
+     "leaf_title": "مسند صفوان بن أمية",
+     "leaf_title_raw": "مسند صفوان بن أمية",
+     "part": null,
+     "dataset_chapter": 718,
+     "hadith_range": [
+      14761,
+      14771
+     ],
+     "n_line_starts": 11
+    },
+    {
+     "leaf_title": "مسند حكيم بن حزام",
+     "leaf_title_raw": "مسند حكيم بن حزام",
+     "part": null,
+     "dataset_chapter": 717,
+     "hadith_range": [
+      14772,
+      14789
+     ],
+     "n_line_starts": 18
+    },
+    {
+     "leaf_title": "حديث هشام بن حكيم بن حزام",
+     "leaf_title_raw": "حديث هشام بن حكيم بن حزام",
+     "part": null,
+     "dataset_chapter": 313,
+     "hadith_range": [
+      14790,
+      14795
+     ],
+     "n_line_starts": 6
+    },
+    {
+     "leaf_title": "حديث سبرة بن معبد",
+     "leaf_title_raw": "حديث سبرة بن معبد",
+     "part": null,
+     "dataset_chapter": 207,
+     "hadith_range": [
+      14796,
+      14810
+     ],
+     "n_line_starts": 15
+    },
+    {
+     "leaf_title": "حديث عبد الرحمن بن أبزى الخزاعي",
+     "leaf_title_raw": "حديث عبد الرحمن بن أبزى الخزاعي",
+     "part": null,
+     "dataset_chapter": 237,
+     "hadith_range": [
+      14811,
+      14829
+     ],
+     "n_line_starts": 19
+    },
+    {
+     "leaf_title": "حديث نافع بن عبد الحارث",
+     "leaf_title_raw": "حديث نافع بن عبد الحارث",
+     "part": null,
+     "dataset_chapter": 308,
+     "hadith_range": [
+      14830,
+      14832
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "أحاديث أبي محذورة المؤذن",
+     "leaf_title_raw": "أحاديث أبي محذورة المؤذن",
+     "part": null,
+     "dataset_chapter": 2,
+     "hadith_range": [
+      14833,
+      14837
+     ],
+     "n_line_starts": 5
+    },
+    {
+     "leaf_title": "أحاديث شيبة بن عثمان الحجي",
+     "leaf_title_raw": "أحاديث شيبة بن عثمان الحجي",
+     "part": null,
+     "dataset_chapter": 3,
+     "hadith_range": [
+      14838,
+      14839
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "أحاديث أبي الحكم أو الحكم بن سفيان",
+     "leaf_title_raw": "أحاديث أبي الحكم أو الحكم بن سفيان",
+     "part": null,
+     "dataset_chapter": 1,
+     "hadith_range": [
+      14840,
+      14841
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "أحاديث عثمان بن طلحة",
+     "leaf_title_raw": "أحاديث عثمان بن طلحة",
+     "part": null,
+     "dataset_chapter": 5,
+     "hadith_range": [
+      14842,
+      14843
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "أحاديث عبد الله بن السائب",
+     "leaf_title_raw": "أحاديث عبد الله بن السائب",
+     "part": null,
+     "dataset_chapter": 4,
+     "hadith_range": [
+      14844,
+      14853
+     ],
+     "n_line_starts": 10
+    },
+    {
+     "leaf_title": "حديث عبد الله بن حبشي",
+     "leaf_title_raw": "حديث عبد الله بن حبشي",
+     "part": null,
+     "dataset_chapter": 251,
+     "hadith_range": [
+      14854,
+      14854
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث جد إسماعيل بن أمية",
+     "leaf_title_raw": "حديث جد إسماعيل بن أمية",
+     "part": null,
+     "dataset_chapter": 156,
+     "hadith_range": [
+      14855,
+      14856
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث الحارث ابن برصاء",
+     "leaf_title_raw": "حديث الحارث ابن برصاء",
+     "part": null,
+     "dataset_chapter": 132,
+     "hadith_range": [
+      14857,
+      14858
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث مطيع بن الأسود",
+     "leaf_title_raw": "حديث مطيع بن الأسود",
+     "part": null,
+     "dataset_chapter": 294,
+     "hadith_range": [
+      14859,
+      14862
+     ],
+     "n_line_starts": 4
+    },
+    {
+     "leaf_title": "حديث قدامة بن عبد الله بن عمار",
+     "leaf_title_raw": "حديث قدامة بن عبد الله بن عمار",
+     "part": null,
+     "dataset_chapter": 275,
+     "hadith_range": [
+      14863,
+      14868
+     ],
+     "n_line_starts": 6
+    },
+    {
+     "leaf_title": "حديث سفيان بن عبد الله الثقفي",
+     "leaf_title_raw": "حديث سفيان بن عبد الله الثقفي",
+     "part": null,
+     "dataset_chapter": 209,
+     "hadith_range": [
+      14869,
+      14872
+     ],
+     "n_line_starts": 4
+    },
+    {
+     "leaf_title": "حديث رجل عن أبيه",
+     "leaf_title_raw": "حديث رجل عن أبيه",
+     "part": null,
+     "dataset_chapter": 185,
+     "hadith_range": [
+      14873,
+      14873
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل من أصحاب النبي",
+     "leaf_title_raw": "حديث رجل من أصحاب النبي",
+     "part": null,
+     "dataset_chapter": 194,
+     "hadith_range": [
+      14874,
+      14874
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل من أصحاب النبي",
+     "leaf_title_raw": "حديث رجل من أصحاب النبي/1",
+     "part": 1,
+     "dataset_chapter": 199,
+     "hadith_range": [
+      14875,
+      14875
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل أدرك النبي",
+     "leaf_title_raw": "حديث رجل أدرك النبي",
+     "part": null,
+     "dataset_chapter": 182,
+     "hadith_range": [
+      14876,
+      14876
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل عن النبي",
+     "leaf_title_raw": "حديث رجل عن النبي",
+     "part": null,
+     "dataset_chapter": 187,
+     "hadith_range": [
+      14877,
+      14877
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث كلدة بن الحنبل",
+     "leaf_title_raw": "حديث كلدة بن الحنبل",
+     "part": null,
+     "dataset_chapter": 282,
+     "hadith_range": [
+      14878,
+      14878
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث مصدقي النبي",
+     "leaf_title_raw": "حديث مصدقي النبي",
+     "part": null,
+     "dataset_chapter": 293,
+     "hadith_range": [
+      14879,
+      14880
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث بشر بن سحيم",
+     "leaf_title_raw": "حديث بشر بن سحيم",
+     "part": null,
+     "dataset_chapter": 147,
+     "hadith_range": [
+      14881,
+      14883
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث الأسود بن خلف",
+     "leaf_title_raw": "حديث الأسود بن خلف",
+     "part": null,
+     "dataset_chapter": 128,
+     "hadith_range": [
+      14884,
+      14884
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي كليب",
+     "leaf_title_raw": "حديث أبي كليب",
+     "part": null,
+     "dataset_chapter": 114,
+     "hadith_range": [
+      14885,
+      14885
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث من سمع منادي",
+     "leaf_title_raw": "حديث من سمع منادي",
+     "part": null,
+     "dataset_chapter": 305,
+     "hadith_range": [
+      14886,
+      14886
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عريف من عرفاء قريش",
+     "leaf_title_raw": "حديث عريف من عرفاء قريش",
+     "part": null,
+     "dataset_chapter": 258,
+     "hadith_range": [
+      14887,
+      14887
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث جد عكرمة بن خالد المخزومي",
+     "leaf_title_raw": "حديث جد عكرمة بن خالد المخزومي",
+     "part": null,
+     "dataset_chapter": 159,
+     "hadith_range": [
+      14888,
+      14889
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث أبي طريف",
+     "leaf_title_raw": "حديث أبي طريف",
+     "part": null,
+     "dataset_chapter": 106,
+     "hadith_range": [
+      14890,
+      14890
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "تمام حديث صخر الغامدي",
+     "leaf_title_raw": "تمام حديث صخر الغامدي",
+     "part": null,
+     "dataset_chapter": 82,
+     "hadith_range": [
+      14891,
+      14891
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي بكر بن أبي زهير عن أبيه",
+     "leaf_title_raw": "حديث أبي بكر بن أبي زهير عن أبيه",
+     "part": null,
+     "dataset_chapter": 93,
+     "hadith_range": [
+      14892,
+      14892
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث الحارث بن عبد الله بن أوس",
+     "leaf_title_raw": "حديث الحارث بن عبد الله بن أوس",
+     "part": null,
+     "dataset_chapter": 135,
+     "hadith_range": [
+      14893,
+      14895
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "ومن حديث صخر الغامدي",
+     "leaf_title_raw": "ومن حديث صخر الغامدي",
+     "part": null,
+     "dataset_chapter": 753,
+     "hadith_range": [
+      14896,
+      14896
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث إياس بن عبد",
+     "leaf_title_raw": "حديث إياس بن عبد",
+     "part": null,
+     "dataset_chapter": 121,
+     "hadith_range": [
+      14897,
+      14897
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث كيسان",
+     "leaf_title_raw": "حديث كيسان",
+     "part": null,
+     "dataset_chapter": 283,
+     "hadith_range": [
+      14898,
+      14899
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث الأرقم بن أبي الأرقم",
+     "leaf_title_raw": "حديث الأرقم بن أبي الأرقم",
+     "part": null,
+     "dataset_chapter": 127,
+     "hadith_range": [
+      14900,
+      14900
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث ابن عابس الجهني",
+     "leaf_title_raw": "حديث ابن عابس الجهني",
+     "part": null,
+     "dataset_chapter": 125,
+     "hadith_range": [
+      14901,
+      14901
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي عمرة الأنصاري",
+     "leaf_title_raw": "حديث أبي عمرة الأنصاري",
+     "part": null,
+     "dataset_chapter": 110,
+     "hadith_range": [
+      14902,
+      14902
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عمير بن سلمة الضمري",
+     "leaf_title_raw": "حديث عمير بن سلمة الضمري",
+     "part": null,
+     "dataset_chapter": 268,
+     "hadith_range": [
+      14903,
+      14903
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث محمد بن حاطب الجمحي",
+     "leaf_title_raw": "حديث محمد بن حاطب الجمحي",
+     "part": null,
+     "dataset_chapter": 291,
+     "hadith_range": [
+      14904,
+      14907
+     ],
+     "n_line_starts": 4
+    },
+    {
+     "leaf_title": "حديث ابن أبي زيد",
+     "leaf_title_raw": "حديث ابن أبي زيد",
+     "part": null,
+     "dataset_chapter": 123,
+     "hadith_range": [
+      14908,
+      14908
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث كردم بن سفيان",
+     "leaf_title_raw": "حديث كردم بن سفيان",
+     "part": null,
+     "dataset_chapter": 278,
+     "hadith_range": [
+      14909,
+      14909
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عبد الله المزني",
+     "leaf_title_raw": "حديث عبد الله المزني",
+     "part": null,
+     "dataset_chapter": 245,
+     "hadith_range": [
+      14910,
+      14910
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي سليط البدري",
+     "leaf_title_raw": "حديث أبي سليط البدري",
+     "part": null,
+     "dataset_chapter": 104,
+     "hadith_range": [
+      14911,
+      14912
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث عبد الرحمن بن خنبش",
+     "leaf_title_raw": "حديث عبد الرحمن بن خنبش",
+     "part": null,
+     "dataset_chapter": 239,
+     "hadith_range": [
+      14913,
+      14914
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث ابن عبس",
+     "leaf_title_raw": "حديث ابن عبس",
+     "part": null,
+     "dataset_chapter": 126,
+     "hadith_range": [
+      14915,
+      14915
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عياش بن أبي ربيعة",
+     "leaf_title_raw": "حديث عياش بن أبي ربيعة",
+     "part": null,
+     "dataset_chapter": 271,
+     "hadith_range": [
+      14916,
+      14916
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث المطلب بن أبي وداعة",
+     "leaf_title_raw": "حديث المطلب بن أبي وداعة",
+     "part": null,
+     "dataset_chapter": 144,
+     "hadith_range": [
+      14917,
+      14918
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث مجمع بن جارية",
+     "leaf_title_raw": "حديث مجمع بن جارية",
+     "part": null,
+     "dataset_chapter": 287,
+     "hadith_range": [
+      14919,
+      14923
+     ],
+     "n_line_starts": 5
+    },
+    {
+     "leaf_title": "حديث جبار بن صخر",
+     "leaf_title_raw": "حديث جبار بن صخر",
+     "part": null,
+     "dataset_chapter": 154,
+     "hadith_range": [
+      14924,
+      14924
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث ابن أبي خزامة",
+     "leaf_title_raw": "حديث ابن أبي خزامة",
+     "part": null,
+     "dataset_chapter": 122,
+     "hadith_range": [
+      14925,
+      14927
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث قيس بن سعد بن عبادة",
+     "leaf_title_raw": "حديث قيس بن سعد بن عبادة",
+     "part": null,
+     "dataset_chapter": 277,
+     "hadith_range": [
+      14928,
+      14935
+     ],
+     "n_line_starts": 8
+    },
+    {
+     "leaf_title": "حديث وهب بن حذيفة",
+     "leaf_title_raw": "حديث وهب بن حذيفة",
+     "part": null,
+     "dataset_chapter": 320,
+     "hadith_range": [
+      14936,
+      14937
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث عويم بن ساعدة",
+     "leaf_title_raw": "حديث عويم بن ساعدة",
+     "part": null,
+     "dataset_chapter": 269,
+     "hadith_range": [
+      14938,
+      14938
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث قهيد بن مطرف العقاري",
+     "leaf_title_raw": "حديث قهيد بن مطرف العقاري",
+     "part": null,
+     "dataset_chapter": 276,
+     "hadith_range": [
+      14939,
+      14940
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث عمرو بن يثربي",
+     "leaf_title_raw": "حديث عمرو بن يثربي",
+     "part": null,
+     "dataset_chapter": 267,
+     "hadith_range": [
+      14941,
+      14941
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي حدرد الأسلمي",
+     "leaf_title_raw": "حديث أبي حدرد الأسلمي",
+     "part": null,
+     "dataset_chapter": 97,
+     "hadith_range": [
+      14942,
+      14942
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عمرو بن أم مكتوم",
+     "leaf_title_raw": "حديث عمرو بن أم مكتوم",
+     "part": null,
+     "dataset_chapter": 262,
+     "hadith_range": [
+      14943,
+      14944
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث عبد الله الزرقي",
+     "leaf_title_raw": "حديث عبد الله الزرقي",
+     "part": null,
+     "dataset_chapter": 244,
+     "hadith_range": [
+      14945,
+      14945
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل عن النبي صلى الله عليه وسلم",
+     "leaf_title_raw": "حديث رجل عن النبي صلى الله عليه وسلم",
+     "part": null,
+     "dataset_chapter": 191,
+     "hadith_range": [
+      14946,
+      14946
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث جد أبي الأشد السلمي",
+     "leaf_title_raw": "حديث جد أبي الأشد السلمي",
+     "part": null,
+     "dataset_chapter": 155,
+     "hadith_range": [
+      14947,
+      14948
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث عبيد بن خالد السلمي",
+     "leaf_title_raw": "حديث عبيد بن خالد السلمي",
+     "part": null,
+     "dataset_chapter": 255,
+     "hadith_range": [
+      14949,
+      14950
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث أبي الجعد الضمري",
+     "leaf_title_raw": "حديث أبي الجعد الضمري",
+     "part": null,
+     "dataset_chapter": 87,
+     "hadith_range": [
+      14951,
+      14951
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث 14952 رجل عن النبي",
+     "leaf_title_raw": "حديث 14952 رجل عن النبي",
+     "part": null,
+     "dataset_chapter": 84,
+     "hadith_range": [
+      14952,
+      14952
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث السائب بن عبد الله",
+     "leaf_title_raw": "حديث السائب بن عبد الله",
+     "part": null,
+     "dataset_chapter": 139,
+     "hadith_range": [
+      14953,
+      14958
+     ],
+     "n_line_starts": 6
+    },
+    {
+     "leaf_title": "حديث السائب بن خباب",
+     "leaf_title_raw": "حديث السائب بن خباب",
+     "part": null,
+     "dataset_chapter": 138,
+     "hadith_range": [
+      14959,
+      14959
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عمرو بن الأحوص",
+     "leaf_title_raw": "حديث عمرو بن الأحوص",
+     "part": null,
+     "dataset_chapter": 263,
+     "hadith_range": [
+      14960,
+      14960
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رافع بن عمرو المزني",
+     "leaf_title_raw": "حديث رافع بن عمرو المزني",
+     "part": null,
+     "dataset_chapter": 174,
+     "hadith_range": [
+      14961,
+      14961
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث معيقب",
+     "leaf_title_raw": "حديث معيقب",
+     "part": null,
+     "dataset_chapter": 304,
+     "hadith_range": [
+      14962,
+      14964
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث محرش الكعبي الخزاعي",
+     "leaf_title_raw": "حديث محرش الكعبي الخزاعي",
+     "part": null,
+     "dataset_chapter": 290,
+     "hadith_range": [
+      14965,
+      14966
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث أبي حازم",
+     "leaf_title_raw": "حديث أبي حازم",
+     "part": null,
+     "dataset_chapter": 95,
+     "hadith_range": [
+      14967,
+      14970
+     ],
+     "n_line_starts": 4
+    },
+    {
+     "leaf_title": "بقية حديث محرش الكعبي",
+     "leaf_title_raw": "بقية حديث محرش الكعبي",
+     "part": null,
+     "dataset_chapter": 79,
+     "hadith_range": [
+      14971,
+      14971
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي اليسر الأنصاري كعب بن عمرو",
+     "leaf_title_raw": "حديث أبي اليسر الأنصاري كعب بن عمرو",
+     "part": null,
+     "dataset_chapter": 90,
+     "hadith_range": [
+      14972,
+      14977
+     ],
+     "n_line_starts": 6
+    },
+    {
+     "leaf_title": "حديث أبي فاطمة",
+     "leaf_title_raw": "حديث أبي فاطمة",
+     "part": null,
+     "dataset_chapter": 113,
+     "hadith_range": [
+      14978,
+      14980
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "زيادة في حديث عبد الرحمن بن شبل",
+     "leaf_title_raw": "زيادة في حديث عبد الرحمن بن شبل",
+     "part": null,
+     "dataset_chapter": 322,
+     "hadith_range": [
+      14981,
+      14986
+     ],
+     "n_line_starts": 6
+    },
+    {
+     "leaf_title": "حديث عامر بن شهر",
+     "leaf_title_raw": "حديث عامر بن شهر",
+     "part": null,
+     "dataset_chapter": 234,
+     "hadith_range": [
+      14987,
+      14987
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث معاوية الليثي",
+     "leaf_title_raw": "حديث معاوية الليثي",
+     "part": null,
+     "dataset_chapter": 296,
+     "hadith_range": [
+      14988,
+      14988
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث معاوية بن جاهمة السلمي",
+     "leaf_title_raw": "حديث معاوية بن جاهمة السلمي",
+     "part": null,
+     "dataset_chapter": 298,
+     "hadith_range": [
+      14989,
+      14989
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي عزة",
+     "leaf_title_raw": "حديث أبي عزة",
+     "part": null,
+     "dataset_chapter": 109,
+     "hadith_range": [
+      14990,
+      14990
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث الحارث بن زياد",
+     "leaf_title_raw": "حديث الحارث بن زياد",
+     "part": null,
+     "dataset_chapter": 134,
+     "hadith_range": [
+      14991,
+      14991
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث شكل بن حميد",
+     "leaf_title_raw": "حديث شكل بن حميد",
+     "part": null,
+     "dataset_chapter": 226,
+     "hadith_range": [
+      14992,
+      14992
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث طخفة بن قيس الغفاري",
+     "leaf_title_raw": "حديث طخفة بن قيس الغفاري",
+     "part": null,
+     "dataset_chapter": 229,
+     "hadith_range": [
+      14993,
+      14994
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "زيادة في حديث أبي لبابة بن عبد المنذر البدري",
+     "leaf_title_raw": "زيادة في حديث أبي لبابة بن عبد المنذر البدري",
+     "part": null,
+     "dataset_chapter": 321,
+     "hadith_range": [
+      14995,
+      14997
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث عمرو بن الجموح",
+     "leaf_title_raw": "حديث عمرو بن الجموح",
+     "part": null,
+     "dataset_chapter": 264,
+     "hadith_range": [
+      14998,
+      14998
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عبد الرحمن بن صفوان",
+     "leaf_title_raw": "حديث عبد الرحمن بن صفوان",
+     "part": null,
+     "dataset_chapter": 241,
+     "hadith_range": [
+      14999,
+      15002
+     ],
+     "n_line_starts": 4
+    },
+    {
+     "leaf_title": "حديث وفد عبد القيس",
+     "leaf_title_raw": "حديث وفد عبد القيس",
+     "part": null,
+     "dataset_chapter": 319,
+     "hadith_range": [
+      15003,
+      15003
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث نصر بن دهر",
+     "leaf_title_raw": "حديث نصر بن دهر",
+     "part": null,
+     "dataset_chapter": 309,
+     "hadith_range": [
+      15004,
+      15005
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "تمام حديث صخر الغامدي1",
+     "leaf_title_raw": "تمام حديث صخر الغامدي1",
+     "part": null,
+     "dataset_chapter": 83,
+     "hadith_range": [
+      15006,
+      15007
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "بقية حديث وفد عبد القيس",
+     "leaf_title_raw": "بقية حديث وفد عبد القيس",
+     "part": null,
+     "dataset_chapter": 81,
+     "hadith_range": [
+      15008,
+      15008
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "من مسند سهل بن سعد الساعدي",
+     "leaf_title_raw": "من مسند سهل بن سعد الساعدي",
+     "part": null,
+     "dataset_chapter": 752,
+     "hadith_range": [
+      15009,
+      15020
+     ],
+     "n_line_starts": 12
+    },
+    {
+     "leaf_title": "حديث حكيم بن حزام",
+     "leaf_title_raw": "حديث حكيم بن حزام",
+     "part": null,
+     "dataset_chapter": 166,
+     "hadith_range": [
+      15021,
+      15028
+     ],
+     "n_line_starts": 8
+    },
+    {
+     "leaf_title": "حديث معاوية بن قرة عن أبيه",
+     "leaf_title_raw": "حديث معاوية بن قرة عن أبيه",
+     "part": null,
+     "dataset_chapter": 299,
+     "hadith_range": [
+      15029,
+      15030
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث أبي إياس",
+     "leaf_title_raw": "حديث أبي إياس",
+     "part": null,
+     "dataset_chapter": 86,
+     "hadith_range": [
+      15031,
+      15032
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث الأسود بن سريع",
+     "leaf_title_raw": "حديث الأسود بن سريع",
+     "part": null,
+     "dataset_chapter": 129,
+     "hadith_range": [
+      15033,
+      15038
+     ],
+     "n_line_starts": 6
+    },
+    {
+     "leaf_title": "بقية حديث معاوية بن قرة",
+     "leaf_title_raw": "بقية حديث معاوية بن قرة",
+     "part": null,
+     "dataset_chapter": 80,
+     "hadith_range": [
+      15039,
+      15044
+     ],
+     "n_line_starts": 6
+    },
+    {
+     "leaf_title": "حديث مالك بن الحويرث",
+     "leaf_title_raw": "حديث مالك بن الحويرث",
+     "part": null,
+     "dataset_chapter": 284,
+     "hadith_range": [
+      15045,
+      15051
+     ],
+     "n_line_starts": 7
+    },
+    {
+     "leaf_title": "حديث هبيب بن مغفل الغفاري",
+     "leaf_title_raw": "حديث هبيب بن مغفل الغفاري",
+     "part": null,
+     "dataset_chapter": 312,
+     "hadith_range": [
+      15052,
+      15054
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث أبي بردة بن قيس أخي أبي موسى الأشعري",
+     "leaf_title_raw": "حديث أبي بردة بن قيس أخي أبي موسى الأشعري",
+     "part": null,
+     "dataset_chapter": 91,
+     "hadith_range": [
+      15055,
+      15055
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث معاذ بن أنس الجهني",
+     "leaf_title_raw": "حديث معاذ بن أنس الجهني",
+     "part": null,
+     "dataset_chapter": 295,
+     "hadith_range": [
+      15056,
+      15096
+     ],
+     "n_line_starts": 41
+    },
+    {
+     "leaf_title": "حديث رجل من أصحاب النبي الحديث 15097",
+     "leaf_title_raw": "حديث رجل من أصحاب النبي الحديث 15097",
+     "part": null,
+     "dataset_chapter": 196,
+     "hadith_range": [
+      15097,
+      15097
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل من أصحاب النبي الحديث 15098",
+     "leaf_title_raw": "حديث رجل من أصحاب النبي الحديث 15098",
+     "part": null,
+     "dataset_chapter": 197,
+     "hadith_range": [
+      15098,
+      15098
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عبادة بن الوليد بن عبادة عن أبيه",
+     "leaf_title_raw": "حديث عبادة بن الوليد بن عبادة عن أبيه",
+     "part": null,
+     "dataset_chapter": 236,
+     "hadith_range": [
+      15099,
+      15099
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث التنوخي",
+     "leaf_title_raw": "حديث التنوخي",
+     "part": null,
+     "dataset_chapter": 131,
+     "hadith_range": [
+      15100,
+      15100
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث قثم بن تمام أو تمام بن قثم عن أبيه",
+     "leaf_title_raw": "حديث قثم بن تمام أو تمام بن قثم عن أبيه",
+     "part": null,
+     "dataset_chapter": 274,
+     "hadith_range": [
+      15101,
+      15101
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث حسان بن ثابت",
+     "leaf_title_raw": "حديث حسان بن ثابت",
+     "part": null,
+     "dataset_chapter": 165,
+     "hadith_range": [
+      15102,
+      15102
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث بشر أو بسر",
+     "leaf_title_raw": "حديث بشر أو بسر",
+     "part": null,
+     "dataset_chapter": 146,
+     "hadith_range": [
+      15103,
+      15103
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث سويد الأنصاري",
+     "leaf_title_raw": "حديث سويد الأنصاري",
+     "part": null,
+     "dataset_chapter": 219,
+     "hadith_range": [
+      15104,
+      15104
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عبد الرحمن بن أبي قراد",
+     "leaf_title_raw": "حديث عبد الرحمن بن أبي قراد",
+     "part": null,
+     "dataset_chapter": 238,
+     "hadith_range": [
+      15105,
+      15106
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث مولى لرسول الله",
+     "leaf_title_raw": "حديث مولى لرسول الله",
+     "part": null,
+     "dataset_chapter": 307,
+     "hadith_range": [
+      15107,
+      15107
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث معاوية بن الحكم",
+     "leaf_title_raw": "حديث معاوية بن الحكم",
+     "part": null,
+     "dataset_chapter": 297,
+     "hadith_range": [
+      15108,
+      15108
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي هاشم بن عتبة",
+     "leaf_title_raw": "حديث أبي هاشم بن عتبة",
+     "part": null,
+     "dataset_chapter": 118,
+     "hadith_range": [
+      15109,
+      15109
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عبد الرحمن بن شبل",
+     "leaf_title_raw": "حديث عبد الرحمن بن شبل",
+     "part": null,
+     "dataset_chapter": 240,
+     "hadith_range": [
+      15110,
+      15117
+     ],
+     "n_line_starts": 8
+    },
+    {
+     "leaf_title": "حديث عامر بن ربيعة",
+     "leaf_title_raw": "حديث عامر بن ربيعة",
+     "part": null,
+     "dataset_chapter": 233,
+     "hadith_range": [
+      15118,
+      15146
+     ],
+     "n_line_starts": 29
+    },
+    {
+     "leaf_title": "حديث عبد الله بن عامر",
+     "leaf_title_raw": "حديث عبد الله بن عامر",
+     "part": null,
+     "dataset_chapter": 254,
+     "hadith_range": [
+      15147,
+      15147
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث سويد بن مقرن",
+     "leaf_title_raw": "حديث سويد بن مقرن",
+     "part": null,
+     "dataset_chapter": 222,
+     "hadith_range": [
+      15148,
+      15150
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث أبي حدرد الأسلمي 15151",
+     "leaf_title_raw": "حديث أبي حدرد الأسلمي 15151",
+     "part": null,
+     "dataset_chapter": 98,
+     "hadith_range": [
+      15151,
+      15151
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث مهران مولى رسول الله",
+     "leaf_title_raw": "حديث مهران مولى رسول الله",
+     "part": null,
+     "dataset_chapter": 306,
+     "hadith_range": [
+      15152,
+      15152
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل من أسلم",
+     "leaf_title_raw": "حديث رجل من أسلم",
+     "part": null,
+     "dataset_chapter": 193,
+     "hadith_range": [
+      15153,
+      15153
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث سهل بن أبي حثمة",
+     "leaf_title_raw": "حديث سهل بن أبي حثمة",
+     "part": null,
+     "dataset_chapter": 214,
+     "hadith_range": [
+      15154,
+      15155
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث عاصم المزني",
+     "leaf_title_raw": "حديث عاصم المزني",
+     "part": null,
+     "dataset_chapter": 230,
+     "hadith_range": [
+      15156,
+      15156
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث السائب بن يزيد",
+     "leaf_title_raw": "حديث السائب بن يزيد",
+     "part": null,
+     "dataset_chapter": 140,
+     "hadith_range": [
+      15157,
+      15170
+     ],
+     "n_line_starts": 14
+    },
+    {
+     "leaf_title": "حديث أبي سعيد بن المعلى",
+     "leaf_title_raw": "حديث أبي سعيد بن المعلى",
+     "part": null,
+     "dataset_chapter": 103,
+     "hadith_range": [
+      15171,
+      15171
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث الحجاج بن عمرو الأنصاري",
+     "leaf_title_raw": "حديث الحجاج بن عمرو الأنصاري",
+     "part": null,
+     "dataset_chapter": 137,
+     "hadith_range": [
+      15172,
+      15172
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي سعيد الزرقي",
+     "leaf_title_raw": "حديث أبي سعيد الزرقي",
+     "part": null,
+     "dataset_chapter": 101,
+     "hadith_range": [
+      15173,
+      15173
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث حجاج الأسلمي",
+     "leaf_title_raw": "حديث حجاج الأسلمي",
+     "part": null,
+     "dataset_chapter": 164,
+     "hadith_range": [
+      15174,
+      15174
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل عن النبي 15175",
+     "leaf_title_raw": "حديث رجل عن النبي 15175",
+     "part": null,
+     "dataset_chapter": 188,
+     "hadith_range": [
+      15175,
+      15175
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عبد الله بن حذافة",
+     "leaf_title_raw": "حديث عبد الله بن حذافة",
+     "part": null,
+     "dataset_chapter": 252,
+     "hadith_range": [
+      15176,
+      15176
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عبد الله بن رواحة",
+     "leaf_title_raw": "حديث عبد الله بن رواحة",
+     "part": null,
+     "dataset_chapter": 253,
+     "hadith_range": [
+      15177,
+      15178
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث سهيل ابن البيضاء",
+     "leaf_title_raw": "حديث سهيل ابن البيضاء",
+     "part": null,
+     "dataset_chapter": 216,
+     "hadith_range": [
+      15179,
+      15179
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عقيل بن أبي طالب",
+     "leaf_title_raw": "حديث عقيل بن أبي طالب",
+     "part": null,
+     "dataset_chapter": 259,
+     "hadith_range": [
+      15180,
+      15181
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث فروة بن مسيك",
+     "leaf_title_raw": "حديث فروة بن مسيك",
+     "part": null,
+     "dataset_chapter": 272,
+     "hadith_range": [
+      15182,
+      15182
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل من الأنصار",
+     "leaf_title_raw": "حديث رجل من الأنصار",
+     "part": null,
+     "dataset_chapter": 201,
+     "hadith_range": [
+      15183,
+      15183
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل من بهز",
+     "leaf_title_raw": "حديث رجل من بهز",
+     "part": null,
+     "dataset_chapter": 202,
+     "hadith_range": [
+      15184,
+      15184
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث الضحاك بن سفيان",
+     "leaf_title_raw": "حديث الضحاك بن سفيان",
+     "part": null,
+     "dataset_chapter": 141,
+     "hadith_range": [
+      15185,
+      15187
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث أبي لبابة",
+     "leaf_title_raw": "حديث أبي لبابة",
+     "part": null,
+     "dataset_chapter": 115,
+     "hadith_range": [
+      15188,
+      15192
+     ],
+     "n_line_starts": 5
+    },
+    {
+     "leaf_title": "حديث الضحاك بن قيس",
+     "leaf_title_raw": "حديث الضحاك بن قيس",
+     "part": null,
+     "dataset_chapter": 142,
+     "hadith_range": [
+      15193,
+      15193
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي صرمة",
+     "leaf_title_raw": "حديث أبي صرمة",
+     "part": null,
+     "dataset_chapter": 105,
+     "hadith_range": [
+      15194,
+      15196
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث عبد الرحمن بن عثمان",
+     "leaf_title_raw": "حديث عبد الرحمن بن عثمان",
+     "part": null,
+     "dataset_chapter": 242,
+     "hadith_range": [
+      15197,
+      15197
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث معمر بن عبد الله",
+     "leaf_title_raw": "حديث معمر بن عبد الله",
+     "part": null,
+     "dataset_chapter": 302,
+     "hadith_range": [
+      15198,
+      15201
+     ],
+     "n_line_starts": 4
+    },
+    {
+     "leaf_title": "حديث عويمر بن أشقر",
+     "leaf_title_raw": "حديث عويمر بن أشقر",
+     "part": null,
+     "dataset_chapter": 270,
+     "hadith_range": [
+      15202,
+      15202
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث جد خبيب",
+     "leaf_title_raw": "حديث جد خبيب",
+     "part": null,
+     "dataset_chapter": 157,
+     "hadith_range": [
+      15203,
+      15203
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث كعب بن مالك الأنصاري",
+     "leaf_title_raw": "حديث كعب بن مالك الأنصاري",
+     "part": null,
+     "dataset_chapter": 281,
+     "hadith_range": [
+      15204,
+      15237
+     ],
+     "n_line_starts": 34
+    },
+    {
+     "leaf_title": "حديث سويد بن النعمان",
+     "leaf_title_raw": "حديث سويد بن النعمان",
+     "part": null,
+     "dataset_chapter": 220,
+     "hadith_range": [
+      15238,
+      15239
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث رجل",
+     "leaf_title_raw": "حديث رجل",
+     "part": null,
+     "dataset_chapter": 178,
+     "hadith_range": [
+      15240,
+      15240
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل رضي الله تعالى عنه",
+     "leaf_title_raw": "حديث رجل رضي الله تعالى عنه",
+     "part": null,
+     "dataset_chapter": 184,
+     "hadith_range": [
+      15241,
+      15241
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رافع بن خديج",
+     "leaf_title_raw": "حديث رافع بن خديج",
+     "part": null,
+     "dataset_chapter": 173,
+     "hadith_range": [
+      15242,
+      15269
+     ],
+     "n_line_starts": 28
+    },
+    {
+     "leaf_title": "حديث أبي بردة بن نيار",
+     "leaf_title_raw": "حديث أبي بردة بن نيار",
+     "part": null,
+     "dataset_chapter": 92,
+     "hadith_range": [
+      15270,
+      15277
+     ],
+     "n_line_starts": 8
+    },
+    {
+     "leaf_title": "حديث أبي سعيد بن أبي فضالة",
+     "leaf_title_raw": "حديث أبي سعيد بن أبي فضالة",
+     "part": null,
+     "dataset_chapter": 102,
+     "hadith_range": [
+      15278,
+      15278
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث سهيل ابن بيضاء",
+     "leaf_title_raw": "حديث سهيل ابن بيضاء",
+     "part": null,
+     "dataset_chapter": 217,
+     "hadith_range": [
+      15279,
+      15279
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث سلمة بن سلامة",
+     "leaf_title_raw": "حديث سلمة بن سلامة",
+     "part": null,
+     "dataset_chapter": 211,
+     "hadith_range": [
+      15280,
+      15280
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث سعيد بن حريث أخو عمرو بن حريث",
+     "leaf_title_raw": "حديث سعيد بن حريث أخو عمرو بن حريث",
+     "part": null,
+     "dataset_chapter": 208,
+     "hadith_range": [
+      15281,
+      15281
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث حوشب صاحب النبي",
+     "leaf_title_raw": "حديث حوشب صاحب النبي",
+     "part": null,
+     "dataset_chapter": 168,
+     "hadith_range": [
+      15282,
+      15282
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث جندب بن مكيث",
+     "leaf_title_raw": "حديث جندب بن مكيث",
+     "part": null,
+     "dataset_chapter": 162,
+     "hadith_range": [
+      15283,
+      15283
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث سويد بن هبيرة",
+     "leaf_title_raw": "حديث سويد بن هبيرة",
+     "part": null,
+     "dataset_chapter": 223,
+     "hadith_range": [
+      15284,
+      15284
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث هشام بن حكيم بن حزام 15285",
+     "leaf_title_raw": "حديث هشام بن حكيم بن حزام 15285",
+     "part": null,
+     "dataset_chapter": 314,
+     "hadith_range": [
+      15285,
+      15285
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث مجاشع بن مسعود",
+     "leaf_title_raw": "حديث مجاشع بن مسعود",
+     "part": null,
+     "dataset_chapter": 286,
+     "hadith_range": [
+      15286,
+      15290
+     ],
+     "n_line_starts": 5
+    },
+    {
+     "leaf_title": "حديث بلال بن الحارث المزني",
+     "leaf_title_raw": "حديث بلال بن الحارث المزني",
+     "part": null,
+     "dataset_chapter": 151,
+     "hadith_range": [
+      15291,
+      15293
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث حبة وسواء ابني خالد",
+     "leaf_title_raw": "حديث حبة وسواء ابني خالد",
+     "part": null,
+     "dataset_chapter": 163,
+     "hadith_range": [
+      15294,
+      15295
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث عبد الله بن أبي الجدعاء",
+     "leaf_title_raw": "حديث عبد الله بن أبي الجدعاء",
+     "part": null,
+     "dataset_chapter": 247,
+     "hadith_range": [
+      15296,
+      15297
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث عباد بن قرط",
+     "leaf_title_raw": "حديث عباد بن قرط",
+     "part": null,
+     "dataset_chapter": 235,
+     "hadith_range": [
+      15298,
+      15298
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث معن بن يزيد السلمي",
+     "leaf_title_raw": "حديث معن بن يزيد السلمي",
+     "part": null,
+     "dataset_chapter": 303,
+     "hadith_range": [
+      15299,
+      15302
+     ],
+     "n_line_starts": 4
+    },
+    {
+     "leaf_title": "حديث عبد الله بن ثابت",
+     "leaf_title_raw": "حديث عبد الله بن ثابت",
+     "part": null,
+     "dataset_chapter": 250,
+     "hadith_range": [
+      15303,
+      15303
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل من جهينة",
+     "leaf_title_raw": "حديث رجل من جهينة",
+     "part": null,
+     "dataset_chapter": 203,
+     "hadith_range": [
+      15304,
+      15304
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث نمير الخزاعي",
+     "leaf_title_raw": "حديث نمير الخزاعي",
+     "part": null,
+     "dataset_chapter": 311,
+     "hadith_range": [
+      15305,
+      15306
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث جعدة",
+     "leaf_title_raw": "حديث جعدة",
+     "part": null,
+     "dataset_chapter": 161,
+     "hadith_range": [
+      15307,
+      15309
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث محمد بن صفوان",
+     "leaf_title_raw": "حديث محمد بن صفوان",
+     "part": null,
+     "dataset_chapter": 292,
+     "hadith_range": [
+      15310,
+      15310
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي روح الكلاعي",
+     "leaf_title_raw": "حديث أبي روح الكلاعي",
+     "part": null,
+     "dataset_chapter": 100,
+     "hadith_range": [
+      15311,
+      15312
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث طارق بن أشيم الأشجعي والد أبي مالك",
+     "leaf_title_raw": "حديث طارق بن أشيم الأشجعي والد أبي مالك",
+     "part": null,
+     "dataset_chapter": 228,
+     "hadith_range": [
+      15313,
+      15320
+     ],
+     "n_line_starts": 8
+    },
+    {
+     "leaf_title": "حديث عبد الله اليشكري عن رجل",
+     "leaf_title_raw": "حديث عبد الله اليشكري عن رجل",
+     "part": null,
+     "dataset_chapter": 246,
+     "hadith_range": [
+      15321,
+      15321
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل من أصحاب النبي صلى الله عليه وسلم",
+     "leaf_title_raw": "حديث رجل من أصحاب النبي صلى الله عليه وسلم",
+     "part": null,
+     "dataset_chapter": 198,
+     "hadith_range": [
+      15322,
+      15322
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث مالك بن نضلة أبي الأحوص",
+     "leaf_title_raw": "حديث مالك بن نضلة أبي الأحوص",
+     "part": null,
+     "dataset_chapter": 285,
+     "hadith_range": [
+      15323,
+      15327
+     ],
+     "n_line_starts": 5
+    },
+    {
+     "leaf_title": "حديث رجل عن النبي 15328",
+     "leaf_title_raw": "حديث رجل عن النبي 15328",
+     "part": null,
+     "dataset_chapter": 189,
+     "hadith_range": [
+      15328,
+      15328
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل عن النبي 15329",
+     "leaf_title_raw": "حديث رجل عن النبي 15329",
+     "part": null,
+     "dataset_chapter": 190,
+     "hadith_range": [
+      15329,
+      15329
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل رضي الله تعالى",
+     "leaf_title_raw": "حديث رجل رضي الله تعالى",
+     "part": null,
+     "dataset_chapter": 183,
+     "hadith_range": [
+      15330,
+      15332
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث بعض أصحاب النبي",
+     "leaf_title_raw": "حديث بعض أصحاب النبي",
+     "part": null,
+     "dataset_chapter": 149,
+     "hadith_range": [
+      15333,
+      15333
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل من أصحاب بدر",
+     "leaf_title_raw": "حديث رجل من أصحاب بدر",
+     "part": null,
+     "dataset_chapter": 200,
+     "hadith_range": [
+      15334,
+      15335
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث معقل بن سنان",
+     "leaf_title_raw": "حديث معقل بن سنان",
+     "part": null,
+     "dataset_chapter": 300,
+     "hadith_range": [
+      15336,
+      15336
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عمرو بن سلمة",
+     "leaf_title_raw": "حديث عمرو بن سلمة",
+     "part": null,
+     "dataset_chapter": 265,
+     "hadith_range": [
+      15337,
+      15337
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث بعض أصحاب النبي 15338",
+     "leaf_title_raw": "حديث بعض أصحاب النبي 15338",
+     "part": null,
+     "dataset_chapter": 150,
+     "hadith_range": [
+      15338,
+      15338
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل لم يسم",
+     "leaf_title_raw": "حديث رجل لم يسم",
+     "part": null,
+     "dataset_chapter": 192,
+     "hadith_range": [
+      15339,
+      15339
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي عمرو بن حفص بن المغيرة",
+     "leaf_title_raw": "حديث أبي عمرو بن حفص بن المغيرة",
+     "part": null,
+     "dataset_chapter": 111,
+     "hadith_range": [
+      15340,
+      15340
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي النعمان الأنصاري",
+     "leaf_title_raw": "حديث أبي النعمان الأنصاري",
+     "part": null,
+     "dataset_chapter": 89,
+     "hadith_range": [
+      15341,
+      15341
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث سلمة بن المحبق",
+     "leaf_title_raw": "حديث سلمة بن المحبق",
+     "part": null,
+     "dataset_chapter": 210,
+     "hadith_range": [
+      15342,
+      15348
+     ],
+     "n_line_starts": 7
+    },
+    {
+     "leaf_title": "حديث قبيصة بن مخارق",
+     "leaf_title_raw": "حديث قبيصة بن مخارق",
+     "part": null,
+     "dataset_chapter": 273,
+     "hadith_range": [
+      15349,
+      15351
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث كرز بن علقمة الخزاعي",
+     "leaf_title_raw": "حديث كرز بن علقمة الخزاعي",
+     "part": null,
+     "dataset_chapter": 279,
+     "hadith_range": [
+      15352,
+      15354
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث عامر المزني",
+     "leaf_title_raw": "حديث عامر المزني",
+     "part": null,
+     "dataset_chapter": 232,
+     "hadith_range": [
+      15355,
+      15356
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث أبي المعلى",
+     "leaf_title_raw": "حديث أبي المعلى",
+     "part": null,
+     "dataset_chapter": 88,
+     "hadith_range": [
+      15357,
+      15357
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث سلمة بن يزيد الجعفي",
+     "leaf_title_raw": "حديث سلمة بن يزيد الجعفي",
+     "part": null,
+     "dataset_chapter": 212,
+     "hadith_range": [
+      15358,
+      15358
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عاصم بن عمر",
+     "leaf_title_raw": "حديث عاصم بن عمر",
+     "part": null,
+     "dataset_chapter": 231,
+     "hadith_range": [
+      15359,
+      15359
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل من أصحاب النبي 15360",
+     "leaf_title_raw": "حديث رجل من أصحاب النبي 15360",
+     "part": null,
+     "dataset_chapter": 195,
+     "hadith_range": [
+      15360,
+      15360
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث جرهد الأسلمي",
+     "leaf_title_raw": "حديث جرهد الأسلمي",
+     "part": null,
+     "dataset_chapter": 160,
+     "hadith_range": [
+      15361,
+      15368
+     ],
+     "n_line_starts": 8
+    },
+    {
+     "leaf_title": "حديث اللجلاج",
+     "leaf_title_raw": "حديث اللجلاج",
+     "part": null,
+     "dataset_chapter": 143,
+     "hadith_range": [
+      15369,
+      15369
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي عبس رضي الله تعالى عنه",
+     "leaf_title_raw": "حديث أبي عبس رضي الله تعالى عنه",
+     "part": null,
+     "dataset_chapter": 107,
+     "hadith_range": [
+      15370,
+      15370
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أعرابي",
+     "leaf_title_raw": "حديث أعرابي",
+     "part": null,
+     "dataset_chapter": 119,
+     "hadith_range": [
+      15371,
+      15371
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل عن أبيه رضي الله تعالى عنه",
+     "leaf_title_raw": "حديث رجل عن أبيه رضي الله تعالى عنه",
+     "part": null,
+     "dataset_chapter": 186,
+     "hadith_range": [
+      15372,
+      15372
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث مجمع بن يزيد",
+     "leaf_title_raw": "حديث مجمع بن يزيد",
+     "part": null,
+     "dataset_chapter": 288,
+     "hadith_range": [
+      15373,
+      15375
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث رجل 15376",
+     "leaf_title_raw": "حديث رجل 15376",
+     "part": null,
+     "dataset_chapter": 179,
+     "hadith_range": [
+      15376,
+      15376
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل 15377",
+     "leaf_title_raw": "حديث رجل 15377",
+     "part": null,
+     "dataset_chapter": 180,
+     "hadith_range": [
+      15377,
+      15377
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث معقل بن سنان الأشجعي",
+     "leaf_title_raw": "حديث معقل بن سنان الأشجعي",
+     "part": null,
+     "dataset_chapter": 301,
+     "hadith_range": [
+      15378,
+      15379
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث بهيسة عن أبيها",
+     "leaf_title_raw": "حديث بهيسة عن أبيها",
+     "part": null,
+     "dataset_chapter": 152,
+     "hadith_range": [
+      15380,
+      15381
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث ابن الرسيم عن أبيه",
+     "leaf_title_raw": "حديث ابن الرسيم عن أبيه",
+     "part": null,
+     "dataset_chapter": 124,
+     "hadith_range": [
+      15382,
+      15383
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث عبيدة بن عمرو",
+     "leaf_title_raw": "حديث عبيدة بن عمرو",
+     "part": null,
+     "dataset_chapter": 257,
+     "hadith_range": [
+      15384,
+      15384
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث جد طلحة الأيامي",
+     "leaf_title_raw": "حديث جد طلحة الأيامي",
+     "part": null,
+     "dataset_chapter": 158,
+     "hadith_range": [
+      15385,
+      15385
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث الحارث بن حسان البكري",
+     "leaf_title_raw": "حديث الحارث بن حسان البكري",
+     "part": null,
+     "dataset_chapter": 133,
+     "hadith_range": [
+      15386,
+      15388
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث أبي تميمة الهجيمي",
+     "leaf_title_raw": "حديث أبي تميمة الهجيمي",
+     "part": null,
+     "dataset_chapter": 94,
+     "hadith_range": [
+      15389,
+      15389
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث صحار العبدي",
+     "leaf_title_raw": "حديث صحار العبدي",
+     "part": null,
+     "dataset_chapter": 227,
+     "hadith_range": [
+      15390,
+      15391
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث سبرة بن أبي فاكه",
+     "leaf_title_raw": "حديث سبرة بن أبي فاكه",
+     "part": null,
+     "dataset_chapter": 206,
+     "hadith_range": [
+      15392,
+      15392
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عبد الله بن أرقم",
+     "leaf_title_raw": "حديث عبد الله بن أرقم",
+     "part": null,
+     "dataset_chapter": 248,
+     "hadith_range": [
+      15393,
+      15393
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عمرو بن شأش الأسلمي",
+     "leaf_title_raw": "حديث عمرو بن شأش الأسلمي",
+     "part": null,
+     "dataset_chapter": 266,
+     "hadith_range": [
+      15394,
+      15394
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث سوادة بن الربيع",
+     "leaf_title_raw": "حديث سوادة بن الربيع",
+     "part": null,
+     "dataset_chapter": 218,
+     "hadith_range": [
+      15395,
+      15395
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث هند بن أسماء الأسلمي",
+     "leaf_title_raw": "حديث هند بن أسماء الأسلمي",
+     "part": null,
+     "dataset_chapter": 315,
+     "hadith_range": [
+      15396,
+      15397
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث جارية بن قدامة",
+     "leaf_title_raw": "حديث جارية بن قدامة",
+     "part": null,
+     "dataset_chapter": 153,
+     "hadith_range": [
+      15398,
+      15398
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث ذي الجوشن",
+     "leaf_title_raw": "حديث ذي الجوشن",
+     "part": null,
+     "dataset_chapter": 170,
+     "hadith_range": [
+      15399,
+      15399
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي عبيد",
+     "leaf_title_raw": "حديث أبي عبيد",
+     "part": null,
+     "dataset_chapter": 108,
+     "hadith_range": [
+      15400,
+      15400
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث الهرماس بن زياد",
+     "leaf_title_raw": "حديث الهرماس بن زياد",
+     "part": null,
+     "dataset_chapter": 145,
+     "hadith_range": [
+      15401,
+      15404
+     ],
+     "n_line_starts": 4
+    },
+    {
+     "leaf_title": "حديث الحارث بن عمرو",
+     "leaf_title_raw": "حديث الحارث بن عمرو",
+     "part": null,
+     "dataset_chapter": 136,
+     "hadith_range": [
+      15405,
+      15405
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث سهل بن حنيف",
+     "leaf_title_raw": "حديث سهل بن حنيف",
+     "part": null,
+     "dataset_chapter": 215,
+     "hadith_range": [
+      15406,
+      15418
+     ],
+     "n_line_starts": 13
+    },
+    {
+     "leaf_title": "حديث رجل يسم طلحة وليس هو بطلحة بن عبيد الله",
+     "leaf_title_raw": "حديث رجل يسم طلحة وليس هو بطلحة بن عبيد الله",
+     "part": null,
+     "dataset_chapter": 204,
+     "hadith_range": [
+      15419,
+      15419
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث نعيم بن مسعود",
+     "leaf_title_raw": "حديث نعيم بن مسعود",
+     "part": null,
+     "dataset_chapter": 310,
+     "hadith_range": [
+      15420,
+      15420
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث سويد بن النعمان رضي الله تعالى عنه",
+     "leaf_title_raw": "حديث سويد بن النعمان رضي الله تعالى عنه",
+     "part": null,
+     "dataset_chapter": 221,
+     "hadith_range": [
+      15421,
+      15421
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث الأقرع بن حابس",
+     "leaf_title_raw": "حديث الأقرع بن حابس",
+     "part": null,
+     "dataset_chapter": 130,
+     "hadith_range": [
+      15422,
+      15422
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رباح بن الربيع",
+     "leaf_title_raw": "حديث رباح بن الربيع",
+     "part": null,
+     "dataset_chapter": 176,
+     "hadith_range": [
+      15423,
+      15423
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي مويهبة مولى رسول الله",
+     "leaf_title_raw": "حديث أبي مويهبة مولى رسول الله",
+     "part": null,
+     "dataset_chapter": 117,
+     "hadith_range": [
+      15424,
+      15425
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث راشد بن حبيش",
+     "leaf_title_raw": "حديث راشد بن حبيش",
+     "part": null,
+     "dataset_chapter": 172,
+     "hadith_range": [
+      15426,
+      15426
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي حبة البدري",
+     "leaf_title_raw": "حديث أبي حبة البدري",
+     "part": null,
+     "dataset_chapter": 96,
+     "hadith_range": [
+      15427,
+      15428
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث أبي عمير",
+     "leaf_title_raw": "حديث أبي عمير",
+     "part": null,
+     "dataset_chapter": 112,
+     "hadith_range": [
+      15429,
+      15429
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث واثلة بن الأسقع من الشاميين",
+     "leaf_title_raw": "حديث واثلة بن الأسقع من الشاميين",
+     "part": null,
+     "dataset_chapter": 317,
+     "hadith_range": [
+      15430,
+      15444
+     ],
+     "n_line_starts": 15
+    },
+    {
+     "leaf_title": "حديث ربيعة بن عباد الديلي",
+     "leaf_title_raw": "حديث ربيعة بن عباد الديلي",
+     "part": null,
+     "dataset_chapter": 177,
+     "hadith_range": [
+      15445,
+      15452
+     ],
+     "n_line_starts": 8
+    },
+    {
+     "leaf_title": "باقي حديث محمد بن مسلمة",
+     "leaf_title_raw": "باقي حديث محمد بن مسلمة",
+     "part": null,
+     "dataset_chapter": 76,
+     "hadith_range": [
+      15453,
+      15454
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث كعب بن زيد أو زيد بن كعب",
+     "leaf_title_raw": "حديث كعب بن زيد أو زيد بن كعب",
+     "part": null,
+     "dataset_chapter": 280,
+     "hadith_range": [
+      15455,
+      15455
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث شداد بن الهاد",
+     "leaf_title_raw": "حديث شداد بن الهاد",
+     "part": null,
+     "dataset_chapter": 224,
+     "hadith_range": [
+      15456,
+      15456
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث حمزة بن عمرو الأسلمي",
+     "leaf_title_raw": "حديث حمزة بن عمرو الأسلمي",
+     "part": null,
+     "dataset_chapter": 167,
+     "hadith_range": [
+      15457,
+      15461
+     ],
+     "n_line_starts": 5
+    },
+    {
+     "leaf_title": "حديث عليم عن عبس",
+     "leaf_title_raw": "حديث عليم عن عبس",
+     "part": null,
+     "dataset_chapter": 261,
+     "hadith_range": [
+      15462,
+      15462
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث شقران مولى رسول الله",
+     "leaf_title_raw": "حديث شقران مولى رسول الله",
+     "part": null,
+     "dataset_chapter": 225,
+     "hadith_range": [
+      15463,
+      15463
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عبد الله بن أنيس",
+     "leaf_title_raw": "حديث عبد الله بن أنيس",
+     "part": null,
+     "dataset_chapter": 249,
+     "hadith_range": [
+      15464,
+      15469
+     ],
+     "n_line_starts": 6
+    },
+    {
+     "leaf_title": "حديث أبي أسيد الساعدي",
+     "leaf_title_raw": "حديث أبي أسيد الساعدي",
+     "part": null,
+     "dataset_chapter": 85,
+     "hadith_range": [
+      15470,
+      15482
+     ],
+     "n_line_starts": 13
+    },
+    {
+     "leaf_title": "بقية حديث عبد الله بن أنيس",
+     "leaf_title_raw": "بقية حديث عبد الله بن أنيس",
+     "part": null,
+     "dataset_chapter": 78,
+     "hadith_range": [
+      15483,
+      15483
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث سليمان بن عمرو بن الأحوص عن أبيه",
+     "leaf_title_raw": "حديث سليمان بن عمرو بن الأحوص عن أبيه",
+     "part": null,
+     "dataset_chapter": 213,
+     "hadith_range": [
+      15484,
+      15484
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "بقية حديث خريم بن فاتك",
+     "leaf_title_raw": "بقية حديث خريم بن فاتك",
+     "part": null,
+     "dataset_chapter": 77,
+     "hadith_range": [
+      15485,
+      15487
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث عبد الرحمن بن عثمان عن النبي",
+     "leaf_title_raw": "حديث عبد الرحمن بن عثمان عن النبي",
+     "part": null,
+     "dataset_chapter": 243,
+     "hadith_range": [
+      15488,
+      15490
+     ],
+     "n_line_starts": 3
+    },
+    {
+     "leaf_title": "حديث علباء",
+     "leaf_title_raw": "حديث علباء",
+     "part": null,
+     "dataset_chapter": 260,
+     "hadith_range": [
+      15491,
+      15491
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث هوذة الأنصاري عن جده",
+     "leaf_title_raw": "حديث هوذة الأنصاري عن جده",
+     "part": null,
+     "dataset_chapter": 316,
+     "hadith_range": [
+      15492,
+      15492
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث بشير بن عقربة",
+     "leaf_title_raw": "حديث بشير بن عقربة",
+     "part": null,
+     "dataset_chapter": 148,
+     "hadith_range": [
+      15493,
+      15493
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث عبيد بن خالد السلمي رضي الله تعالى عنه",
+     "leaf_title_raw": "حديث عبيد بن خالد السلمي رضي الله تعالى عنه",
+     "part": null,
+     "dataset_chapter": 256,
+     "hadith_range": [
+      15494,
+      15494
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رجل 15495",
+     "leaf_title_raw": "حديث رجل 15495",
+     "part": null,
+     "dataset_chapter": 181,
+     "hadith_range": [
+      15495,
+      15495
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث خادم النبي",
+     "leaf_title_raw": "حديث خادم النبي",
+     "part": null,
+     "dataset_chapter": 169,
+     "hadith_range": [
+      15496,
+      15496
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث وحشي الحبشي",
+     "leaf_title_raw": "حديث وحشي الحبشي",
+     "part": null,
+     "dataset_chapter": 318,
+     "hadith_range": [
+      15497,
+      15498
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث رافع بن مكيث",
+     "leaf_title_raw": "حديث رافع بن مكيث",
+     "part": null,
+     "dataset_chapter": 175,
+     "hadith_range": [
+      15499,
+      15499
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث أبي لبابة عبد المنذر بن عبد المنذر",
+     "leaf_title_raw": "حديث أبي لبابة عبد المنذر بن عبد المنذر",
+     "part": null,
+     "dataset_chapter": 116,
+     "hadith_range": [
+      15500,
+      15500
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث مجمع بن يعقوب عن غلام من أهل قباء أدرك النبي",
+     "leaf_title_raw": "حديث مجمع بن يعقوب عن غلام من أهل قباء أدرك النبي",
+     "part": null,
+     "dataset_chapter": 289,
+     "hadith_range": [
+      15501,
+      15501
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث زينب امرأة عبد الله",
+     "leaf_title_raw": "حديث زينب امرأة عبد الله",
+     "part": null,
+     "dataset_chapter": 205,
+     "hadith_range": [
+      15502,
+      15502
+     ],
+     "n_line_starts": 1
+    },
+    {
+     "leaf_title": "حديث رائطة امرأة عبد الله",
+     "leaf_title_raw": "حديث رائطة امرأة عبد الله",
+     "part": null,
+     "dataset_chapter": 171,
+     "hadith_range": [
+      15503,
+      15504
+     ],
+     "n_line_starts": 2
+    },
+    {
+     "leaf_title": "حديث أم سليمان بن عمرو بن الأحوص",
+     "leaf_title_raw": "حديث أم سليمان بن عمرو بن الأحوص",
+     "part": null,
+     "dataset_chapter": 120,
+     "hadith_range": [
+      15505,
+      15507
+     ],
+     "n_line_starts": 3
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند المدنيين",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    15508,
+    16208
+   ],
+   "n_pages": 19,
+   "n_line_starts": 698,
+   "evidence": "Page titles «أول مسند المدنيين/1-2» + «مسند المدنيين/3-19»; closing colophon «آخر مسند المكيين والمدنيين» after 16208.",
+   "leaves": [
+    {
+     "leaf_title": "أول مسند المدنيين",
+     "leaf_title_raw": "أول مسند المدنيين/1",
+     "part": 1,
+     "dataset_chapter": 6,
+     "hadith_range": [
+      15508,
+      15548
+     ],
+     "n_line_starts": 41
+    },
+    {
+     "leaf_title": "أول مسند المدنيين",
+     "leaf_title_raw": "أول مسند المدنيين/2",
+     "part": 2,
+     "dataset_chapter": 7,
+     "hadith_range": [
+      15549,
+      15592
+     ],
+     "n_line_starts": 44
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/3",
+     "part": 3,
+     "dataset_chapter": 686,
+     "hadith_range": [
+      15593,
+      15624
+     ],
+     "n_line_starts": 32
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/4",
+     "part": 4,
+     "dataset_chapter": 687,
+     "hadith_range": [
+      15625,
+      15661
+     ],
+     "n_line_starts": 37
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/5",
+     "part": 5,
+     "dataset_chapter": 688,
+     "hadith_range": [
+      15662,
+      15707
+     ],
+     "n_line_starts": 46
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/6",
+     "part": 6,
+     "dataset_chapter": 689,
+     "hadith_range": [
+      15710,
+      15747
+     ],
+     "n_line_starts": 38
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/7",
+     "part": 7,
+     "dataset_chapter": 690,
+     "hadith_range": [
+      15748,
+      15783
+     ],
+     "n_line_starts": 36
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/8",
+     "part": 8,
+     "dataset_chapter": 691,
+     "hadith_range": [
+      15784,
+      15834
+     ],
+     "n_line_starts": 51
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/9",
+     "part": 9,
+     "dataset_chapter": 692,
+     "hadith_range": [
+      15835,
+      15877
+     ],
+     "n_line_starts": 43
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/10",
+     "part": 10,
+     "dataset_chapter": 693,
+     "hadith_range": [
+      15878,
+      15894
+     ],
+     "n_line_starts": 17
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/11",
+     "part": 11,
+     "dataset_chapter": 694,
+     "hadith_range": [
+      15895,
+      15931
+     ],
+     "n_line_starts": 37
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/12",
+     "part": 12,
+     "dataset_chapter": 695,
+     "hadith_range": [
+      15932,
+      15958
+     ],
+     "n_line_starts": 27
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/13",
+     "part": 13,
+     "dataset_chapter": 696,
+     "hadith_range": [
+      15959,
+      16001
+     ],
+     "n_line_starts": 43
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/14",
+     "part": 14,
+     "dataset_chapter": 697,
+     "hadith_range": [
+      16002,
+      16026
+     ],
+     "n_line_starts": 25
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/15",
+     "part": 15,
+     "dataset_chapter": 698,
+     "hadith_range": [
+      16027,
+      16046
+     ],
+     "n_line_starts": 20
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/16",
+     "part": 16,
+     "dataset_chapter": 699,
+     "hadith_range": [
+      16047,
+      16096
+     ],
+     "n_line_starts": 50
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/17",
+     "part": 17,
+     "dataset_chapter": 700,
+     "hadith_range": [
+      16097,
+      16130
+     ],
+     "n_line_starts": 33
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/18",
+     "part": 18,
+     "dataset_chapter": 701,
+     "hadith_range": [
+      16131,
+      16183
+     ],
+     "n_line_starts": 53
+    },
+    {
+     "leaf_title": "مسند المدنيين",
+     "leaf_title_raw": "مسند المدنيين/19",
+     "part": 19,
+     "dataset_chapter": 702,
+     "hadith_range": [
+      16184,
+      16208
+     ],
+     "n_line_starts": 25
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند الشاميين",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    16209,
+    17393
+   ],
+   "n_pages": 38,
+   "n_line_starts": 1165,
+   "evidence": "Page titles «مسند الشاميين/1-38»; colophon «هذا آخر مسند الشاميين» after 17393.",
+   "leaves": [
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/1",
+     "part": 1,
+     "dataset_chapter": 589,
+     "hadith_range": [
+      16209,
+      16224
+     ],
+     "n_line_starts": 16
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/2",
+     "part": 2,
+     "dataset_chapter": 590,
+     "hadith_range": [
+      16225,
+      16270
+     ],
+     "n_line_starts": 46
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/3",
+     "part": 3,
+     "dataset_chapter": 591,
+     "hadith_range": [
+      16271,
+      16331
+     ],
+     "n_line_starts": 61
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/4",
+     "part": 4,
+     "dataset_chapter": 592,
+     "hadith_range": [
+      16332,
+      16375
+     ],
+     "n_line_starts": 44
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/5",
+     "part": 5,
+     "dataset_chapter": 593,
+     "hadith_range": [
+      16376,
+      16399
+     ],
+     "n_line_starts": 24
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/6",
+     "part": 6,
+     "dataset_chapter": 594,
+     "hadith_range": [
+      16400,
+      16414
+     ],
+     "n_line_starts": 15
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/7",
+     "part": 7,
+     "dataset_chapter": 595,
+     "hadith_range": [
+      16415,
+      16445
+     ],
+     "n_line_starts": 31
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/8",
+     "part": 8,
+     "dataset_chapter": 596,
+     "hadith_range": [
+      16446,
+      16487
+     ],
+     "n_line_starts": 42
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/9",
+     "part": 9,
+     "dataset_chapter": 597,
+     "hadith_range": [
+      16488,
+      16517
+     ],
+     "n_line_starts": 30
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/10",
+     "part": 10,
+     "dataset_chapter": 598,
+     "hadith_range": [
+      16518,
+      16541
+     ],
+     "n_line_starts": 24
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/11",
+     "part": 11,
+     "dataset_chapter": 599,
+     "hadith_range": [
+      16542,
+      16573
+     ],
+     "n_line_starts": 32
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/12",
+     "part": 12,
+     "dataset_chapter": 600,
+     "hadith_range": [
+      16574,
+      16593
+     ],
+     "n_line_starts": 20
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/13",
+     "part": 13,
+     "dataset_chapter": 601,
+     "hadith_range": [
+      16594,
+      16615
+     ],
+     "n_line_starts": 22
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/14",
+     "part": 14,
+     "dataset_chapter": 602,
+     "hadith_range": [
+      16616,
+      16652
+     ],
+     "n_line_starts": 37
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/15",
+     "part": 15,
+     "dataset_chapter": 603,
+     "hadith_range": [
+      16653,
+      16685
+     ],
+     "n_line_starts": 33
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/16",
+     "part": 16,
+     "dataset_chapter": 604,
+     "hadith_range": [
+      16686,
+      16730
+     ],
+     "n_line_starts": 45
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/17",
+     "part": 17,
+     "dataset_chapter": 605,
+     "hadith_range": [
+      16731,
+      16752
+     ],
+     "n_line_starts": 22
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/18",
+     "part": 18,
+     "dataset_chapter": 606,
+     "hadith_range": [
+      16773,
+      16816
+     ],
+     "n_line_starts": 44
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/19",
+     "part": 19,
+     "dataset_chapter": 607,
+     "hadith_range": [
+      16817,
+      16849
+     ],
+     "n_line_starts": 33
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/20",
+     "part": 20,
+     "dataset_chapter": 608,
+     "hadith_range": [
+      16850,
+      16875
+     ],
+     "n_line_starts": 26
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/21",
+     "part": 21,
+     "dataset_chapter": 609,
+     "hadith_range": [
+      16876,
+      16915
+     ],
+     "n_line_starts": 40
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/22",
+     "part": 22,
+     "dataset_chapter": 610,
+     "hadith_range": [
+      16916,
+      16937
+     ],
+     "n_line_starts": 22
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/23",
+     "part": 23,
+     "dataset_chapter": 611,
+     "hadith_range": [
+      16938,
+      16970
+     ],
+     "n_line_starts": 33
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/24",
+     "part": 24,
+     "dataset_chapter": 612,
+     "hadith_range": [
+      16971,
+      17000
+     ],
+     "n_line_starts": 30
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/25",
+     "part": 25,
+     "dataset_chapter": 613,
+     "hadith_range": [
+      17001,
+      17054
+     ],
+     "n_line_starts": 54
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/26",
+     "part": 26,
+     "dataset_chapter": 614,
+     "hadith_range": [
+      17055,
+      17085
+     ],
+     "n_line_starts": 31
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/27",
+     "part": 27,
+     "dataset_chapter": 615,
+     "hadith_range": [
+      17086,
+      17113
+     ],
+     "n_line_starts": 28
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/28",
+     "part": 28,
+     "dataset_chapter": 616,
+     "hadith_range": [
+      17114,
+      17129
+     ],
+     "n_line_starts": 16
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/29",
+     "part": 29,
+     "dataset_chapter": 617,
+     "hadith_range": [
+      17130,
+      17159
+     ],
+     "n_line_starts": 30
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/30",
+     "part": 30,
+     "dataset_chapter": 618,
+     "hadith_range": [
+      17160,
+      17182
+     ],
+     "n_line_starts": 23
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/31",
+     "part": 31,
+     "dataset_chapter": 619,
+     "hadith_range": [
+      17183,
+      17214
+     ],
+     "n_line_starts": 32
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/32",
+     "part": 32,
+     "dataset_chapter": 620,
+     "hadith_range": [
+      17215,
+      17240
+     ],
+     "n_line_starts": 26
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/33",
+     "part": 33,
+     "dataset_chapter": 621,
+     "hadith_range": [
+      17241,
+      17255
+     ],
+     "n_line_starts": 15
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/34",
+     "part": 34,
+     "dataset_chapter": 622,
+     "hadith_range": [
+      17256,
+      17289
+     ],
+     "n_line_starts": 34
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/35",
+     "part": 35,
+     "dataset_chapter": 623,
+     "hadith_range": [
+      17290,
+      17312
+     ],
+     "n_line_starts": 23
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/36",
+     "part": 36,
+     "dataset_chapter": 624,
+     "hadith_range": [
+      17313,
+      17340
+     ],
+     "n_line_starts": 28
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/37",
+     "part": 37,
+     "dataset_chapter": 625,
+     "hadith_range": [
+      17341,
+      17363
+     ],
+     "n_line_starts": 23
+    },
+    {
+     "leaf_title": "مسند الشاميين",
+     "leaf_title_raw": "مسند الشاميين/38",
+     "part": 38,
+     "dataset_chapter": 626,
+     "hadith_range": [
+      17364,
+      17393
+     ],
+     "n_line_starts": 30
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند الكوفيين",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    17394,
+    18926
+   ],
+   "n_pages": 46,
+   "n_line_starts": 1533,
+   "evidence": "Page titles «مسند الكوفيين/1-46»; colophon «وهو آخر مسند الكوفيين» after 18926 (with «آخر حديث أبي موسى الأشعري»).",
+   "leaves": [
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/1",
+     "part": 1,
+     "dataset_chapter": 640,
+     "hadith_range": [
+      17394,
+      17431
+     ],
+     "n_line_starts": 38
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/2",
+     "part": 2,
+     "dataset_chapter": 641,
+     "hadith_range": [
+      17432,
+      17465
+     ],
+     "n_line_starts": 34
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/3",
+     "part": 3,
+     "dataset_chapter": 642,
+     "hadith_range": [
+      17466,
+      17500
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/4",
+     "part": 4,
+     "dataset_chapter": 643,
+     "hadith_range": [
+      17501,
+      17532
+     ],
+     "n_line_starts": 32
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/5",
+     "part": 5,
+     "dataset_chapter": 644,
+     "hadith_range": [
+      17533,
+      17568
+     ],
+     "n_line_starts": 36
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/6",
+     "part": 6,
+     "dataset_chapter": 645,
+     "hadith_range": [
+      17569,
+      17593
+     ],
+     "n_line_starts": 25
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/7",
+     "part": 7,
+     "dataset_chapter": 646,
+     "hadith_range": [
+      17594,
+      17621
+     ],
+     "n_line_starts": 28
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/8",
+     "part": 8,
+     "dataset_chapter": 647,
+     "hadith_range": [
+      17622,
+      17650
+     ],
+     "n_line_starts": 29
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/9",
+     "part": 9,
+     "dataset_chapter": 648,
+     "hadith_range": [
+      17651,
+      17680
+     ],
+     "n_line_starts": 30
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/10",
+     "part": 10,
+     "dataset_chapter": 649,
+     "hadith_range": [
+      17681,
+      17724
+     ],
+     "n_line_starts": 44
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/11",
+     "part": 11,
+     "dataset_chapter": 650,
+     "hadith_range": [
+      17725,
+      17737
+     ],
+     "n_line_starts": 13
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/12",
+     "part": 12,
+     "dataset_chapter": 651,
+     "hadith_range": [
+      17738,
+      17770
+     ],
+     "n_line_starts": 33
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/13",
+     "part": 13,
+     "dataset_chapter": 652,
+     "hadith_range": [
+      17771,
+      17810
+     ],
+     "n_line_starts": 40
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/14",
+     "part": 14,
+     "dataset_chapter": 653,
+     "hadith_range": [
+      17811,
+      17860
+     ],
+     "n_line_starts": 50
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/15",
+     "part": 15,
+     "dataset_chapter": 654,
+     "hadith_range": [
+      17861,
+      17890
+     ],
+     "n_line_starts": 30
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/16",
+     "part": 16,
+     "dataset_chapter": 655,
+     "hadith_range": [
+      17891,
+      17925
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/17",
+     "part": 17,
+     "dataset_chapter": 656,
+     "hadith_range": [
+      17926,
+      17963
+     ],
+     "n_line_starts": 38
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/18",
+     "part": 18,
+     "dataset_chapter": 657,
+     "hadith_range": [
+      17964,
+      17990
+     ],
+     "n_line_starts": 27
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/19",
+     "part": 19,
+     "dataset_chapter": 658,
+     "hadith_range": [
+      17991,
+      18028
+     ],
+     "n_line_starts": 38
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/20",
+     "part": 20,
+     "dataset_chapter": 659,
+     "hadith_range": [
+      18029,
+      18064
+     ],
+     "n_line_starts": 36
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/21",
+     "part": 21,
+     "dataset_chapter": 660,
+     "hadith_range": [
+      18065,
+      18083
+     ],
+     "n_line_starts": 19
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/22",
+     "part": 22,
+     "dataset_chapter": 661,
+     "hadith_range": [
+      18084,
+      18121
+     ],
+     "n_line_starts": 38
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/23",
+     "part": 23,
+     "dataset_chapter": 662,
+     "hadith_range": [
+      18122,
+      18137
+     ],
+     "n_line_starts": 16
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/24",
+     "part": 24,
+     "dataset_chapter": 663,
+     "hadith_range": [
+      18138,
+      18148
+     ],
+     "n_line_starts": 11
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/25",
+     "part": 25,
+     "dataset_chapter": 664,
+     "hadith_range": [
+      18149,
+      18156
+     ],
+     "n_line_starts": 8
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/26",
+     "part": 26,
+     "dataset_chapter": 665,
+     "hadith_range": [
+      18157,
+      18167
+     ],
+     "n_line_starts": 11
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/27",
+     "part": 27,
+     "dataset_chapter": 666,
+     "hadith_range": [
+      18168,
+      18182
+     ],
+     "n_line_starts": 15
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/28",
+     "part": 28,
+     "dataset_chapter": 667,
+     "hadith_range": [
+      18183,
+      18202
+     ],
+     "n_line_starts": 20
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/29",
+     "part": 29,
+     "dataset_chapter": 668,
+     "hadith_range": [
+      18203,
+      18238
+     ],
+     "n_line_starts": 36
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/30",
+     "part": 30,
+     "dataset_chapter": 669,
+     "hadith_range": [
+      18239,
+      18264
+     ],
+     "n_line_starts": 26
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/31",
+     "part": 31,
+     "dataset_chapter": 670,
+     "hadith_range": [
+      18265,
+      18299
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/32",
+     "part": 32,
+     "dataset_chapter": 671,
+     "hadith_range": [
+      18300,
+      18314
+     ],
+     "n_line_starts": 15
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/33",
+     "part": 33,
+     "dataset_chapter": 672,
+     "hadith_range": [
+      18315,
+      18362
+     ],
+     "n_line_starts": 48
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/34",
+     "part": 34,
+     "dataset_chapter": 673,
+     "hadith_range": [
+      18363,
+      18410
+     ],
+     "n_line_starts": 48
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/35",
+     "part": 35,
+     "dataset_chapter": 674,
+     "hadith_range": [
+      18411,
+      18461
+     ],
+     "n_line_starts": 51
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/36",
+     "part": 36,
+     "dataset_chapter": 675,
+     "hadith_range": [
+      18462,
+      18500
+     ],
+     "n_line_starts": 39
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/37",
+     "part": 37,
+     "dataset_chapter": 676,
+     "hadith_range": [
+      18501,
+      18541
+     ],
+     "n_line_starts": 41
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/38",
+     "part": 38,
+     "dataset_chapter": 677,
+     "hadith_range": [
+      18542,
+      18559
+     ],
+     "n_line_starts": 18
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/39",
+     "part": 39,
+     "dataset_chapter": 678,
+     "hadith_range": [
+      18560,
+      18582
+     ],
+     "n_line_starts": 23
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/40",
+     "part": 40,
+     "dataset_chapter": 679,
+     "hadith_range": [
+      18583,
+      18613
+     ],
+     "n_line_starts": 31
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/41",
+     "part": 41,
+     "dataset_chapter": 680,
+     "hadith_range": [
+      18614,
+      18665
+     ],
+     "n_line_starts": 52
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/42",
+     "part": 42,
+     "dataset_chapter": 681,
+     "hadith_range": [
+      18666,
+      18715
+     ],
+     "n_line_starts": 50
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/43",
+     "part": 43,
+     "dataset_chapter": 682,
+     "hadith_range": [
+      18716,
+      18765
+     ],
+     "n_line_starts": 50
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/44",
+     "part": 44,
+     "dataset_chapter": 683,
+     "hadith_range": [
+      18766,
+      18808
+     ],
+     "n_line_starts": 43
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/45",
+     "part": 45,
+     "dataset_chapter": 684,
+     "hadith_range": [
+      18809,
+      18862
+     ],
+     "n_line_starts": 54
+    },
+    {
+     "leaf_title": "مسند الكوفيين",
+     "leaf_title_raw": "مسند الكوفيين/46",
+     "part": 46,
+     "dataset_chapter": 685,
+     "hadith_range": [
+      18863,
+      18926
+     ],
+     "n_line_starts": 64
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند البصريين",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    18927,
+    20171
+   ],
+   "n_pages": 34,
+   "n_line_starts": 1244,
+   "evidence": "Page titles «مسند البصريين/1-34»; colophon «هذا آخر مسند البصريين» after 20171.",
+   "leaves": [
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/1",
+     "part": 1,
+     "dataset_chapter": 555,
+     "hadith_range": [
+      18927,
+      18948
+     ],
+     "n_line_starts": 22
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/2",
+     "part": 2,
+     "dataset_chapter": 556,
+     "hadith_range": [
+      18949,
+      18975
+     ],
+     "n_line_starts": 27
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/3",
+     "part": 3,
+     "dataset_chapter": 557,
+     "hadith_range": [
+      18976,
+      19010
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/4",
+     "part": 4,
+     "dataset_chapter": 558,
+     "hadith_range": [
+      19011,
+      19051
+     ],
+     "n_line_starts": 41
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/5",
+     "part": 5,
+     "dataset_chapter": 559,
+     "hadith_range": [
+      19052,
+      19088
+     ],
+     "n_line_starts": 37
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/6",
+     "part": 6,
+     "dataset_chapter": 560,
+     "hadith_range": [
+      19089,
+      19120
+     ],
+     "n_line_starts": 32
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/7",
+     "part": 7,
+     "dataset_chapter": 561,
+     "hadith_range": [
+      19121,
+      19159
+     ],
+     "n_line_starts": 39
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/8",
+     "part": 8,
+     "dataset_chapter": 562,
+     "hadith_range": [
+      19160,
+      19164
+     ],
+     "n_line_starts": 5
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/9",
+     "part": 9,
+     "dataset_chapter": 563,
+     "hadith_range": [
+      19165,
+      19200
+     ],
+     "n_line_starts": 36
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/10",
+     "part": 10,
+     "dataset_chapter": 564,
+     "hadith_range": [
+      19201,
+      19219
+     ],
+     "n_line_starts": 19
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/11",
+     "part": 11,
+     "dataset_chapter": 565,
+     "hadith_range": [
+      19220,
+      19255
+     ],
+     "n_line_starts": 36
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/12",
+     "part": 12,
+     "dataset_chapter": 566,
+     "hadith_range": [
+      19256,
+      19310
+     ],
+     "n_line_starts": 55
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/13",
+     "part": 13,
+     "dataset_chapter": 567,
+     "hadith_range": [
+      19311,
+      19392
+     ],
+     "n_line_starts": 82
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/14",
+     "part": 14,
+     "dataset_chapter": 568,
+     "hadith_range": [
+      19393,
+      19405
+     ],
+     "n_line_starts": 13
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/15",
+     "part": 15,
+     "dataset_chapter": 569,
+     "hadith_range": [
+      19406,
+      19428
+     ],
+     "n_line_starts": 23
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/16",
+     "part": 16,
+     "dataset_chapter": 570,
+     "hadith_range": [
+      19429,
+      19462
+     ],
+     "n_line_starts": 34
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/17",
+     "part": 17,
+     "dataset_chapter": 571,
+     "hadith_range": [
+      19463,
+      19478
+     ],
+     "n_line_starts": 16
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/18",
+     "part": 18,
+     "dataset_chapter": 572,
+     "hadith_range": [
+      19479,
+      19510
+     ],
+     "n_line_starts": 32
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/19",
+     "part": 19,
+     "dataset_chapter": 573,
+     "hadith_range": [
+      19511,
+      19545
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/20",
+     "part": 20,
+     "dataset_chapter": 574,
+     "hadith_range": [
+      19546,
+      19584
+     ],
+     "n_line_starts": 39
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/21",
+     "part": 21,
+     "dataset_chapter": 575,
+     "hadith_range": [
+      19585,
+      19619
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/22",
+     "part": 22,
+     "dataset_chapter": 576,
+     "hadith_range": [
+      19620,
+      19669
+     ],
+     "n_line_starts": 50
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/23",
+     "part": 23,
+     "dataset_chapter": 577,
+     "hadith_range": [
+      19670,
+      19696
+     ],
+     "n_line_starts": 27
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/24",
+     "part": 24,
+     "dataset_chapter": 578,
+     "hadith_range": [
+      19698,
+      19728
+     ],
+     "n_line_starts": 31
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/25",
+     "part": 25,
+     "dataset_chapter": 579,
+     "hadith_range": [
+      19729,
+      19750
+     ],
+     "n_line_starts": 22
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/26",
+     "part": 26,
+     "dataset_chapter": 580,
+     "hadith_range": [
+      19751,
+      19778
+     ],
+     "n_line_starts": 28
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/27",
+     "part": 27,
+     "dataset_chapter": 581,
+     "hadith_range": [
+      19779,
+      19825
+     ],
+     "n_line_starts": 47
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/28",
+     "part": 28,
+     "dataset_chapter": 582,
+     "hadith_range": [
+      19826,
+      19871
+     ],
+     "n_line_starts": 46
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/29",
+     "part": 29,
+     "dataset_chapter": 583,
+     "hadith_range": [
+      19872,
+      19940
+     ],
+     "n_line_starts": 69
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/30",
+     "part": 30,
+     "dataset_chapter": 584,
+     "hadith_range": [
+      19941,
+      20000
+     ],
+     "n_line_starts": 60
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/31",
+     "part": 31,
+     "dataset_chapter": 585,
+     "hadith_range": [
+      20001,
+      20045
+     ],
+     "n_line_starts": 45
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/32",
+     "part": 32,
+     "dataset_chapter": 586,
+     "hadith_range": [
+      20046,
+      20094
+     ],
+     "n_line_starts": 49
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/33",
+     "part": 33,
+     "dataset_chapter": 587,
+     "hadith_range": [
+      20095,
+      20143
+     ],
+     "n_line_starts": 49
+    },
+    {
+     "leaf_title": "مسند البصريين",
+     "leaf_title_raw": "مسند البصريين/34",
+     "part": 34,
+     "dataset_chapter": 588,
+     "hadith_range": [
+      20144,
+      20171
+     ],
+     "n_line_starts": 28
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند الأنصار",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    20172,
+    22882
+   ],
+   "n_pages": 73,
+   "n_line_starts": 2712,
+   "evidence": "Page titles «مسند الأنصار/1-73» for this span; closing colophon «آخر مسند عوف بن مالك الأنصاري وهو تمام مسند الأنصار» after 22882.",
+   "leaves": [
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/1",
+     "part": 1,
+     "dataset_chapter": 415,
+     "hadith_range": [
+      20172,
+      20191
+     ],
+     "n_line_starts": 20
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/2",
+     "part": 2,
+     "dataset_chapter": 416,
+     "hadith_range": [
+      20192,
+      20209
+     ],
+     "n_line_starts": 18
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/3",
+     "part": 3,
+     "dataset_chapter": 417,
+     "hadith_range": [
+      20210,
+      20233
+     ],
+     "n_line_starts": 24
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/4",
+     "part": 4,
+     "dataset_chapter": 418,
+     "hadith_range": [
+      20234,
+      20265
+     ],
+     "n_line_starts": 32
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/5",
+     "part": 5,
+     "dataset_chapter": 419,
+     "hadith_range": [
+      20266,
+      20288
+     ],
+     "n_line_starts": 23
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/6",
+     "part": 6,
+     "dataset_chapter": 420,
+     "hadith_range": [
+      20289,
+      20309
+     ],
+     "n_line_starts": 21
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/7",
+     "part": 7,
+     "dataset_chapter": 421,
+     "hadith_range": [
+      20310,
+      20327
+     ],
+     "n_line_starts": 18
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/8",
+     "part": 8,
+     "dataset_chapter": 422,
+     "hadith_range": [
+      20328,
+      20350
+     ],
+     "n_line_starts": 23
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/9",
+     "part": 9,
+     "dataset_chapter": 423,
+     "hadith_range": [
+      20351,
+      20388
+     ],
+     "n_line_starts": 38
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/10",
+     "part": 10,
+     "dataset_chapter": 424,
+     "hadith_range": [
+      20389,
+      20415
+     ],
+     "n_line_starts": 27
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/11",
+     "part": 11,
+     "dataset_chapter": 425,
+     "hadith_range": [
+      20416,
+      20440
+     ],
+     "n_line_starts": 25
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/12",
+     "part": 12,
+     "dataset_chapter": 426,
+     "hadith_range": [
+      20441,
+      20469
+     ],
+     "n_line_starts": 29
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/13",
+     "part": 13,
+     "dataset_chapter": 427,
+     "hadith_range": [
+      20470,
+      20500
+     ],
+     "n_line_starts": 31
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/14",
+     "part": 14,
+     "dataset_chapter": 428,
+     "hadith_range": [
+      20501,
+      20530
+     ],
+     "n_line_starts": 30
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/15",
+     "part": 15,
+     "dataset_chapter": 429,
+     "hadith_range": [
+      20531,
+      20550
+     ],
+     "n_line_starts": 20
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/16",
+     "part": 16,
+     "dataset_chapter": 430,
+     "hadith_range": [
+      20551,
+      20593
+     ],
+     "n_line_starts": 43
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/17",
+     "part": 17,
+     "dataset_chapter": 431,
+     "hadith_range": [
+      20594,
+      20630
+     ],
+     "n_line_starts": 37
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/18",
+     "part": 18,
+     "dataset_chapter": 432,
+     "hadith_range": [
+      20631,
+      20666
+     ],
+     "n_line_starts": 36
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/19",
+     "part": 19,
+     "dataset_chapter": 433,
+     "hadith_range": [
+      20667,
+      20683
+     ],
+     "n_line_starts": 17
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/20",
+     "part": 20,
+     "dataset_chapter": 434,
+     "hadith_range": [
+      20684,
+      20702
+     ],
+     "n_line_starts": 19
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/21",
+     "part": 21,
+     "dataset_chapter": 435,
+     "hadith_range": [
+      20703,
+      20746
+     ],
+     "n_line_starts": 44
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/22",
+     "part": 22,
+     "dataset_chapter": 436,
+     "hadith_range": [
+      20747,
+      20785
+     ],
+     "n_line_starts": 39
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/23",
+     "part": 23,
+     "dataset_chapter": 437,
+     "hadith_range": [
+      20786,
+      20832
+     ],
+     "n_line_starts": 47
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/24",
+     "part": 24,
+     "dataset_chapter": 438,
+     "hadith_range": [
+      20833,
+      20880
+     ],
+     "n_line_starts": 48
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/25",
+     "part": 25,
+     "dataset_chapter": 439,
+     "hadith_range": [
+      20881,
+      20923
+     ],
+     "n_line_starts": 43
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/26",
+     "part": 26,
+     "dataset_chapter": 440,
+     "hadith_range": [
+      20924,
+      20954
+     ],
+     "n_line_starts": 31
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/27",
+     "part": 27,
+     "dataset_chapter": 441,
+     "hadith_range": [
+      20955,
+      20982
+     ],
+     "n_line_starts": 28
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/28",
+     "part": 28,
+     "dataset_chapter": 442,
+     "hadith_range": [
+      20983,
+      21025
+     ],
+     "n_line_starts": 43
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/29",
+     "part": 29,
+     "dataset_chapter": 443,
+     "hadith_range": [
+      21026,
+      21065
+     ],
+     "n_line_starts": 40
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/30",
+     "part": 30,
+     "dataset_chapter": 444,
+     "hadith_range": [
+      21066,
+      21119
+     ],
+     "n_line_starts": 54
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/31",
+     "part": 31,
+     "dataset_chapter": 445,
+     "hadith_range": [
+      21120,
+      21166
+     ],
+     "n_line_starts": 47
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/32",
+     "part": 32,
+     "dataset_chapter": 446,
+     "hadith_range": [
+      21167,
+      21220
+     ],
+     "n_line_starts": 54
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/33",
+     "part": 33,
+     "dataset_chapter": 447,
+     "hadith_range": [
+      21221,
+      21252
+     ],
+     "n_line_starts": 32
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/34",
+     "part": 34,
+     "dataset_chapter": 448,
+     "hadith_range": [
+      21253,
+      21287
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/35",
+     "part": 35,
+     "dataset_chapter": 449,
+     "hadith_range": [
+      21288,
+      21327
+     ],
+     "n_line_starts": 40
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/36",
+     "part": 36,
+     "dataset_chapter": 450,
+     "hadith_range": [
+      21328,
+      21382
+     ],
+     "n_line_starts": 55
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/37",
+     "part": 37,
+     "dataset_chapter": 451,
+     "hadith_range": [
+      21383,
+      21418
+     ],
+     "n_line_starts": 36
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/38",
+     "part": 38,
+     "dataset_chapter": 452,
+     "hadith_range": [
+      21419,
+      21448
+     ],
+     "n_line_starts": 30
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/39",
+     "part": 39,
+     "dataset_chapter": 453,
+     "hadith_range": [
+      21449,
+      21478
+     ],
+     "n_line_starts": 30
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/40",
+     "part": 40,
+     "dataset_chapter": 454,
+     "hadith_range": [
+      21479,
+      21510
+     ],
+     "n_line_starts": 32
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/41",
+     "part": 41,
+     "dataset_chapter": 455,
+     "hadith_range": [
+      21511,
+      21540
+     ],
+     "n_line_starts": 30
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/42",
+     "part": 42,
+     "dataset_chapter": 456,
+     "hadith_range": [
+      21540,
+      21570
+     ],
+     "n_line_starts": 31
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/43",
+     "part": 43,
+     "dataset_chapter": 457,
+     "hadith_range": [
+      21571,
+      21613
+     ],
+     "n_line_starts": 43
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/44",
+     "part": 44,
+     "dataset_chapter": 458,
+     "hadith_range": [
+      21614,
+      21665
+     ],
+     "n_line_starts": 52
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/45",
+     "part": 45,
+     "dataset_chapter": 459,
+     "hadith_range": [
+      21666,
+      21709
+     ],
+     "n_line_starts": 44
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/46",
+     "part": 46,
+     "dataset_chapter": 460,
+     "hadith_range": [
+      21710,
+      21730
+     ],
+     "n_line_starts": 21
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/47",
+     "part": 47,
+     "dataset_chapter": 461,
+     "hadith_range": [
+      21731,
+      21765
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/48",
+     "part": 48,
+     "dataset_chapter": 462,
+     "hadith_range": [
+      21766,
+      21810
+     ],
+     "n_line_starts": 45
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/49",
+     "part": 49,
+     "dataset_chapter": 463,
+     "hadith_range": [
+      21811,
+      21856
+     ],
+     "n_line_starts": 46
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/50",
+     "part": 50,
+     "dataset_chapter": 464,
+     "hadith_range": [
+      21857,
+      21915
+     ],
+     "n_line_starts": 59
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/51",
+     "part": 51,
+     "dataset_chapter": 465,
+     "hadith_range": [
+      21916,
+      21983
+     ],
+     "n_line_starts": 68
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/52",
+     "part": 52,
+     "dataset_chapter": 466,
+     "hadith_range": [
+      21984,
+      22025
+     ],
+     "n_line_starts": 42
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/53",
+     "part": 53,
+     "dataset_chapter": 467,
+     "hadith_range": [
+      22026,
+      22075
+     ],
+     "n_line_starts": 50
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/54",
+     "part": 54,
+     "dataset_chapter": 468,
+     "hadith_range": [
+      22076,
+      22114
+     ],
+     "n_line_starts": 39
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/55",
+     "part": 55,
+     "dataset_chapter": 469,
+     "hadith_range": [
+      22115,
+      22155
+     ],
+     "n_line_starts": 41
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/56",
+     "part": 56,
+     "dataset_chapter": 470,
+     "hadith_range": [
+      22156,
+      22191
+     ],
+     "n_line_starts": 36
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/57",
+     "part": 57,
+     "dataset_chapter": 471,
+     "hadith_range": [
+      22192,
+      22235
+     ],
+     "n_line_starts": 44
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/58",
+     "part": 58,
+     "dataset_chapter": 472,
+     "hadith_range": [
+      22236,
+      22270
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/59",
+     "part": 59,
+     "dataset_chapter": 473,
+     "hadith_range": [
+      22271,
+      22320
+     ],
+     "n_line_starts": 50
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/60",
+     "part": 60,
+     "dataset_chapter": 474,
+     "hadith_range": [
+      22321,
+      22367
+     ],
+     "n_line_starts": 47
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/61",
+     "part": 61,
+     "dataset_chapter": 475,
+     "hadith_range": [
+      22368,
+      22399
+     ],
+     "n_line_starts": 32
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/62",
+     "part": 62,
+     "dataset_chapter": 476,
+     "hadith_range": [
+      22400,
+      22445
+     ],
+     "n_line_starts": 46
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/63",
+     "part": 63,
+     "dataset_chapter": 477,
+     "hadith_range": [
+      22446,
+      22491
+     ],
+     "n_line_starts": 46
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/64",
+     "part": 64,
+     "dataset_chapter": 478,
+     "hadith_range": [
+      22492,
+      22546
+     ],
+     "n_line_starts": 55
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/65",
+     "part": 65,
+     "dataset_chapter": 479,
+     "hadith_range": [
+      22547,
+      22587
+     ],
+     "n_line_starts": 41
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/66",
+     "part": 66,
+     "dataset_chapter": 480,
+     "hadith_range": [
+      22588,
+      22622
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/67",
+     "part": 67,
+     "dataset_chapter": 481,
+     "hadith_range": [
+      22623,
+      22675
+     ],
+     "n_line_starts": 53
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/68",
+     "part": 68,
+     "dataset_chapter": 482,
+     "hadith_range": [
+      22676,
+      22690
+     ],
+     "n_line_starts": 15
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/69",
+     "part": 69,
+     "dataset_chapter": 483,
+     "hadith_range": [
+      22691,
+      22718
+     ],
+     "n_line_starts": 28
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/70",
+     "part": 70,
+     "dataset_chapter": 484,
+     "hadith_range": [
+      22719,
+      22753
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/71",
+     "part": 71,
+     "dataset_chapter": 485,
+     "hadith_range": [
+      22754,
+      22797
+     ],
+     "n_line_starts": 44
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/72",
+     "part": 72,
+     "dataset_chapter": 486,
+     "hadith_range": [
+      22798,
+      22844
+     ],
+     "n_line_starts": 47
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/73",
+     "part": 73,
+     "dataset_chapter": 487,
+     "hadith_range": [
+      22845,
+      22882
+     ],
+     "n_line_starts": 38
+    }
+   ]
+  },
+  {
+   "musnad_title": null,
+   "musnad_title_status": "MISSING",
+   "hadith_range": [
+    22883,
+    25900
+   ],
+   "n_pages": 67,
+   "n_line_starts": 3018,
+   "evidence": "MISSING — no verified collective title in the source. Wiki pages continue titled «مسند الأنصار/74-140» but the colophon proves الأنصار ended at 22882. Internal headings: «حديث السيدة عائشة رضي الله عنها» 22883-25208 (colophon «آخر مسند السيدة عائشة» after 25208); then «أحاديث فاطمة بنت رسول الله ﷺ» + «زيادات القطيعي» + basmala at 25209, continuing with أمهات المؤمنين والنساء (أم سلمة، حفصة، زينب بنت جحش، جويرية، أم حبيبة، ميمونة، صفية، أم هانئ، أسماء بنت أبي بكر، أم الدرداء، زينب امرأة عبد الله بن مسعود…) through 25900. The well-known printed-edition name for this span is NOT used because it is not verified in this source.",
+   "leaves": [
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/74",
+     "part": 74,
+     "dataset_chapter": 488,
+     "hadith_range": [
+      22883,
+      22940
+     ],
+     "n_line_starts": 58
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/75",
+     "part": 75,
+     "dataset_chapter": 489,
+     "hadith_range": [
+      22941,
+      23000
+     ],
+     "n_line_starts": 60
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/76",
+     "part": 76,
+     "dataset_chapter": 490,
+     "hadith_range": [
+      23001,
+      23044
+     ],
+     "n_line_starts": 44
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/77",
+     "part": 77,
+     "dataset_chapter": 491,
+     "hadith_range": [
+      23045,
+      23119
+     ],
+     "n_line_starts": 75
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/78",
+     "part": 78,
+     "dataset_chapter": 492,
+     "hadith_range": [
+      23120,
+      23150
+     ],
+     "n_line_starts": 31
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/79",
+     "part": 79,
+     "dataset_chapter": 493,
+     "hadith_range": [
+      23151,
+      23177
+     ],
+     "n_line_starts": 27
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/80",
+     "part": 80,
+     "dataset_chapter": 494,
+     "hadith_range": [
+      23178,
+      23200
+     ],
+     "n_line_starts": 23
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/81",
+     "part": 81,
+     "dataset_chapter": 495,
+     "hadith_range": [
+      23201,
+      23247
+     ],
+     "n_line_starts": 47
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/82",
+     "part": 82,
+     "dataset_chapter": 496,
+     "hadith_range": [
+      23248,
+      23299
+     ],
+     "n_line_starts": 52
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/83",
+     "part": 83,
+     "dataset_chapter": 497,
+     "hadith_range": [
+      23300,
+      23326
+     ],
+     "n_line_starts": 27
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/84",
+     "part": 84,
+     "dataset_chapter": 498,
+     "hadith_range": [
+      23327,
+      23354
+     ],
+     "n_line_starts": 28
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/85",
+     "part": 85,
+     "dataset_chapter": 499,
+     "hadith_range": [
+      23355,
+      23395
+     ],
+     "n_line_starts": 41
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/86",
+     "part": 86,
+     "dataset_chapter": 500,
+     "hadith_range": [
+      23396,
+      23439
+     ],
+     "n_line_starts": 44
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/87",
+     "part": 87,
+     "dataset_chapter": 501,
+     "hadith_range": [
+      23440,
+      23500
+     ],
+     "n_line_starts": 61
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/88",
+     "part": 88,
+     "dataset_chapter": 502,
+     "hadith_range": [
+      23501,
+      23580
+     ],
+     "n_line_starts": 80
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/89",
+     "part": 89,
+     "dataset_chapter": 503,
+     "hadith_range": [
+      23581,
+      23625
+     ],
+     "n_line_starts": 45
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/90",
+     "part": 90,
+     "dataset_chapter": 504,
+     "hadith_range": [
+      23626,
+      23684
+     ],
+     "n_line_starts": 59
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/91",
+     "part": 91,
+     "dataset_chapter": 505,
+     "hadith_range": [
+      23685,
+      23730
+     ],
+     "n_line_starts": 46
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/92",
+     "part": 92,
+     "dataset_chapter": 506,
+     "hadith_range": [
+      23731,
+      23777
+     ],
+     "n_line_starts": 47
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/93",
+     "part": 93,
+     "dataset_chapter": 507,
+     "hadith_range": [
+      23778,
+      23818
+     ],
+     "n_line_starts": 41
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/94",
+     "part": 94,
+     "dataset_chapter": 508,
+     "hadith_range": [
+      23819,
+      23874
+     ],
+     "n_line_starts": 56
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/95",
+     "part": 95,
+     "dataset_chapter": 509,
+     "hadith_range": [
+      23875,
+      23937
+     ],
+     "n_line_starts": 63
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/96",
+     "part": 96,
+     "dataset_chapter": 510,
+     "hadith_range": [
+      23938,
+      23988
+     ],
+     "n_line_starts": 51
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/97",
+     "part": 97,
+     "dataset_chapter": 511,
+     "hadith_range": [
+      23989,
+      24036
+     ],
+     "n_line_starts": 48
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/98",
+     "part": 98,
+     "dataset_chapter": 512,
+     "hadith_range": [
+      24037,
+      24109
+     ],
+     "n_line_starts": 73
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/99",
+     "part": 99,
+     "dataset_chapter": 513,
+     "hadith_range": [
+      24110,
+      24165
+     ],
+     "n_line_starts": 56
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/100",
+     "part": 100,
+     "dataset_chapter": 514,
+     "hadith_range": [
+      24166,
+      24210
+     ],
+     "n_line_starts": 45
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/101",
+     "part": 101,
+     "dataset_chapter": 515,
+     "hadith_range": [
+      24211,
+      24255
+     ],
+     "n_line_starts": 45
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/102",
+     "part": 102,
+     "dataset_chapter": 516,
+     "hadith_range": [
+      24256,
+      24309
+     ],
+     "n_line_starts": 54
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/103",
+     "part": 103,
+     "dataset_chapter": 517,
+     "hadith_range": [
+      24310,
+      24360
+     ],
+     "n_line_starts": 51
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/104",
+     "part": 104,
+     "dataset_chapter": 518,
+     "hadith_range": [
+      24361,
+      24435
+     ],
+     "n_line_starts": 75
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/105",
+     "part": 105,
+     "dataset_chapter": 519,
+     "hadith_range": [
+      24436,
+      24475
+     ],
+     "n_line_starts": 40
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/106",
+     "part": 106,
+     "dataset_chapter": 520,
+     "hadith_range": [
+      24476,
+      24549
+     ],
+     "n_line_starts": 74
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/107",
+     "part": 107,
+     "dataset_chapter": 521,
+     "hadith_range": [
+      24550,
+      24590
+     ],
+     "n_line_starts": 41
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/108",
+     "part": 108,
+     "dataset_chapter": 522,
+     "hadith_range": [
+      24591,
+      24625
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/109",
+     "part": 109,
+     "dataset_chapter": 523,
+     "hadith_range": [
+      24626,
+      24670
+     ],
+     "n_line_starts": 45
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/110",
+     "part": 110,
+     "dataset_chapter": 524,
+     "hadith_range": [
+      24671,
+      24707
+     ],
+     "n_line_starts": 37
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/111",
+     "part": 111,
+     "dataset_chapter": 525,
+     "hadith_range": [
+      24708,
+      24754
+     ],
+     "n_line_starts": 47
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/112",
+     "part": 112,
+     "dataset_chapter": 526,
+     "hadith_range": [
+      24755,
+      24785
+     ],
+     "n_line_starts": 31
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/113",
+     "part": 113,
+     "dataset_chapter": 527,
+     "hadith_range": [
+      24786,
+      24825
+     ],
+     "n_line_starts": 40
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/114",
+     "part": 114,
+     "dataset_chapter": 528,
+     "hadith_range": [
+      24826,
+      24855
+     ],
+     "n_line_starts": 30
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/115",
+     "part": 115,
+     "dataset_chapter": 529,
+     "hadith_range": [
+      24856,
+      24890
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/116",
+     "part": 116,
+     "dataset_chapter": 530,
+     "hadith_range": [
+      24891,
+      24929
+     ],
+     "n_line_starts": 39
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/117",
+     "part": 117,
+     "dataset_chapter": 531,
+     "hadith_range": [
+      24930,
+      24965
+     ],
+     "n_line_starts": 36
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/118",
+     "part": 118,
+     "dataset_chapter": 532,
+     "hadith_range": [
+      24966,
+      25030
+     ],
+     "n_line_starts": 65
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/119",
+     "part": 119,
+     "dataset_chapter": 533,
+     "hadith_range": [
+      25031,
+      25070
+     ],
+     "n_line_starts": 40
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/120",
+     "part": 120,
+     "dataset_chapter": 534,
+     "hadith_range": [
+      25071,
+      25115
+     ],
+     "n_line_starts": 45
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/121",
+     "part": 121,
+     "dataset_chapter": 535,
+     "hadith_range": [
+      25116,
+      25150
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/122",
+     "part": 122,
+     "dataset_chapter": 536,
+     "hadith_range": [
+      25151,
+      25208
+     ],
+     "n_line_starts": 58
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/123",
+     "part": 123,
+     "dataset_chapter": 537,
+     "hadith_range": [
+      25209,
+      25218
+     ],
+     "n_line_starts": 10
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/124",
+     "part": 124,
+     "dataset_chapter": 538,
+     "hadith_range": [
+      25219,
+      25265
+     ],
+     "n_line_starts": 47
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/125",
+     "part": 125,
+     "dataset_chapter": 539,
+     "hadith_range": [
+      25266,
+      25300
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/126",
+     "part": 126,
+     "dataset_chapter": 540,
+     "hadith_range": [
+      25301,
+      25325
+     ],
+     "n_line_starts": 25
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/127",
+     "part": 127,
+     "dataset_chapter": 541,
+     "hadith_range": [
+      25326,
+      25348
+     ],
+     "n_line_starts": 23
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/128",
+     "part": 128,
+     "dataset_chapter": 542,
+     "hadith_range": [
+      25349,
+      25375
+     ],
+     "n_line_starts": 27
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/129",
+     "part": 129,
+     "dataset_chapter": 543,
+     "hadith_range": [
+      25376,
+      25409
+     ],
+     "n_line_starts": 34
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/130",
+     "part": 130,
+     "dataset_chapter": 544,
+     "hadith_range": [
+      25410,
+      25440
+     ],
+     "n_line_starts": 31
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/131",
+     "part": 131,
+     "dataset_chapter": 545,
+     "hadith_range": [
+      25441,
+      25475
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/132",
+     "part": 132,
+     "dataset_chapter": 546,
+     "hadith_range": [
+      25476,
+      25525
+     ],
+     "n_line_starts": 50
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/133",
+     "part": 133,
+     "dataset_chapter": 547,
+     "hadith_range": [
+      25526,
+      25565
+     ],
+     "n_line_starts": 40
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/134",
+     "part": 134,
+     "dataset_chapter": 548,
+     "hadith_range": [
+      25566,
+      25626
+     ],
+     "n_line_starts": 61
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/135",
+     "part": 135,
+     "dataset_chapter": 549,
+     "hadith_range": [
+      25627,
+      25675
+     ],
+     "n_line_starts": 49
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/136",
+     "part": 136,
+     "dataset_chapter": 550,
+     "hadith_range": [
+      25676,
+      25755
+     ],
+     "n_line_starts": 80
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/137",
+     "part": 137,
+     "dataset_chapter": 551,
+     "hadith_range": [
+      25756,
+      25790
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/138",
+     "part": 138,
+     "dataset_chapter": 552,
+     "hadith_range": [
+      25791,
+      25832
+     ],
+     "n_line_starts": 42
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/139",
+     "part": 139,
+     "dataset_chapter": 553,
+     "hadith_range": [
+      25833,
+      25860
+     ],
+     "n_line_starts": 28
+    },
+    {
+     "leaf_title": "مسند الأنصار",
+     "leaf_title_raw": "مسند الأنصار/140",
+     "part": 140,
+     "dataset_chapter": 554,
+     "hadith_range": [
+      25861,
+      25900
+     ],
+     "n_line_starts": 40
+    }
+   ]
+  },
+  {
+   "musnad_title": "مسند القبائل",
+   "musnad_title_status": "verified_in_source",
+   "hadith_range": [
+    25901,
+    26363
+   ],
+   "n_pages": 13,
+   "n_line_starts": 463,
+   "evidence": "Dataset page titles «مسند القبائل/1-13»; book closes «تم الكتاب بفضل الله وحده ورحمته» after 26363.",
+   "leaves": [
+    {
+     "leaf_title": "مسند القبائل",
+     "leaf_title_raw": "مسند القبائل/1",
+     "part": 1,
+     "dataset_chapter": 627,
+     "hadith_range": [
+      25901,
+      25912
+     ],
+     "n_line_starts": 12
+    },
+    {
+     "leaf_title": "مسند القبائل",
+     "leaf_title_raw": "مسند القبائل/2",
+     "part": 2,
+     "dataset_chapter": 628,
+     "hadith_range": [
+      25913,
+      25943
+     ],
+     "n_line_starts": 31
+    },
+    {
+     "leaf_title": "مسند القبائل",
+     "leaf_title_raw": "مسند القبائل/3",
+     "part": 3,
+     "dataset_chapter": 629,
+     "hadith_range": [
+      25944,
+      25977
+     ],
+     "n_line_starts": 34
+    },
+    {
+     "leaf_title": "مسند القبائل",
+     "leaf_title_raw": "مسند القبائل/4",
+     "part": 4,
+     "dataset_chapter": 630,
+     "hadith_range": [
+      25978,
+      26021
+     ],
+     "n_line_starts": 44
+    },
+    {
+     "leaf_title": "مسند القبائل",
+     "leaf_title_raw": "مسند القبائل/5",
+     "part": 5,
+     "dataset_chapter": 631,
+     "hadith_range": [
+      26022,
+      26056
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند القبائل",
+     "leaf_title_raw": "مسند القبائل/6",
+     "part": 6,
+     "dataset_chapter": 632,
+     "hadith_range": [
+      26057,
+      26084
+     ],
+     "n_line_starts": 28
+    },
+    {
+     "leaf_title": "مسند القبائل",
+     "leaf_title_raw": "مسند القبائل/7",
+     "part": 7,
+     "dataset_chapter": 633,
+     "hadith_range": [
+      26085,
+      26109
+     ],
+     "n_line_starts": 25
+    },
+    {
+     "leaf_title": "مسند القبائل",
+     "leaf_title_raw": "مسند القبائل/8",
+     "part": 8,
+     "dataset_chapter": 634,
+     "hadith_range": [
+      26110,
+      26163
+     ],
+     "n_line_starts": 54
+    },
+    {
+     "leaf_title": "مسند القبائل",
+     "leaf_title_raw": "مسند القبائل/9",
+     "part": 9,
+     "dataset_chapter": 635,
+     "hadith_range": [
+      26164,
+      26205
+     ],
+     "n_line_starts": 42
+    },
+    {
+     "leaf_title": "مسند القبائل",
+     "leaf_title_raw": "مسند القبائل/10",
+     "part": 10,
+     "dataset_chapter": 636,
+     "hadith_range": [
+      26206,
+      26240
+     ],
+     "n_line_starts": 35
+    },
+    {
+     "leaf_title": "مسند القبائل",
+     "leaf_title_raw": "مسند القبائل/11",
+     "part": 11,
+     "dataset_chapter": 637,
+     "hadith_range": [
+      26241,
+      26277
+     ],
+     "n_line_starts": 37
+    },
+    {
+     "leaf_title": "مسند القبائل",
+     "leaf_title_raw": "مسند القبائل/12",
+     "part": 12,
+     "dataset_chapter": 638,
+     "hadith_range": [
+      26278,
+      26332
+     ],
+     "n_line_starts": 55
+    },
+    {
+     "leaf_title": "مسند القبائل",
+     "leaf_title_raw": "مسند القبائل/13",
+     "part": 13,
+     "dataset_chapter": 639,
+     "hadith_range": [
+      26333,
+      26363
+     ],
+     "n_line_starts": 31
+    }
+   ]
+  }
+ ]
+}
