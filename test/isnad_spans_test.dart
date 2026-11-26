@@ -68,8 +68,8 @@ void main() {
       ]);
       expect(spans.where((s) => s.isNarrator).toList(), hasLength(1));
       expect(spans.firstWhere((s) => s.isNarrator).text, 'الزهري');
-      expect(spans.any((s) => s.text.contains('شعبة') && s.isNarrator),
-          isFalse);
+      expect(
+          spans.any((s) => s.text.contains('شعبة') && s.isNarrator), isFalse);
     });
 
     test('a confirmed name absent from the text yields no span', () {
@@ -114,7 +114,10 @@ void main() {
       final zuhri = text.indexOf('الزهري');
       final spans = buildIsnadSpans(text, <IsnadNameMatch>[
         IsnadNameMatch(
-            name: 'شعبة', narratorId: 1, startChar: first, endChar: first + 'شعبة'.length),
+            name: 'شعبة',
+            narratorId: 1,
+            startChar: first,
+            endChar: first + 'شعبة'.length),
         IsnadNameMatch(
             name: 'شعبة',
             narratorId: 7,
@@ -183,22 +186,17 @@ void main() {
       const edge = 'شعبة عن الزهري';
       final spans = buildIsnadSpans(edge, <IsnadNameMatch>[
         const IsnadNameMatch(
-            name: 'شعبة',
-            narratorId: 1,
-            startChar: 0,
-            endChar: 'شعبة'.length),
+            name: 'شعبة', narratorId: 1, startChar: 0, endChar: 'شعبة'.length),
         const IsnadNameMatch(
-            name: 'الزهري',
-            narratorId: 2,
-            startChar: 8,
-            endChar: edge.length),
+            name: 'الزهري', narratorId: 2, startChar: 8, endChar: edge.length),
       ]);
       final linked = spans.where((s) => s.isNarrator).toList();
       expect(linked.map((s) => s.narratorId).toList(), <int>[1, 2]);
       expect(spans.map((s) => s.text).join(), edge);
     });
 
-    test('unverified offset names are narrator-name spans, not verified links', () {
+    test('unverified offset names are narrator-name spans, not verified links',
+        () {
       final first = text.indexOf('شعبة');
       final zuhri = text.indexOf('الزهري');
       final spans = buildIsnadSpans(text, <IsnadNameMatch>[
@@ -221,8 +219,7 @@ void main() {
       expect(spans.map((s) => s.text).join(), text);
     });
 
-    test('unusable offsets fall back to name search, never placed blindly',
-        () {
+    test('unusable offsets fall back to name search, never placed blindly', () {
       final spans = buildIsnadSpans(text, <IsnadNameMatch>[
         // Reversed offsets.
         const IsnadNameMatch(
@@ -236,20 +233,24 @@ void main() {
       ]);
       final linked = spans.where((s) => s.isNarrator).toList();
       expect(linked.map((s) => s.narratorId).toList(), <int>[1, 2]);
-      expect(linked.map((s) => s.text).toList(),
-          <String>['شعبة', 'الزهري']);
+      expect(linked.map((s) => s.text).toList(), <String>['شعبة', 'الزهري']);
       expect(spans.map((s) => s.text).join(), text);
     });
 
-    test('overlapping offset rows: earliest start wins, no double cover',
-        () {
+    test('overlapping offset rows: earliest start wins, no double cover', () {
       final first = text.indexOf('شعبة');
       final spans = buildIsnadSpans(text, <IsnadNameMatch>[
         IsnadNameMatch(
-            name: 'شعبة', narratorId: 1, startChar: first, endChar: first + 'شعبة'.length),
+            name: 'شعبة',
+            narratorId: 1,
+            startChar: first,
+            endChar: first + 'شعبة'.length),
         // Same span claimed again by another row.
         IsnadNameMatch(
-            name: 'شعبة', narratorId: 7, startChar: first, endChar: first + 'شعبة'.length),
+            name: 'شعبة',
+            narratorId: 7,
+            startChar: first,
+            endChar: first + 'شعبة'.length),
       ]);
       final linked = spans.where((s) => s.isNarrator).toList();
       expect(linked, hasLength(1));
@@ -257,8 +258,7 @@ void main() {
       expect(spans.map((s) => s.text).join(), text);
     });
 
-    test('mixed rows: offset rows placed first, name-only rows fill gaps',
-        () {
+    test('mixed rows: offset rows placed first, name-only rows fill gaps', () {
       final zuhri = text.indexOf('الزهري');
       final spans = buildIsnadSpans(text, <IsnadNameMatch>[
         IsnadNameMatch(
@@ -372,8 +372,7 @@ void main() {
       expect(spans.map((s) => s.text).join(), text);
     });
 
-    test('name-only fallback: an unverified name is a narrator-name span',
-        () {
+    test('name-only fallback: an unverified name is a narrator-name span', () {
       final spans = buildIsnadSpans(text, const <IsnadNameMatch>[
         IsnadNameMatch(name: 'شعبة', narratorId: null, verified: false),
         IsnadNameMatch(name: 'الزهري', narratorId: 2),
@@ -385,7 +384,7 @@ void main() {
     });
 
     testWidgets(
-        'all narrator names share one style (petrol + gold underline)',
+        'all narrator names share one style (one distinctive red, no underline)',
         (tester) async {
       TextStyle? first;
       TextStyle? second;
@@ -402,10 +401,12 @@ void main() {
       );
       expect(first, isNotNull);
       // The widget builds the style once and applies the same value
-      // to every name: one colour, one underline, no per-name style.
+      // to every name: one colour, no underline, no per-name style.
+      // (User rule 2026-11-26 17:23: ONE distinctive RED for all
+      // narrator names — the old petrol + gold underline is cancelled.)
       expect(first, second);
-      expect(first!.decoration, TextDecoration.underline);
-      expect(first!.decorationColor, SunnatiColors.gold);
+      expect(first!.color, SunnatiColors.narratorRed);
+      expect(first!.decoration, isNull);
       expect(first!.fontWeight, FontWeight.bold);
     });
   });

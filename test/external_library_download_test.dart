@@ -8,11 +8,12 @@ import 'package:sunnati/data/database.dart';
 import 'package:sunnati/data/download_manager.dart';
 import 'package:sunnati/models/downloaded_library.dart';
 
-/// External-download rebuild (2026-11-26) tests — hermetic only: no
-/// network beyond a local loopback [HttpServer], no device, no assets.
-/// The production download is HTTPS-only; the local server tests pass
-/// `allowHttpForTests: true` explicitly (test-only flag, never set by
-/// app code).
+/// Embedded library (2026-11-26, owner decision 16:54) tests — hermetic
+/// only: no network beyond a local loopback [HttpServer], no device, no
+/// assets. The download machinery below is the RECOVERY path only (the
+/// library normally ships inside the APK); the production download is
+/// HTTPS-only and the local server tests pass `allowHttpForTests: true`
+/// explicitly (test-only flag, never set by app code).
 void main() {
   group('external package registry', () {
     test('defines exactly two packages', () {
@@ -23,7 +24,8 @@ void main() {
       );
     });
 
-    test('library package: exact URL, required, available', () {
+    test('library package: exact URL, embedded (not a required download), '
+        'available', () {
       expect(kLibraryPackage.id, 'library');
       expect(kLibraryPackage.fileName, 'sunnati.db');
       expect(
@@ -34,14 +36,22 @@ void main() {
         kLibraryPackage.sha256Url,
         'https://github.com/ezzaldeenmansour123/Sunnati/releases/download/library-v1/sunnati.db.sha256',
       );
-      expect(kLibraryPackage.required, isTrue);
+      // Embed decision (owner 2026-11-26 16:54): the library ships
+      // inside the APK — the library-v1 URL is the recovery copy only.
+      expect(kLibraryPackage.required, isFalse);
       expect(kLibraryPackage.available, isTrue);
       expect(kLibraryPackage.unavailableReason, isEmpty);
     });
 
-    test('narrators package: held back, exact pending-approval reason',
-        () {
-      expect(kNarratorsPackageHeldBack, isTrue);
+    test('narrators package: embedded by owner override 2026-11-26 '
+        '17:51, available, no pending reason', () {
+      // Owner override 2026-11-26 17:51 («بجميع قواعده بكل شيء»):
+      // narrators.db ships INSIDE the APK — the KITAB gate is
+      // overridden for the in-app copy (the request to KITAB is still
+      // unanswered; the CC BY-NC-SA 4.0 risk is documented in the
+      // Sources screen). The URL is recorded for identity only and
+      // must never be published to library-v1 (CI guard (a)).
+      expect(kNarratorsPackageHeldBack, isFalse);
       expect(kNarratorsPackage.id, 'narrators');
       expect(kNarratorsPackage.fileName, 'narrators.db');
       expect(
@@ -53,11 +63,8 @@ void main() {
         'https://github.com/ezzaldeenmansour123/Sunnati/releases/download/library-v1/narrators.db.sha256',
       );
       expect(kNarratorsPackage.required, isFalse);
-      expect(kNarratorsPackage.available, isFalse);
-      expect(
-        kNarratorsPackage.unavailableReason,
-        'حزمة الرواة قيد انتظار الموافقة — ستتوفر حالتها فور اعتمادها',
-      );
+      expect(kNarratorsPackage.available, isTrue);
+      expect(kNarratorsPackage.unavailableReason, isEmpty);
       expect(externalPackageById('narrators'), kNarratorsPackage);
       expect(externalPackageById('nope'), isNull);
     });
@@ -104,7 +111,7 @@ void main() {
     });
   });
 
-  group('decideLibraryInstall (first-run gating + migration)', () {
+  group('decideLibraryInstall (embedded first-run + migration)', () {
     test('valid installed copy is reused — no forced re-download', () {
       expect(
         decideLibraryInstall(fileExists: true, fileValid: true),
@@ -112,20 +119,43 @@ void main() {
       );
     });
 
-    test('missing file needs the first-run download', () {
+    test('missing file installs from the embedded asset — no download', () {
       expect(
         decideLibraryInstall(fileExists: false, fileValid: false),
-        LibraryInstallDecision.needsDownload,
+        LibraryInstallDecision.installFromAsset,
       );
       expect(
         decideLibraryInstall(fileExists: false, fileValid: true),
+        LibraryInstallDecision.installFromAsset,
+      );
+    });
+
+    test('corrupt installed copy is repaired from the embedded asset', () {
+      expect(
+        decideLibraryInstall(fileExists: true, fileValid: false),
+        LibraryInstallDecision.repairFromAsset,
+      );
+    });
+
+    test('without the embedded asset, a missing file needs the recovery '
+        'download', () {
+      expect(
+        decideLibraryInstall(
+          fileExists: false,
+          fileValid: false,
+          assetAvailable: false,
+        ),
         LibraryInstallDecision.needsDownload,
       );
     });
 
-    test('corrupt installed copy is re-downloaded', () {
+    test('without the embedded asset, a corrupt copy needs re-download', () {
       expect(
-        decideLibraryInstall(fileExists: true, fileValid: false),
+        decideLibraryInstall(
+          fileExists: true,
+          fileValid: false,
+          assetAvailable: false,
+        ),
         LibraryInstallDecision.corruptNeedsRedownload,
       );
     });
