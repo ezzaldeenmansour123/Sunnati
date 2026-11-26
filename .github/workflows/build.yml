@@ -235,14 +235,19 @@ jobs:
         # android/app/build.gradle): even if that assignment is ever
         # ignored, AGP's DEFAULT debug keystore (~/.android/debug.keystore)
         # is this committed one, so every CI build shares one signature
-        # and installs as a normal update. Public debug credentials
+        # and installs as a normal update. The committed file is PKCS12
+        # and AGP's debug-keystore handling expects JKS — a PKCS12 file
+        # placed at the default location is silently regenerated as a
+        # fresh key (runs #97/#98/#100 all proved it), so convert it to
+        # JKS here with keytool and verify the fingerprint in the log
+        # (must be the stable 70:85:3F:3B...). Public debug credentials
         # (storePassword "android", alias "androiddebugkey") — install
-        # identity only, no security. Run #98 proved the Gradle path fix
-        # alone was not enough (its APK still carried a fresh cert).
+        # identity only, no security.
         run: |
           mkdir -p ~/.android
-          cp tools/debug.keystore ~/.android/debug.keystore
-          ls -l ~/.android/debug.keystore
+          rm -f ~/.android/debug.keystore
+          keytool -importkeystore -srckeystore tools/debug.keystore -srcstoretype PKCS12 -srcstorepass android -destkeystore ~/.android/debug.keystore -deststoretype JKS -deststorepass android -noprompt
+          keytool -list -v -keystore ~/.android/debug.keystore -storepass android | grep -E "SHA256:|Alias name:"
 
       - name: Build release APK (single arm64-v8a APK)
         # One APK on purpose: the target test device is a Samsung Galaxy
