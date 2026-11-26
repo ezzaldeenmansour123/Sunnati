@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Warm ivory launch background (corrected identity: petrol + ivory + matte gold). -->
+    <color name="launch_background">#F7F2E9</color>
+</resources>
