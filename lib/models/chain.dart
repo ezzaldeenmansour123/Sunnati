@@ -100,8 +100,9 @@ class ChainLink {
       matchStatus == 'linked_verified' && narratorId != null;
 
   /// True for a parser row that names someone but has no verified link
-  /// (`needs_review` / `unlinked`): the name stays plain text, never
-  /// tappable, never given a status.
+  /// (`needs_review` / `unlinked`): the name is a narrator-name span
+  /// under the one-color rule (same style, tappable) but never given a
+  /// status — a tap shows the honest no-biography sheet.
   bool get isUnverifiedParserName =>
       narratorText.isNotEmpty && !isVerifiedLink;
 
