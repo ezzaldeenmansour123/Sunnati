@@ -38,49 +38,24 @@ android {
     }
 
     signingConfigs {
-        // Stable debug keystore — committed in the repo at tools/debug.keystore
-        // (owner decision 2026-11-26). Why: every GitHub runner generates a
-        // FRESH ~/.android/debug.keystore, so each CI build used to carry a
-        // DIFFERENT signature and Android refused to install it over the
-        // previous build ("package appears to be invalid"), forcing the user
-        // to uninstall and lose favorites/notes. This committed keystore is
-        // used for the debug signing config, so every CI build — debug or
-        // release-without-secrets — shares ONE signature and installs as a
-        // normal update. It is a DEBUG (trial) key with the public standard
-        // Android credentials (storePassword "android", alias
-        // "androiddebugkey", keyPassword "android"): install identity only,
-        // no security. A real release key (GitHub Secrets, see SIGNING.md)
-        // still takes precedence below and must replace it before any store
-        // release. NOTE: the build signed with the lost per-run key
-        // (build 81) still needs ONE final uninstall first; updates work
-        // forever after that. If the file is ever absent, the config falls
-        // back to AGP's default per-machine debug keystore.
+        // Stable debug keystore — the CI workflow installs it as
+        // ~/.android/debug.keystore (JKS, converted from the committed
+        // PKCS12 tools/debug.keystore) and android/key.properties points
+        // the release build at the same file, so every CI build shares
+        // ONE signature and installs as a normal update. Do NOT set
+        // storeFile here: AGP 9 treats the debug signing config
+        // specially — pointing it at the PKCS12 file made AGP silently
+        // REGENERATE the default debug keystore (runs #97/#98/#100/#102/
+        // #103 all shipped a fresh per-runner cert), which also poisoned
+        // the key.properties path, since it points at the same default
+        // location. Leaving the debug config at its default lets AGP use
+        // the workflow-installed JKS untouched. A real release key
+        // (GitHub Secrets, see SIGNING.md) still takes precedence via
+        // key.properties and must replace it before any store release.
+        // NOTE: the build signed with the lost per-run key (build 81)
+        // still needs ONE final uninstall first; updates work forever
+        // after that.
         debug {
-            // Path is relative to the Gradle root project (android/), so
-            // the repo-root tools/ dir is one level up. (Was
-            // rootProject.file("tools/debug.keystore") — that resolves to
-            // android/tools/debug.keystore, which does not exist, so the
-            // `if` was silently false and every CI build fell back to a
-            // fresh per-runner debug keystore. Run #97 proved it: its APK
-            // cert was 8A:C8:39:95..., not this keystore's 70:85:3F:3B....)
-            def stableDebugKeystore = rootProject.file("../tools/debug.keystore")
-            // Diagnostic (run #98 still shipped a fresh cert despite the
-            // path fix — this line proves in the Gradle log what path was
-            // resolved and whether the file was seen). The workflow also
-            // installs this keystore as ~/.android/debug.keystore (as JKS),
-            // so the default debug keystore is the stable one even if this
-            // assignment is ever ignored.
-            println("STABLE DEBUG KEYSTORE: ${stableDebugKeystore.absolutePath} exists=${stableDebugKeystore.exists()}")
-            if (stableDebugKeystore.exists()) {
-                storeFile stableDebugKeystore
-                // The committed keystore is PKCS12 (not the JKS AGP
-                // assumes by default) — say so explicitly, or the load
-                // fails and AGP silently regenerates a fresh debug key.
-                storeType "pkcs12"
-                storePassword "android"
-                keyAlias "androiddebugkey"
-                keyPassword "android"
-            }
         }
         release {
             if (keystorePropertiesFile.exists()) {
