@@ -231,23 +231,37 @@ jobs:
           echo "Signing guard OK (ref=${{ github.ref }}, HAS_KEYSTORE=$HAS_KEYSTORE)."
 
       - name: Install stable debug keystore (shared CI signature)
-        # Belt-and-braces for the Gradle debug signing config (see
-        # android/app/build.gradle): even if that assignment is ever
-        # ignored, AGP's DEFAULT debug keystore (~/.android/debug.keystore)
-        # is this committed one, so every CI build shares one signature
-        # and installs as a normal update. The committed file is PKCS12
-        # and AGP's debug-keystore handling expects JKS — a PKCS12 file
-        # placed at the default location is silently regenerated as a
-        # fresh key (runs #97/#98/#100 all proved it), so convert it to
-        # JKS here with keytool and verify the fingerprint in the log
-        # (must be the stable 70:85:3F:3B...). Public debug credentials
-        # (storePassword "android", alias "androiddebugkey") — install
-        # identity only, no security.
+        # The Gradle debug signing config (see android/app/build.gradle)
+        # is IGNORED by AGP 9 in this project — runs #97/#98/#100/#102
+        # all shipped a fresh per-runner cert despite a correct path,
+        # a correct file, and (run #102) a correct JKS at the default
+        # location. So use the PROVEN mechanism instead: the standard
+        # Flutter release-signing path via android/key.properties, which
+        # the workflow already supports for real release keys. This step
+        # converts the committed PKCS12 debug keystore to JKS, installs
+        # it as ~/.android/debug.keystore, and — only when no real
+        # key.properties exists (i.e. no release secrets) — writes a
+        # key.properties pointing at it. The APK stays debug-signed
+        # (public debug credentials, install identity only), but now
+        # with ONE stable signature, so it installs as a normal update.
+        # The tag guard above still blocks any tagged build without a
+        # real release keystore (HAS_KEYSTORE is never set here).
         run: |
           mkdir -p ~/.android
           rm -f ~/.android/debug.keystore
           keytool -importkeystore -srckeystore tools/debug.keystore -srcstoretype PKCS12 -srcstorepass android -destkeystore ~/.android/debug.keystore -deststoretype JKS -deststorepass android -noprompt
           keytool -list -v -keystore ~/.android/debug.keystore -storepass android | grep -E "SHA256:|Alias name:"
+          if [ ! -f android/key.properties ]; then
+            {
+              echo "storePassword=android"
+              echo "keyPassword=android"
+              echo "keyAlias=androiddebugkey"
+              echo "storeFile=$HOME/.android/debug.keystore"
+            } > android/key.properties
+            echo "Wrote android/key.properties (stable debug keystore) for this push build."
+          else
+            echo "android/key.properties already exists (release secrets) — leaving it untouched."
+          fi
 
       - name: Build release APK (single arm64-v8a APK)
         # One APK on purpose: the target test device is a Samsung Galaxy
