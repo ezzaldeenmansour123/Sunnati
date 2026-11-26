@@ -10,6 +10,7 @@ import 'ui/home_screen.dart';
 import 'ui/library_screen.dart';
 import 'ui/more_screen.dart';
 import 'ui/search_screen.dart';
+import 'ui/welcome_screen.dart';
 import 'ui/widgets/empty_library.dart';
 import 'ui/widgets/sunnati_bottom_nav.dart';
 
@@ -72,6 +73,18 @@ class _SunnatiAppState extends State<SunnatiApp> {
     _boot();
   }
 
+  /// Welcome done: persist the flag and rebuild — the live
+  /// [UserRepository.welcomeSeen] getter then reads true and the shell
+  /// (جامع الكتب التسعة) shows. First launch only, by design; showing
+  /// the welcome on every launch would be a one-line change here.
+  Future<void> _onWelcomeStart() async {
+    final repo = _userRepo;
+    if (repo == null) return;
+    await repo.setWelcomeSeen();
+    if (!mounted) return;
+    setState(() {});
+  }
+
   ThemeMode get _effectiveThemeMode {
     switch (_themeMode) {
       case 'light':
@@ -88,24 +101,6 @@ class _SunnatiAppState extends State<SunnatiApp> {
   Widget build(BuildContext context) {
     final db = _db;
     final repo = _userRepo;
-    // Register the fresh-shell factory for pushed screens: tapping a
-    // tab on a pushed page replaces the stack with a new shell on that
-    // tab (see `sunnatiGoToTab` in `sunnati_bottom_nav.dart`). Only
-    // registered once a library is open — pushed screens exist solely
-    // under a booted shell.
-    if (db != null && repo != null) {
-      sunnatiShellBuilder = (index) => _SunnatiShell(
-            db: db,
-            userRepo: repo,
-            initialIndex: index,
-            onThemeModeChanged: (mode) {
-              setState(() => _themeMode = mode);
-            },
-            onFontScaleChanged: (scale) {
-              setState(() => _fontScale = scale);
-            },
-          );
-    }
     return MaterialApp(
       title: 'سُنَّتي',
       debugShowCheckedModeBanner: false,
@@ -122,24 +117,32 @@ class _SunnatiAppState extends State<SunnatiApp> {
           ? _BootError(message: _error!)
           : db == null || repo == null
               ? const _BootLoading()
-              // External-download decision (rebuild 2026-11-26): no
-              // valid library installed → blocking first-run download.
-              // A migrated build-52 copy opens normally and never lands
-              // here (see SunnatiDatabase.open).
+              // Embedded library (owner decision 2026-11-26 16:54):
+              // the library ships inside the APK and open() installs
+              // it from the asset on first run, so this screen is
+              // only a recovery path when the embedded install failed.
+              // A migrated build-52/75/81 copy opens normally and
+              // never lands here (see SunnatiDatabase.open).
               : db.libraryNeedsDownload
                   ? FirstRunDownloadScreen(
                       onInstalled: _onLibraryInstalled,
                     )
-                  : _SunnatiShell(
-                      db: db,
-                      userRepo: repo,
-                      onThemeModeChanged: (mode) {
-                        setState(() => _themeMode = mode);
-                      },
-                      onFontScaleChanged: (scale) {
-                        setState(() => _fontScale = scale);
-                      },
-                    ),
+                  // First-run welcome (owner order 2026-11-26 17:51):
+                  // shown ONCE, before the shell, after the library
+                  // is confirmed available. NOT a login/account
+                  // screen — SUNNATI has no accounts by design.
+                  : !repo.welcomeSeen
+                      ? WelcomeScreen(onStart: _onWelcomeStart)
+                      : _SunnatiShell(
+                          db: db,
+                          userRepo: repo,
+                          onThemeModeChanged: (mode) {
+                            setState(() => _themeMode = mode);
+                          },
+                          onFontScaleChanged: (scale) {
+                            setState(() => _fontScale = scale);
+                          },
+                        ),
     );
   }
 }
@@ -190,11 +193,14 @@ class _BootError extends StatelessWidget {
 /// الرئيسية is the landing tab, as in the mockup (its الرئيسية item is
 /// the active one on the home screen).
 ///
-/// The body builds only the active tab (no IndexedStack): the reader
-/// tab marks its hadith as read in initState, so building it eagerly
-/// would pollute the reading history on every launch. Tab state (e.g.
-/// a typed search) is therefore not preserved across tab switches —
-/// a known limitation, not a silent behaviour.
+/// Smoothness (2026-11-26 fix 1): the body is an [IndexedStack] — each
+/// tab's page is built ONCE, on first visit, and kept alive afterwards,
+/// so scroll positions, typed searches and the reader's place survive
+/// tab switches. Tabs are built LAZILY on first visit (not eagerly):
+/// the reader tab marks its hadith as read in initState, so building it
+/// eagerly would pollute the reading history on every launch. A tab tap
+/// on a pushed screen pops back to this live shell and selects the tab
+/// (see `sunnatiGoToTab`) instead of building a fresh shell.
 ///
 /// First-run download routing and admin routes are untouched: this
 /// shell is only reached when a library file exists (see
@@ -205,7 +211,6 @@ class _SunnatiShell extends StatefulWidget {
     required this.userRepo,
     required this.onThemeModeChanged,
     required this.onFontScaleChanged,
-    this.initialIndex = 2,
   });
 
   final SunnatiDatabase db;
@@ -213,28 +218,43 @@ class _SunnatiShell extends StatefulWidget {
   final ValueChanged<String> onThemeModeChanged;
   final ValueChanged<double> onFontScaleChanged;
 
-  /// Tab the fresh shell opens on (0 المزيد، 1 المكتبة، 2 الرئيسية،
-  /// 3 البحث، 4 الحديث). Default 2 = الرئيسية, the landing tab. Used
-  /// by [sunnatiGoToTab] so a tab tap on a pushed screen can open a
-  /// fresh shell on that tab.
-  final int initialIndex;
-
   @override
   State<_SunnatiShell> createState() => _SunnatiShellState();
 }
 
 class _SunnatiShellState extends State<_SunnatiShell> {
-  /// Active tab — the landing tab, unless [initialIndex] says otherwise.
+  /// Active tab — the landing tab (2 = الرئيسية).
   late int _index;
+
+  /// One built page per visited tab (built once, on first visit, and
+  /// kept alive by the IndexedStack). Unvisited tabs render an empty
+  /// placeholder and cost nothing — the reader tab in particular must
+  /// NOT build before its first visit (it marks its hadith as read in
+  /// initState).
+  final Map<int, Widget> _pages = <int, Widget>{};
 
   @override
   void initState() {
     super.initState();
-    _index = widget.initialIndex;
+    _index = 2; // الرئيسية, the landing tab.
+    _pages[_index] = _page(_index);
+    // Pushed screens switch tabs through this callback (see
+    // `sunnatiGoToTab`): pop back to this live shell, then select.
+    sunnatiSelectTab = _select;
+  }
+
+  @override
+  void dispose() {
+    if (sunnatiSelectTab == _select) sunnatiSelectTab = null;
+    super.dispose();
   }
 
   void _select(int index) {
-    if (index != _index) setState(() => _index = index);
+    if (index == _index && _pages.containsKey(index)) return;
+    setState(() {
+      _index = index;
+      _pages.putIfAbsent(index, () => _page(index));
+    });
   }
 
   Widget _page(int index) {
@@ -263,7 +283,12 @@ class _SunnatiShellState extends State<_SunnatiShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _page(_index),
+      body: IndexedStack(
+        index: _index,
+        children: [
+          for (var i = 0; i < 5; i++) _pages[i] ?? const SizedBox.shrink(),
+        ],
+      ),
       bottomNavigationBar: SunnatiBottomNav(
         currentIndex: _index,
         onTap: _select,
