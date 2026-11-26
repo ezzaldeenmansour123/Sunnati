@@ -71,13 +71,13 @@ class HomeScreen extends StatelessWidget {
           // the wordmark + tagline carry the identity in petrol + matte gold.
           const Card(
             color: SunnatiColors.petrol,
-            child: const Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-              child: const Column(
-                children: const [
-                  const Icon(Icons.menu_book, size: 44, color: Colors.white),
-                  const SizedBox(height: 8),
-                  const Text(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Column(
+                children: [
+                  Icon(Icons.menu_book, size: 44, color: Colors.white),
+                  SizedBox(height: 8),
+                  Text(
                     'سُنَّتي',
                     style: TextStyle(
                       fontSize: 30,
@@ -85,7 +85,7 @@ class HomeScreen extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-                  const Text(
+                  Text(
                     'SUNNATI',
                     style: TextStyle(
                       fontSize: 13,
@@ -93,8 +93,8 @@ class HomeScreen extends StatelessWidget {
                       color: SunnatiColors.goldSoft,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: 8),
+                  Text(
                     'السنة النبوية بين يديك، بفهم موثّق وذكاء متقدم',
                     style: TextStyle(color: Colors.white70),
                     textAlign: TextAlign.center,

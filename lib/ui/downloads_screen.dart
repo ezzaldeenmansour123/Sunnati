@@ -380,7 +380,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                 ),
                 isThreeLine: entry.author.isNotEmpty,
                 trailing: const Chip(
-                  label: const Text('قيد التجهيز'),
+                  label: Text('قيد التجهيز'),
                   backgroundColor: SunnatiColors.goldSoft,
                 ),
               ),
