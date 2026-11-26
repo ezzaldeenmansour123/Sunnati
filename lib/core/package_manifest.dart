@@ -311,3 +311,155 @@ bool isUpdateAvailable(String installedVersion, String availableVersion) {
   }
   return false;
 }
+
+// ---- External core packages (rebuild 2026-11-26) ----
+//
+// Binding decision: the library data is NO LONGER embedded in the APK.
+// After install the app downloads the core library from the `library-v1`
+// GitHub release (see `.github/workflows/build.yml`, step "Publish
+// library data package (library-v1)"). Exactly two external packages
+// exist; no other download URL exists anywhere in the app.
+//
+// The narrators package is HELD BACK by the KITAB gate (see
+// [kNarratorsPackageHeldBack]): its URL is recorded here so the target
+// is unambiguous when the gate clears, but `available` is false and no
+// code path offers or starts its download until the flag is cleared by
+// an explicit owner decision.
+
+/// GitHub release tag that carries the published library data.
+const String kLibraryReleaseTag = 'library-v1';
+
+/// HTTPS directory holding the published library files.
+const String kLibraryDownloadBaseUrl =
+    'https://github.com/ezzaldeenmansour123/Sunnati/releases/download/'
+    'library-v1';
+
+/// KITAB gate: do not publish/distribute narrators.db until KITAB replies or the owner decides.
+const bool kNarratorsPackageHeldBack = true;
+
+/// One externally-downloaded core package: a single file published on a
+/// GitHub release, verified against its `.sha256` sidecar before use.
+/// This is a registry entry, not a manifest — the SHA-256 itself is
+/// fetched at download time from [sha256Url] and validated (64 lowercase
+/// hex) before any byte of the payload is trusted (see
+/// [buildLibraryManifest]).
+class ExternalPackage {
+  const ExternalPackage({
+    required this.id,
+    required this.fileName,
+    required this.displayName,
+    required this.url,
+    required this.sha256Url,
+    required this.required,
+    required this.available,
+    this.unavailableReason = '',
+  });
+
+  /// Stable id: 'library' | 'narrators'. Also the `library_id` used in
+  /// `downloaded_libraries` rows and in [PackageManifest]s built for it.
+  final String id;
+
+  /// File name as published on the release (also the installed file name
+  /// in the app support directory).
+  final String fileName;
+
+  /// Arabic display name.
+  final String displayName;
+
+  /// HTTPS URL of the published file.
+  final String url;
+
+  /// HTTPS URL of the bare-SHA-256 sidecar (`<hash>\n`).
+  final String sha256Url;
+
+  /// True when the app cannot work without this package.
+  final bool required;
+
+  /// True when the package may be downloaded now. False means the UI
+  /// must show [unavailableReason] and offer NO download button.
+  final bool available;
+
+  /// Honest Arabic reason shown when [available] is false. Empty when
+  /// available.
+  final String unavailableReason;
+}
+
+/// The core library: the Nine Books (sunnati.db), published by CI to
+/// `library-v1`. Required and available.
+const ExternalPackage kLibraryPackage = ExternalPackage(
+  id: 'library',
+  fileName: 'sunnati.db',
+  displayName: 'المكتبة الأساسية — الكتب التسعة',
+  url: 'https://github.com/ezzaldeenmansour123/Sunnati/releases/download/library-v1/sunnati.db',
+  sha256Url: 'https://github.com/ezzaldeenmansour123/Sunnati/releases/download/library-v1/sunnati.db.sha256',
+  required: true,
+  available: true,
+);
+
+/// The narrators package (narrators.db, OpenITI Taqrib, CC BY-NC-SA 4.0).
+/// HELD BACK by the KITAB gate: not available, not offered for download,
+/// never published — until KITAB replies or the owner decides.
+const ExternalPackage kNarratorsPackage = ExternalPackage(
+  id: 'narrators',
+  fileName: 'narrators.db',
+  displayName: 'حزمة الرواة',
+  url: 'https://github.com/ezzaldeenmansour123/Sunnati/releases/download/library-v1/narrators.db',
+  sha256Url: 'https://github.com/ezzaldeenmansour123/Sunnati/releases/download/library-v1/narrators.db.sha256',
+  required: false,
+  available: false,
+  unavailableReason:
+      'حزمة الرواة قيد انتظار الموافقة — ستتوفر حالتها فور اعتمادها',
+);
+
+/// Exactly the two external packages above — no other download exists.
+const List<ExternalPackage> kExternalPackages = <ExternalPackage>[
+  kLibraryPackage,
+  kNarratorsPackage,
+];
+
+/// One registry entry by id, or null.
+ExternalPackage? externalPackageById(String id) {
+  for (final pkg in kExternalPackages) {
+    if (pkg.id == id) return pkg;
+  }
+  return null;
+}
+
+/// Build the validated single-file [PackageManifest] for a library
+/// download, from the SHA-256 fetched from the package's [sha256Url]
+/// and the payload size (from the download response's Content-Length).
+/// Throws [FormatException] when the hash is not 64 lowercase hex chars
+/// or the size is not positive — a bad hash is never trusted, and the
+/// download is refused before it starts.
+PackageManifest buildLibraryManifest({
+  required ExternalPackage package,
+  required String sha256,
+  required int sizeBytes,
+  required String createdAt,
+}) {
+  final manifest = PackageManifest(
+    libraryId: package.id,
+    name: package.displayName,
+    version: '1.0.0',
+    source: 'quranlab/hadith',
+    license: package.id == 'library'
+        ? 'ODbL-1.0 / DbCL-1.0 — see SOURCES.md'
+        : 'CC BY-NC-SA 4.0',
+    files: <PackageFileEntry>[
+      PackageFileEntry(
+        path: package.fileName,
+        sha256: sha256.trim().toLowerCase(),
+        sizeBytes: sizeBytes,
+      ),
+    ],
+    totalBytes: sizeBytes,
+    createdAt: createdAt,
+  );
+  final errors = validateManifestJson(manifest.toJson());
+  if (errors.isNotEmpty) {
+    throw FormatException(
+      'Invalid library manifest: ${errors.join('; ')}',
+    );
+  }
+  return manifest;
+}

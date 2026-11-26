@@ -9,15 +9,110 @@ library;
 
 import 'normalize.dart';
 
+/// Exact honest-ladder copy — single source of truth.
+///
+/// The UI shows one of these strings and never invents a status or a
+/// source. Keep the wording identical everywhere (widgets import these
+/// constants; tests assert them verbatim).
+
+/// (b) A verified link exists but the narrators package is held back.
+const String kNarratorsPendingApprovalMessage =
+    'حزمة الرواة قيد انتظار الموافقة — الحالة غير متاحة بعد';
+
+/// (c) No verified biography exists for this narrator (yet).
+const String kNoVerifiedBiographyMessage =
+    'لا توجد ترجمة موثّقة لهذا الراوي بعد.';
+
+/// Parser rows exist for this hadith but none of them is verified.
+const String kNoVerifiedChainMessage =
+    'أسماء الرواة غير مرتبطة بعد — لا توجد بيانات سلسلة موثّقة لهذا الحديث.';
+
+/// This hadith has no parser rows at all: its isnad was never parsed.
+const String kIsnadNotParsedMessage =
+    'إسناد هذا الحديث لم يُحلَّل بعد — لا توجد أسماء رواة موثّقة لهذا الحديث.';
+
+/// What tapping a narrator name must show, decided from facts only.
+///
+/// * [showStatus] — a verified link and the narrators package is
+///   installed: show the status chip + scholar/source + sayings.
+/// * [pendingApproval] — a verified link but the narrators package is
+///   held back: show [kNarratorsPendingApprovalMessage] and NO status.
+/// * [noVerifiedBiography] — no verified link: show
+///   [kNoVerifiedBiographyMessage] and nothing else.
+enum NarratorTapOutcome { showStatus, pendingApproval, noVerifiedBiography }
+
+/// Pure decision for the honest ladder (unit-tested, no widgets).
+NarratorTapOutcome narratorTapOutcome({
+  required bool verifiedLink,
+  required bool narratorsAvailable,
+}) {
+  if (!verifiedLink) return NarratorTapOutcome.noVerifiedBiography;
+  if (!narratorsAvailable) return NarratorTapOutcome.pendingApproval;
+  return NarratorTapOutcome.showStatus;
+}
+
+/// Coverage state of one hadith's isnad, for the reader's honest line.
+///
+/// * [verifiedAvailable] — at least one verified narrator is attached
+///   (package installed).
+/// * [verifiedHeldBack] — verified links exist in `hadith_narrators`
+///   but the narrators package is not installed.
+/// * [parserRowsNoVerified] — parser rows exist but none is verified.
+/// * [notParsed] — no parser rows at all for this hadith.
+enum HadithCoverageState {
+  verifiedAvailable,
+  verifiedHeldBack,
+  parserRowsNoVerified,
+  notParsed,
+}
+
+/// Pure decision for the reader's coverage line (unit-tested).
+HadithCoverageState hadithCoverageState({
+  required bool hasVerifiedNarrators,
+  required bool hasVerifiedLinks,
+  required bool hasParserRows,
+}) {
+  if (hasVerifiedNarrators) return HadithCoverageState.verifiedAvailable;
+  if (hasVerifiedLinks) return HadithCoverageState.verifiedHeldBack;
+  if (hasParserRows) return HadithCoverageState.parserRowsNoVerified;
+  return HadithCoverageState.notParsed;
+}
+
 /// One confirmed narrator name as it appears in a hadith text.
 class IsnadNameMatch {
-  const IsnadNameMatch({required this.name, required this.narratorId});
+  const IsnadNameMatch({
+    required this.name,
+    required this.narratorId,
+    this.startChar,
+    this.endChar,
+    this.verified = true,
+  });
 
-  /// Name exactly as stored for the narrator (e.g. `الزهري`).
+  /// Name exactly as stored for the narrator (e.g. `الزهري`), or the
+  /// parser's verbatim slice (`narrator_text`) for an unverified name.
   final String name;
 
-  /// Verified narrator id from the `chains` table.
-  final int narratorId;
+  /// Verified narrator id from the `chains` table, or null for an
+  /// unverified parser name (which must never become tappable).
+  final int? narratorId;
+
+  /// Exact character offsets of this name inside the hadith text, from
+  /// `hadith_narrators.start_char` / `end_char` (the parser's verbatim
+  /// slice). Null when the row carries no offsets — the name-search
+  /// fallback is then used, and is lower-confidence (see
+  /// [buildIsnadSpans]).
+  final int? startChar;
+
+  /// Exclusive end offset (see [startChar]).
+  final int? endChar;
+
+  /// True only for a `linked_verified` row. Unverified parser names
+  /// (`needs_review` / `unlinked`) are false and never tappable.
+  final bool verified;
+
+  /// True when both offsets are present (validity is checked again
+  /// against the text length by the span builder).
+  bool get hasOffsets => startChar != null && endChar != null;
 }
 
 /// One slice of a hadith text: plain text, or a tappable narrator name.
@@ -113,20 +208,159 @@ NormalizedText normalizeForMatching(String input) {
 
 /// Split [text] into plain and tappable slices.
 ///
-/// Only names in [confirmed] become tappable, in chain order; each name is
-/// matched once, scanning forward from the previous match, so the same
-/// name appearing twice links only its first occurrence in isnad order and
-/// a name that does not occur in the text yields no span at all. Names not
-/// in [confirmed] are never made tappable — no linking by mere similarity.
+/// Offset-first: entries carrying `start_char`/`end_char` from
+/// `hadith_narrators` are placed at their exact stored positions — the
+/// parser's verbatim slice, diacritics intact — so a name repeated in
+/// one hadith gets one span per parser row, at its own occurrence.
+/// Entries without (usable) offsets fall back to normalised name search
+/// ([_buildIsnadSpansByName]); that path is LOWER-CONFIDENCE — it
+/// re-derives a position instead of using the stored one, and must never
+/// be treated as verified positioning.
+///
+/// Only verified entries ([IsnadNameMatch.verified] with a non-null
+/// [IsnadNameMatch.narratorId]) become tappable. Unverified parser names
+/// are sliced at their exact offsets too, but as PLAIN text: they never
+/// look tappable and never open a sheet. Names not in [confirmed] are
+/// never made tappable — no linking by mere similarity.
 List<IsnadSpan> buildIsnadSpans(String text, List<IsnadNameMatch> confirmed) {
   if (text.isEmpty || confirmed.isEmpty) {
     return <IsnadSpan>[IsnadSpan(text: text)];
   }
+  if (confirmed.every((m) => !m.hasOffsets)) {
+    return _buildIsnadSpansByName(text, confirmed);
+  }
+  return buildIsnadSpansWithOffsets(text, confirmed);
+}
+
+/// Offset-based span building (see [buildIsnadSpans]).
+///
+/// An offset entry is usable only when `0 <= start < end <=
+/// text.length`; an unusable entry (null, reversed, or out of range)
+/// falls back to name search instead of being placed blindly. Entries
+/// overlapping an already-placed span are skipped (the earliest start
+/// wins; chain order breaks ties), so the result never double-covers
+/// any character. Name-only verified entries are placed by normalised
+/// search into the gaps left by the offset spans, never over them.
+List<IsnadSpan> buildIsnadSpansWithOffsets(
+  String text,
+  List<IsnadNameMatch> confirmed,
+) {
+  if (text.isEmpty || confirmed.isEmpty) {
+    return <IsnadSpan>[IsnadSpan(text: text)];
+  }
+  // Placed ranges: (start, end, narratorId or null for plain).
+  final placed = <({int start, int end, int? narratorId})>[];
+
+  bool overlaps(int start, int end) {
+    for (final p in placed) {
+      if (start < p.end && p.start < end) return true;
+    }
+    return false;
+  }
+
+  // 1. Offset entries first, in stored position order.
+  final offsetEntries = confirmed
+      .where(
+        (m) =>
+            m.hasOffsets &&
+            m.startChar! >= 0 &&
+            m.startChar! < m.endChar! &&
+            m.endChar! <= text.length,
+      )
+      .toList()
+    ..sort((a, b) => a.startChar!.compareTo(b.startChar!));
+  // Entries already resolved by their offsets (placed, or skipped
+  // because they overlap a placed span) must NOT be re-searched by
+  // name: name search could link a different occurrence. Entries
+  // whose offsets are unusable (null, reversed, out of range) are NOT
+  // in either set, so step 2 falls back to name search for them.
+  final offsetResolved = <IsnadNameMatch>{};
+  for (final entry in offsetEntries) {
+    final start = entry.startChar!;
+    final end = entry.endChar!;
+    offsetResolved.add(entry);
+    if (overlaps(start, end)) continue;
+    placed.add(
+      (
+        start: start,
+        end: end,
+        narratorId:
+            entry.verified ? entry.narratorId : null,
+      ),
+    );
+  }
+
+  // 2. Name-only verified entries, by normalised search into the gaps.
+  // LOWER-CONFIDENCE fallback (see [buildIsnadSpans]): only for rows
+  // without usable stored offsets.
+  final normalized = normalizeForMatching(text);
+  for (final entry in confirmed) {
+    if (offsetResolved.contains(entry)) continue;
+    if (!entry.verified || entry.narratorId == null) continue;
+    final needle = normalizeArabic(entry.name);
+    if (needle.isEmpty) continue;
+    var at = normalized.text.indexOf(needle);
+    while (at >= 0) {
+      final beforeOk = at == 0 || normalized.text[at - 1] == ' ';
+      final after = at + needle.length;
+      final afterOk =
+          after >= normalized.text.length || normalized.text[after] == ' ';
+      if (beforeOk && afterOk) {
+        final start = normalized.origins[at];
+        final end = after < normalized.origins.length
+            ? normalized.origins[after]
+            : text.length;
+        if (!overlaps(start, end)) {
+          placed.add((start: start, end: end, narratorId: entry.narratorId));
+          break;
+        }
+      }
+      at = normalized.text.indexOf(needle, at + 1);
+    }
+  }
+
+  if (placed.isEmpty) return <IsnadSpan>[IsnadSpan(text: text)];
+  placed.sort((a, b) => a.start.compareTo(b.start));
+  final spans = <IsnadSpan>[];
+  var cursor = 0;
+  for (final p in placed) {
+    if (p.start > cursor) {
+      spans.add(IsnadSpan(text: text.substring(cursor, p.start)));
+    }
+    spans.add(
+      IsnadSpan(
+        text: text.substring(p.start, p.end),
+        narratorId: p.narratorId,
+      ),
+    );
+    cursor = p.end;
+  }
+  if (cursor < text.length) {
+    spans.add(IsnadSpan(text: text.substring(cursor)));
+  }
+  if (spans.isEmpty) return <IsnadSpan>[IsnadSpan(text: text)];
+  return spans;
+}
+
+/// Normalised name-search span building.
+///
+/// LOWER-CONFIDENCE fallback: used only when no entry carries stored
+/// offsets. Only names in [confirmed] become tappable, in chain order;
+/// each name is matched once, scanning forward from the previous match,
+/// so the same name appearing twice links only its first occurrence in
+/// isnad order and a name that does not occur in the text yields no span
+/// at all. Names not in [confirmed] are never made tappable — no linking
+/// by mere similarity.
+List<IsnadSpan> _buildIsnadSpansByName(
+  String text,
+  List<IsnadNameMatch> confirmed,
+) {
   final spans = <IsnadSpan>[];
   var cursor = 0;
   var searchFrom = 0;
   final normalized = normalizeForMatching(text);
   for (final entry in confirmed) {
+    if (!entry.verified || entry.narratorId == null) continue;
     final needle = normalizeArabic(entry.name);
     if (needle.isEmpty) continue;
     var at = normalized.text.indexOf(needle, searchFrom);
