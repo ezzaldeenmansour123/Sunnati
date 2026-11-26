@@ -146,9 +146,13 @@ jobs:
 
       - name: Build release APK (single arm64-v8a APK)
         # One APK on purpose: the target test device is a Samsung Galaxy
-        # S22 Ultra (arm64-v8a). A universal/split build is a later
-        # decision, not a silent default.
-        run: flutter build apk --release --target-platform android-arm64
+        # S22 Ultra (arm64-v8a). --split-per-abi is required (not a
+        # multi-APK decision): without it `flutter build apk` writes the
+        # universal name app-release.apk, but the Verify / Upload /
+        # Release steps below all expect app-arm64-v8a-release.apk
+        # (run #51 failed exactly here: the build produced
+        # app-release.apk (68.8MB) and Verify could not find the split name).
+        run: flutter build apk --release --target-platform android-arm64 --split-per-abi
 
       - name: Verify APK + SHA-256 + signing certificate
         run: |
