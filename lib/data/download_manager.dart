@@ -27,6 +27,7 @@
 ///     refused outright.
 library;
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
@@ -384,3 +385,228 @@ class DownloadManager {
 }
 
 class DownloadPausedException implements Exception {}
+
+/// Fetch a bare-SHA-256 sidecar (`<64-hex>\n`) over HTTPS and validate
+/// it. Throws [PackageException] on HTTP failure or a malformed hash —
+/// a bad published hash refuses the download before it starts.
+Future<String> fetchRemoteSha256(Uri url) async {
+  if (url.scheme != 'https') {
+    throw PackageException('رفض جلب بصمة SHA-256: الرابط ليس HTTPS.');
+  }
+  final client = HttpClient();
+  try {
+    final request = await client.getUrl(url);
+    final response = await request.close();
+    if (response.statusCode != 200) {
+      throw PackageException(
+        'تعذّر جلب بصمة SHA-256: HTTP ${response.statusCode}.',
+      );
+    }
+    final text = await response.transform(utf8.decoder).join();
+    final hash = text.trim().toLowerCase();
+    if (!RegExp(r'^[0-9a-f]{64}$').hasMatch(hash)) {
+      throw PackageException(
+        'بصمة SHA-256 المنشورة غير صالحة — رُفض التنزيل.',
+      );
+    }
+    return hash;
+  } finally {
+    client.close(force: true);
+  }
+}
+
+/// Best-effort HEAD for a remote file's size (Content-Length), or null
+/// when the server does not report one. Used only to show the size
+/// before a download starts; the download itself does not depend on it.
+Future<int?> fetchRemoteContentLength(Uri url) async {
+  if (url.scheme != 'https') return null;
+  final client = HttpClient();
+  try {
+    final request = await client.openUrl('HEAD', url);
+    final response = await request.close();
+    if (response.statusCode != 200) return null;
+    final length = response.contentLength;
+    return length < 0 ? null : length;
+  } catch (_) {
+    return null;
+  } finally {
+    client.close(force: true);
+  }
+}
+
+/// Bytes already on disk for a resumed single-file download: the
+/// `<target>.part` length, or 0 when there is no partial file. A partial
+/// file longer than [expectedTotalBytes] is corrupt and is deleted.
+/// Pure file logic (no network) — unit-tested directly.
+Future<int> partialResumeOffset(File target, int expectedTotalBytes) async {
+  final partial = File('${target.path}.part');
+  if (!await partial.exists()) return 0;
+  final length = await partial.length();
+  if (length > expectedTotalBytes) {
+    await partial.delete();
+    return 0;
+  }
+  return length;
+}
+
+/// Download ONE file (the core library) with Range resume + streaming
+/// SHA-256 verification.
+///
+/// Writes to `<target>.part`, resumes from its length (`Range:
+/// bytes=<received>-`), verifies the SHA-256 over the streamed bytes,
+/// and only then renames the file to [target] — a corrupt or incomplete
+/// file is NEVER installed. On a SHA-256 mismatch the partial file is
+/// deleted and [PackageException] is thrown. A server that ignores
+/// Range restarts the file from 0 (the partial is truncated, never
+/// mixed with new bytes).
+///
+/// [expectedTotalBytes] (Content-Length from HEAD, when known) is the
+/// progress total; otherwise the GET response's Content-Length is used,
+/// else 0 (indeterminate). [onProgress] reports downloading / verifying
+/// states with [DownloadProgress.libraryId] == 'library'.
+/// [shouldCancel] is polled between chunks; when true the transfer
+/// pauses (partial kept) by throwing [DownloadPausedException].
+///
+/// [allowHttpForTests] is TEST-ONLY (local hermetic servers): app code
+/// must never pass true — production downloads are HTTPS-only.
+Future<int> downloadSingleFile({
+  required Uri url,
+  required File target,
+  required String expectedSha256,
+  int? expectedTotalBytes,
+  void Function(DownloadProgress)? onProgress,
+  bool Function()? shouldCancel,
+  bool allowHttpForTests = false,
+}) async {
+  if (url.scheme != 'https' && !allowHttpForTests) {
+    throw PackageException('رفض تنزيل المكتبة: الرابط ليس HTTPS.');
+  }
+  final expectedHash = expectedSha256.trim().toLowerCase();
+  if (!RegExp(r'^[0-9a-f]{64}$').hasMatch(expectedHash)) {
+    throw PackageException(
+      'بصمة SHA-256 المتوقعة غير صالحة — رُفض التنزيل.',
+    );
+  }
+  final partial = File('${target.path}.part');
+  await target.parent.create(recursive: true);
+  var received = 0;
+  if (await partial.exists()) {
+    received = await partial.length();
+    if (expectedTotalBytes != null && received > expectedTotalBytes) {
+      await partial.delete();
+      received = 0;
+    }
+  }
+  if (expectedTotalBytes != null && received == expectedTotalBytes) {
+    // Partial already complete (e.g. app killed after the last byte):
+    // verify it instead of re-downloading.
+    if (await verifyFileSha256(partial, expectedHash)) {
+      if (await target.exists()) await target.delete();
+      await partial.rename(target.path);
+      onProgress?.call(
+        DownloadProgress(
+          libraryId: 'library',
+          status: DownloadStatus.installed,
+          receivedBytes: received,
+          totalBytes: expectedTotalBytes,
+        ),
+      );
+      return received;
+    }
+    await partial.delete();
+    received = 0;
+  }
+  final client = HttpClient();
+  try {
+    final request = await client.getUrl(url);
+    if (received > 0) {
+      request.headers.set('Range', 'bytes=$received-');
+    }
+    final response = await request.close();
+    if (response.statusCode == 416) {
+      await partial.delete();
+      throw PackageException(
+        'تعذّر استكمال تنزيل المكتبة: أعد المحاولة من البداية.',
+      );
+    }
+    if (response.statusCode != 200 && response.statusCode != 206) {
+      throw PackageException(
+        'فشل تنزيل المكتبة: HTTP ${response.statusCode}.',
+      );
+    }
+    final resumed = response.statusCode == 206;
+    var total = expectedTotalBytes ?? -1;
+    if (total < 0) {
+      total = response.contentLength < 0 ? 0 : response.contentLength;
+      // A resumed 206 reports only the remaining bytes; the progress
+      // total is the full file size.
+      if (resumed) total += received;
+    }
+    final sink = partial.openWrite(
+      mode: resumed ? FileMode.append : FileMode.write,
+    );
+    if (!resumed) received = 0;
+    try {
+      await for (final chunk in response) {
+        if (shouldCancel?.call() ?? false) break;
+        sink.add(chunk);
+        received += chunk.length;
+        onProgress?.call(
+          DownloadProgress(
+            libraryId: 'library',
+            status: DownloadStatus.downloading,
+            receivedBytes: received,
+            totalBytes: total,
+          ),
+        );
+      }
+    } finally {
+      await sink.close();
+    }
+    if (shouldCancel?.call() ?? false) {
+      onProgress?.call(
+        DownloadProgress(
+          libraryId: 'library',
+          status: DownloadStatus.paused,
+          receivedBytes: received,
+          totalBytes: total,
+        ),
+      );
+      throw DownloadPausedException();
+    }
+    if (total > 0 && received != total) {
+      throw PackageException(
+        'اكتمل التنزيل ناقصاً للمكتبة '
+        '($received من $total بايت) — أعد المحاولة للاستكمال.',
+      );
+    }
+    onProgress?.call(
+      DownloadProgress(
+        libraryId: 'library',
+        status: DownloadStatus.verifying,
+        receivedBytes: received,
+        totalBytes: total,
+      ),
+    );
+    if (!await verifyFileSha256(partial, expectedHash)) {
+      await partial.delete();
+      throw PackageException(
+        'فشل التحقق SHA-256 للمكتبة: الملف المنزَّل لا يطابق البيان — '
+        'حُذف الملف ولم يُثبَّت شيء.',
+      );
+    }
+    if (await target.exists()) await target.delete();
+    await partial.rename(target.path);
+    onProgress?.call(
+      DownloadProgress(
+        libraryId: 'library',
+        status: DownloadStatus.installed,
+        receivedBytes: received,
+        totalBytes: total,
+      ),
+    );
+    return received;
+  } finally {
+    client.close(force: true);
+  }
+}

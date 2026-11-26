@@ -1,11 +1,21 @@
 /// Local SQLite library database.
 ///
-/// The database is built in CI by `tools/build_db.py` from the licensed
-/// source (`quranlab/hadith`, pinned revision) and shipped as an asset
-/// (`assets/sunnati.db` + `assets/sunnati.db.sha256`). On first run it is
-/// copied to the app support directory and verified (SHA-256 + PRAGMA
-/// quick_check) before use — the same install/verify discipline as the
-/// Ezz-alsonah audit described, kept here from day one.
+/// The library database is built in CI by `tools/build_db.py` from the
+/// licensed source (`quranlab/hadith`, pinned revision) and PUBLISHED by
+/// CI to the `library-v1` GitHub release — it is NOT embedded in the APK
+/// (rebuild 2026-11-26, external-download decision). After install the
+/// app downloads it once (`lib/ui/first_run_download_screen.dart`) into
+/// the app support directory, verifies it (SHA-256 + PRAGMA quick_check)
+/// and only then opens it. A device that already has a VALID installed
+/// copy (e.g. migrated from build 52, which copied the embedded asset)
+/// keeps using it as-is — no forced re-download (see
+/// [LibraryInstallDecision]).
+///
+/// There is NO code path in this file that loads `sunnati.db` from
+/// Flutter assets: the embedded-asset copy was removed with the
+/// external-download decision. `assets/assistant_phrasings.json` is the
+/// only data asset left in the APK, and it is loaded by
+/// `lib/assistant/phrasings.dart`, not here.
 ///
 /// In Phase 1 the database contains the schema, the nine-books metadata and
 /// `meta` only — no hadith rows yet (full import is Phase 2/3). The app
@@ -14,27 +24,30 @@
 /// content. Nothing here invents a hadith.
 ///
 /// Phase 5 core (2026-11-26): the verified narrators live in a SEPARATE
-/// database (`assets/narrators.db`, CC BY-NC-SA 4.0, OpenITI Taqrib
-/// al-Tahdhib) — never merged into this file, because this file's hadith
-/// content is ODbL/Unlicense and the two licences are incompatible.
-/// When the asset is present it is installed, verified and ATTACHed as
-/// `narrators_db` ([narratorsAvailable] == true); narrator queries then
-/// read `narrators_db.narrators` and the v3 `hadith_narrators` links in
-/// this file. When it is absent the app keeps working: narrator queries
-/// read the local (empty) `narrators` table and every screen reports
-/// honestly that no verified narrators are installed. Nothing here
-/// invents a narrator, a grade, or a link.
+/// database (`narrators.db`, CC BY-NC-SA 4.0, OpenITI Taqrib al-Tahdhib)
+/// — never merged into this file, because this file's hadith content is
+/// ODbL/Unlicense and the two licences are incompatible. The narrators
+/// package is HELD BACK by the KITAB gate
+/// (`kNarratorsPackageHeldBack` in `lib/core/package_manifest.dart`):
+/// it is NOT distributed by this build, NOT offered for download, and
+/// there is no asset-install path for it. The ONLY narrators copy this
+/// build will ever use is a valid one ALREADY on the device from a
+/// previous install (legacy local copy, read-only, never re-distributed);
+/// when it is absent the app keeps working: narrator queries read the
+/// local (empty) `narrators` table and every screen reports honestly
+/// that no verified narrators are installed — with the registry's
+/// pending-approval reason. Nothing here invents a narrator, a grade,
+/// or a link.
 library;
 
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:crypto/crypto.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 import '../core/normalize.dart';
+import '../core/package_manifest.dart';
 import '../core/stemming.dart';
 import '../models/admin_record.dart';
 import '../models/book.dart';
@@ -51,6 +64,36 @@ const String kDatabaseFileName = 'sunnati.db';
 
 /// Where the installed narrators database lives on the device.
 const String kNarratorsFileName = 'narrators.db';
+
+/// First-run / migration decision for the installed library file.
+/// Pure logic (see [decideLibraryInstall]) so it is unit-testable
+/// without a device, a database, or a network.
+enum LibraryInstallDecision {
+  /// A valid installed copy exists: use it as-is. This is the migration
+  /// path for users of build 52 (whose install already holds a valid
+  /// `sunnati.db`): they are NEVER forced to re-download ~190 MB.
+  useExisting,
+
+  /// No installed copy exists: the first-run download screen must run.
+  needsDownload,
+
+  /// An installed copy exists but fails verification: delete it and
+  /// re-download (the first-run download screen must run).
+  corruptNeedsRedownload,
+}
+
+/// Decide what to do with an installed library file, from two facts
+/// only: whether the file exists and whether it passed verification
+/// (SQLite header + `PRAGMA quick_check` + at least one hadith row).
+/// No I/O, no network — the caller supplies the facts.
+LibraryInstallDecision decideLibraryInstall({
+  required bool fileExists,
+  required bool fileValid,
+}) {
+  if (!fileExists) return LibraryInstallDecision.needsDownload;
+  if (!fileValid) return LibraryInstallDecision.corruptNeedsRedownload;
+  return LibraryInstallDecision.useExisting;
+}
 
 /// Admin/download tables of schema v4 (Phases 7-8). These statements are
 /// safe to run on every open (CREATE ... IF NOT EXISTS). The
@@ -105,16 +148,14 @@ const Map<String, String> kDownloadedLibrariesV4Columns =
   'updated_at': "TEXT NOT NULL DEFAULT ''",
 };
 
-/// Asset paths (declared in pubspec.yaml; replaced by real built files in CI).
-const String kDatabaseAssetPath = 'assets/sunnati.db';
-const String kDatabaseHashAssetPath = 'assets/sunnati.db.sha256';
-
-/// Asset paths for the derived narrators database (Phase 5 core, CC
-/// BY-NC-SA 4.0). The file is OPTIONAL: the app works without it and
-/// every narrator screen then reports honestly that no verified
-/// narrators are installed (see [_installNarratorsDb]).
-const String kNarratorsAssetPath = 'assets/narrators.db';
-const String kNarratorsHashAssetPath = 'assets/narrators.db.sha256';
+/// NOTE (rebuild 2026-11-26): there are NO asset paths for either
+/// database any more. `sunnati.db` is downloaded after install (see
+/// [kLibraryPackage]) and `narrators.db` is held back by the KITAB gate
+/// (see [kNarratorsPackageHeldBack]) — neither is loaded from Flutter
+/// assets by any code path. The integrator still has to remove the two
+/// entries from `pubspec.yaml` (see
+/// SUNNATI_REBUILD_WORK_B_2026-11-26.md); until then the asset entries
+/// are dead declarations that nothing reads.
 
 /// One FTS hit row: the hadith plus the ranking inputs the search
 /// service needs (FTS5 rank, the indexed norm text, and — for the
@@ -192,19 +233,29 @@ class SunnatiDatabase {
     this._db, {
     required this.isAvailable,
     this.narratorsAvailable = false,
+    this.libraryNeedsDownload = false,
   });
 
   final Database? _db;
 
   /// True only when a verified database with at least one hadith row is
-  /// installed. False in Phase 1 (schema-only DB) and when the asset is
-  /// missing or fails verification.
+  /// installed. False when no library has been downloaded yet, when the
+  /// installed copy fails verification, or when the database holds no
+  /// hadith rows.
   final bool isAvailable;
 
-  /// True only when the derived narrators database (assets/narrators.db)
-  /// is installed, verified and attached as `narrators_db`. False when
-  /// the asset is absent or fails verification — narrator screens then
-  /// report honestly that no verified narrators are installed.
+  /// True when the first-run download screen must run: no installed
+  /// library file exists, or the installed copy failed verification and
+  /// was removed. False when a valid library is installed (including a
+  /// migrated build-52 copy) or when the database is present but empty.
+  final bool libraryNeedsDownload;
+
+  /// True only when a narrators database ALREADY on the device from a
+  /// previous install (legacy local copy — NOT distributed by this
+  /// build) is verified and attached as `narrators_db`. False when no
+  /// such copy exists or it fails verification — narrator screens then
+  /// report honestly that no verified narrators are installed, with the
+  /// registry's pending-approval reason.
   final bool narratorsAvailable;
 
   /// Human-readable status for the library screen, e.g. the reason the
@@ -215,27 +266,79 @@ class SunnatiDatabase {
   /// Empty when available.
   String narratorsUnavailableReason = '';
 
-  /// Open (and if needed install + verify) the library database.
+  /// The installed library file in [dir] (app support directory).
+  static File installedLibraryFile(Directory dir) =>
+      File('${dir.path}/$kDatabaseFileName');
+
+  /// The installed narrators file in [dir] (app support directory).
+  static File installedNarratorsFile(Directory dir) =>
+      File('${dir.path}/$kNarratorsFileName');
+
+  /// Verify an installed library file WITHOUT opening it for use:
+  /// SQLite header + `PRAGMA quick_check` + at least one hadith row.
+  /// Used by the first-run download screen after a download, before it
+  /// reports success — a download is never reported successful on the
+  /// strength of the SHA-256 alone. Never throws.
+  static Future<bool> verifyLibraryFile(File file) async {
+    if (!await _verifyFile(file)) return false;
+    try {
+      final sqlite = sqlite3.open(file.path, mode: OpenMode.readOnly);
+      try {
+        final result = sqlite.select('PRAGMA quick_check');
+        final quickOk = result.isNotEmpty &&
+            result.first['quick_check'].toString() == 'ok';
+        if (!quickOk) return false;
+        final countRow =
+            sqlite.select('SELECT COUNT(*) AS c FROM hadiths');
+        return ((countRow.first['c'] as int?) ?? 0) > 0;
+      } finally {
+        sqlite.dispose();
+      }
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Open the installed library database.
   ///
-  /// Never throws for a missing/corrupt asset: it returns a database with
-  /// [isAvailable] == false and [unavailableReason] set, so the UI can
-  /// explain the state instead of crashing.
+  /// The library is NOT installed from assets any more: if no VALID
+  /// installed copy exists, this returns a database with [isAvailable]
+  /// == false and [libraryNeedsDownload] == true, and the caller (see
+  /// `lib/main.dart`) shows the first-run download screen instead of
+  /// crashing or pretending the library is there. A valid installed
+  /// copy — including one migrated from build 52 — is used as-is.
+  ///
+  /// Never throws for a missing/corrupt install: it returns a database
+  /// with [isAvailable] == false and [unavailableReason] set, so the UI
+  /// can explain the state instead of crashing.
   static Future<SunnatiDatabase> open() async {
     try {
       final dir = await getApplicationSupportDirectory();
-      final file = File('${dir.path}/$kDatabaseFileName');
-      if (!await file.exists()) {
-        await _installFromAssets(file);
+      final file = installedLibraryFile(dir);
+      final exists = await file.exists();
+      if (!exists) {
+        final db = SunnatiDatabase._(
+          null,
+          isAvailable: false,
+          libraryNeedsDownload: true,
+        );
+        db.unavailableReason =
+            'المكتبة غير منزّلة بعد — نزّلها عند أول تشغيل لتعمل دون إنترنت.';
+        return db;
       }
-      final ok = await _verifyFile(file);
-      if (!ok) {
-        // Corrupt install: remove it so a future run can reinstall cleanly.
+      if (!await _verifyFile(file)) {
+        // Corrupt install: remove it so the first-run download can
+        // replace it cleanly on the next run.
         try {
           await file.delete();
         } catch (_) {}
-        final db = SunnatiDatabase._(null, isAvailable: false);
+        final db = SunnatiDatabase._(
+          null,
+          isAvailable: false,
+          libraryNeedsDownload: true,
+        );
         db.unavailableReason =
-            'تعذّر التحقق من سلامة المكتبة المثبّتة؛ ستُعاد محاولة التثبيت عند التشغيل التالي.';
+            'تعذّر التحقق من سلامة المكتبة المثبّتة؛ ستُعاد محاولة التنزيل عند التشغيل التالي.';
         return db;
       }
       final sqlite = sqlite3.open(file.path);
@@ -244,23 +347,32 @@ class SunnatiDatabase {
           result.first['quick_check'].toString() == 'ok';
       if (!quickOk) {
         sqlite.dispose();
-        final db = SunnatiDatabase._(null, isAvailable: false);
+        try {
+          await file.delete();
+        } catch (_) {}
+        final db = SunnatiDatabase._(
+          null,
+          isAvailable: false,
+          libraryNeedsDownload: true,
+        );
         db.unavailableReason = 'فشل فحص سلامة قاعدة بيانات المكتبة.';
         return db;
       }
       // Schema v4 (Phases 7-8): admin + downloads-registry tables. The
-      // bundled asset DB ships as v2, so this runs on every open and is
-      // idempotent — an already-migrated database is untouched.
+      // published library DB ships as v2, so this runs on every open and
+      // is idempotent — an already-migrated database is untouched.
       _ensureAdminSchema(sqlite);
       final countRow =
           sqlite.select('SELECT COUNT(*) AS c FROM hadiths');
       final total = (countRow.first['c'] as int?) ?? 0;
-      // Phase 5 core (optional, never fatal): install + verify the
-      // derived narrators database and ATTACH it as `narrators_db`.
-      // Without it every narrator query reads the local (empty)
-      // `narrators` table and the UI reports honestly that no verified
-      // narrators are installed.
-      final narrators = await _installNarratorsDb(dir, sqlite);
+      // Phase 5 core (optional, never fatal): attach a narrators
+      // database ALREADY on the device from a previous install as
+      // `narrators_db` (legacy local copy only — this build distributes
+      // no narrators file and offers no narrators download; see
+      // [_attachLegacyNarratorsDb]). Without it every narrator query
+      // reads the local (empty) `narrators` table and the UI reports
+      // honestly that no verified narrators are installed.
+      final narrators = await _attachLegacyNarratorsDb(dir, sqlite);
       final db = SunnatiDatabase._(
         sqlite,
         isAvailable: total > 0,
@@ -272,6 +384,16 @@ class SunnatiDatabase {
       if (total == 0) {
         db.unavailableReason =
             'المكتبة تُبنى — الكتب التسعة قيد الاستيراد. لا توجد أحاديث بعد.';
+      } else {
+        // Record the installed core library in the downloads registry
+        // when no row exists yet (migration: build-52 users have a
+        // valid library file but never downloaded it through this
+        // build, so no row was ever written). The SHA-256 is left
+        // empty for a migrated copy — it was never verified against a
+        // published hash by this build, and claiming one would be
+        // inventing data. A fresh download records its real hash
+        // (see the first-run download screen).
+        _ensureLibraryRegistryRow(sqlite, file);
       }
       return db;
     } catch (e) {
@@ -281,67 +403,76 @@ class SunnatiDatabase {
     }
   }
 
-  /// Copy the bundled asset DB to [file] and check its SHA-256 against the
-  /// bundled hash asset. Returns false (and deletes the copy) on mismatch.
-  static Future<void> _installFromAssets(File file) async {
-    final bytes = await rootBundle.load(kDatabaseAssetPath);
-    final data = bytes.buffer.asUint8List();
-    await file.writeAsBytes(data, flush: true);
+  /// Insert the `downloaded_libraries` row for the core library when
+  /// none exists (migration case). Best-effort and never throws: a
+  /// registry failure must never break opening the library.
+  static void _ensureLibraryRegistryRow(Database sqlite, File file) {
     try {
-      final expected =
-          (await rootBundle.loadString(kDatabaseHashAssetPath)).trim();
-      final actual = sha256.convert(data).toString();
-      if (expected.isNotEmpty && expected != actual) {
-        await file.delete();
-        throw StateError('SHA-256 mismatch for the bundled library database');
-      }
-    } on StateError {
-      rethrow;
+      final existing = sqlite.select(
+        'SELECT COUNT(*) AS c FROM downloaded_libraries '
+        "WHERE library_id = 'library'",
+      );
+      if (((existing.first['c'] as int?) ?? 0) > 0) return;
+      final size = file.lengthSync();
+      final now = DateTime.now().toUtc().toIso8601String();
+      sqlite.execute(
+        'INSERT INTO downloaded_libraries (library_id, name, version, '
+        'size_bytes, sha256, status, installed_at, source, license, '
+        'download_url, total_bytes, downloaded_bytes, manifest_json, '
+        'updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        <Object?>[
+          kLibraryPackage.id,
+          kLibraryPackage.displayName,
+          '1.0.0',
+          size,
+          '',
+          'installed',
+          now,
+          'quranlab/hadith',
+          '',
+          kLibraryPackage.url,
+          size,
+          size,
+          '',
+          now,
+        ],
+      );
     } catch (_) {
-      // A missing/unreadable hash asset is not fatal in a dev build, but the
-      // CI-built release always ships a hash (see build.yml). The file stays
-      // installed; quick_check below still guards integrity.
+      // Registry bookkeeping must never break the library open.
     }
   }
 
-  /// Install + verify the derived narrators database (Phase 5 core) and
-  /// ATTACH it as `narrators_db` on [sqlite]. Best-effort and never
-  /// throws: any failure (missing asset, SHA mismatch, corrupt file)
-  /// leaves the app working without narrators and reports the reason.
+  /// Attach a narrators database ALREADY on the device from a previous
+  /// install (legacy local copy) as `narrators_db` on [sqlite], after
+  /// verifying it (header + quick_check + at least one narrator row).
+  /// Best-effort and never throws.
   ///
-  /// The installed copy is re-checked against the bundled hash on every
-  /// open (the file is small, ~3.5 MB): a stale or corrupt copy is
-  /// deleted and reinstalled from the asset, so the app self-heals
-  /// instead of silently keeping old narrator data.
-  static Future<({bool ok, String reason})> _installNarratorsDb(
+  /// KITAB GATE — read carefully. This build distributes NO narrators
+  /// file, offers NO narrators download, and installs NOTHING from
+  /// assets: there is no source to reinstall a missing or corrupt copy
+  /// from while the gate is closed. The legacy copy is therefore kept
+  /// read-only and used as-is when it verifies, because deleting it
+  /// would destroy data the user already holds and that cannot be
+  /// re-fetched; a corrupt legacy copy is LEFT ON DISK (not deleted)
+  /// and reported as unavailable, so it can still be inspected or
+  /// repaired by hand. When no legacy copy exists the reason returned
+  /// is the registry's pending-approval reason
+  /// ([kNarratorsPackage.unavailableReason]), word for word.
+  static Future<({bool ok, String reason})> _attachLegacyNarratorsDb(
     Directory dir,
     Database sqlite,
   ) async {
+    final file = installedNarratorsFile(dir);
+    if (!await file.exists()) {
+      return (ok: false, reason: kNarratorsPackage.unavailableReason);
+    }
     try {
-      final file = File('${dir.path}/$kNarratorsFileName');
-      final expectedHash = await _narratorsHashAsset();
-      if (await file.exists() && expectedHash.isNotEmpty) {
-        final installedHash =
-            sha256.convert(await file.readAsBytes()).toString();
-        if (installedHash != expectedHash) {
-          await file.delete(); // stale or corrupt: reinstall from asset.
-        }
-      }
-      if (!await file.exists()) {
-        final bytes = await rootBundle.load(kNarratorsAssetPath);
-        final data = bytes.buffer.asUint8List();
-        await file.writeAsBytes(data, flush: true);
-        if (expectedHash.isNotEmpty &&
-            sha256.convert(data).toString() != expectedHash) {
-          await file.delete();
-          return (
-            ok: false,
-            reason: 'تعذّر التحقق من سلامة قاعدة الرواة (SHA-256).',
-          );
-        }
-      }
       if (!await _verifyFile(file)) {
-        return (ok: false, reason: 'ملف قاعدة الرواة غير صالح.');
+        return (
+          ok: false,
+          reason: 'ملف قاعدة الرواة المحلي على الجهاز تالف ولا يمكن '
+              'فتحه — بقي الملف دون حذف.',
+        );
       }
       sqlite.execute(
         "ATTACH DATABASE '${file.path.replaceAll("'", "''")}' "
@@ -352,7 +483,7 @@ class SunnatiDatabase {
           result.first['quick_check'].toString() == 'ok';
       if (!quickOk) {
         sqlite.execute('DETACH DATABASE narrators_db');
-        return (ok: false, reason: 'فشل فحص سلامة قاعدة الرواة.');
+        return (ok: false, reason: 'فشل فحص سلامة قاعدة الرواة المحلية.');
       }
       final count = sqlite.select(
         'SELECT COUNT(*) AS c FROM narrators_db.narrators',
@@ -360,25 +491,14 @@ class SunnatiDatabase {
       final total = (count.first['c'] as int?) ?? 0;
       if (total == 0) {
         sqlite.execute('DETACH DATABASE narrators_db');
-        return (ok: false, reason: 'قاعدة الرواة مثبّتة لكنها فارغة.');
+        return (ok: false, reason: 'قاعدة الرواة المحلية مثبّتة لكنها فارغة.');
       }
       return (ok: true, reason: '');
     } catch (e) {
       try {
         sqlite.execute('DETACH DATABASE narrators_db');
       } catch (_) {}
-      return (ok: false, reason: 'تعذّر تثبيت قاعدة الرواة: $e');
-    }
-  }
-
-  /// The bundled narrators-db hash, or '' when the hash asset is
-  /// missing/unreadable (dev build) — callers then skip the SHA check
-  /// and rely on quick_check alone.
-  static Future<String> _narratorsHashAsset() async {
-    try {
-      return (await rootBundle.loadString(kNarratorsHashAssetPath)).trim();
-    } catch (_) {
-      return '';
+      return (ok: false, reason: 'تعذّر فتح قاعدة الرواة المحلية: $e');
     }
   }
 
@@ -1117,7 +1237,8 @@ class SunnatiDatabase {
               'NULL AS bio_src';
       rows = db.select(
         'SELECT hn.position, hn.narrator_id, hn.link_type, hn.source, '
-        'hn.notes, $narratorCols FROM hadith_narrators hn '
+        'hn.notes, hn.narrator_text, hn.start_char, hn.end_char, '
+        'hn.match_status, $narratorCols FROM hadith_narrators hn '
         '$chainFilter$narratorJoin'
         'WHERE hn.hadith_id = ? ORDER BY hn.position',
         <Object?>[hadithId],
@@ -1153,6 +1274,13 @@ class SunnatiDatabase {
           'link_type': r['link_type'],
           'source': r['source'],
           'notes': r['notes'],
+          // Parser row fields selected above (integrator fix 2026-11-26:
+          // the SELECT already carried them, but this map dropped them,
+          // so hasOffsets was always false at runtime).
+          'narrator_text': r['narrator_text'],
+          'start_char': r['start_char'],
+          'end_char': r['end_char'],
+          'match_status': r['match_status'],
         },
         narrator: narrator,
       );
