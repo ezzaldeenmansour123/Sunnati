@@ -150,7 +150,7 @@ jobs:
 
       - name: Verify launcher icon (owner's v2 image, committed PNGs)
         run: |
-          pip install Pillow
+          pip install Pillow numpy
           python3 tools/make_icon_from_source.py --out android/app/src/main/res --check
           test -f android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
           test -f android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png
