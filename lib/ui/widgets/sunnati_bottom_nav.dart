@@ -15,40 +15,31 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../core/theme.dart';
 
-/// Builds a fresh app shell opened on the given tab index.
+/// Selects a tab on the LIVE app shell (registered by `lib/main.dart`,
+/// which owns the shell state).
 ///
-/// Registered once by the app entry point (`lib/main.dart`), which is
-/// the only place that owns the database, user data and theme callbacks
-/// a shell needs. The nav widget itself must not import `main.dart`
-/// (that would be an import cycle), so the entry point hands the factory
-/// over through this variable instead.
-typedef SunnatiShellBuilder = Widget Function(int index);
-
-/// Factory for a fresh shell, set by `lib/main.dart` on every build
-/// once the library is open. Null only before the app has booted — and
+/// Registered by the shell itself in `initState` and cleared in
+/// `dispose`. The nav widget must not import `main.dart` (that would be
+/// an import cycle), so the entry point hands the callback over through
+/// this variable instead. Null only before the app has booted — and
 /// pushed screens (the only callers of [sunnatiGoToTab]) exist solely
 /// under a booted shell, so a null here means "do nothing".
-SunnatiShellBuilder? sunnatiShellBuilder;
+ValueChanged<int>? sunnatiSelectTab;
 
 /// Switch to tab [index] from a PUSHED screen.
 ///
-/// Replaces the whole navigation stack with a fresh shell opened on the
-/// given tab ([SunnatiBottomNav] index contract: 0 المزيد، 1 المكتبة،
-/// 2 الرئيسية، 3 البحث، 4 الحديث). Switching tabs from a pushed screen
-/// therefore resets the back stack — the pushed page is gone and the
-/// back button exits the app from the fresh shell, exactly like a
-/// standard tab bar: tabs are top-level destinations, not pages stacked
-/// on top of each other.
+/// Pops back to the LIVE shell (the first route) and selects the tab
+/// there — the shell keeps every tab's state alive (IndexedStack), so
+/// scroll positions, typed searches and the reader's place survive the
+/// switch. This REPLACES the old behaviour (2026-11-26 smoothness fix
+/// 1) of pushing a FRESH shell with pushAndRemoveUntil, which rebuilt
+/// the whole app from scratch on every tab tap and felt like a restart.
 ///
 /// In-shell tab switches (the shell's own `setState`) are untouched —
 /// only pushed screens use this helper.
 void sunnatiGoToTab(BuildContext context, int index) {
-  final buildShell = sunnatiShellBuilder;
-  if (buildShell == null) return;
-  Navigator.of(context).pushAndRemoveUntil(
-    MaterialPageRoute<void>(builder: (_) => buildShell(index)),
-    (route) => false,
-  );
+  Navigator.of(context).popUntil((route) => route.isFirst);
+  sunnatiSelectTab?.call(index);
 }
 
 class SunnatiBottomNav extends StatelessWidget {

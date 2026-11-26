@@ -5,24 +5,27 @@
 /// «الحديث» node. A node shows the narrator name and, underneath it in
 /// parentheses, the tier label ONLY when the tier is actually known from
 /// the database (verified narrator with a recorded tier); unverified nodes
-/// show the name only, never an invented tier. Tapping reuses the
-/// existing honest-ladder tap logic: a confirmed narrator opens his card,
-/// a verified link whose narrators package is held back shows the pending
-/// sheet with no status, and anything else shows the honest
-/// «no verified biography» sheet. The whole tree zooms/pans through
+/// show the name only, never an invented tier. Tapping a node shows the
+/// status + source as an INLINE LINE inside that same node, right under
+/// the name (user decision 2026-11-26 17:23, superseding the 16:49
+/// small-card design); a verified link whose narrators package is held
+/// back shows the pending message, and anything else shows the honest
+/// «no verified biography» message — never a navigation, never a sheet,
+/// never a popup card. The whole tree zooms/pans through
 /// [InteractiveViewer]. With no chain rows the widget shows an honest
 /// empty state instead of a fabricated chain.
 library;
 
 import 'package:material_ui/material_ui.dart';
 
+import '../../core/narrator_logic.dart';
 import '../../core/theme.dart';
 import '../../data/database.dart';
 import '../../models/chain.dart';
 import 'empty_library.dart';
-import 'narrator_card.dart';
+import 'isnad_text.dart';
 
-class IsnadTree extends StatelessWidget {
+class IsnadTree extends StatefulWidget {
   const IsnadTree({super.key, required this.db, required this.links});
 
   final SunnatiDatabase db;
@@ -31,7 +34,60 @@ class IsnadTree extends StatelessWidget {
   final List<ChainLink> links;
 
   @override
+  State<IsnadTree> createState() => _IsnadTreeState();
+}
+
+class _IsnadTreeState extends State<IsnadTree> {
+  /// Index of the tapped node (null: none tapped) + its inline-line data.
+  int? _selectedIndex;
+  InlineNarratorStatus? _selected;
+
+  @override
+  void didUpdateWidget(IsnadTree oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.links != widget.links) {
+      _selectedIndex = null;
+      _selected = null;
+    }
+  }
+
+  /// Tap a node: compute the honest-ladder outcome and show the status
+  /// + source as an inline line inside that same node — never a sheet,
+  /// never a navigation, never a popup card (user decision 2026-11-26
+  /// 17:23). Tapping the same node again hides the line.
+  void _select(int index) {
+    final link = widget.links[index];
+    final outcome = narratorTapOutcome(
+      verifiedLink: link.isVerifiedLink,
+      narratorsAvailable: widget.db.narratorsAvailable,
+    );
+    final narrator =
+        outcome == NarratorTapOutcome.showStatus ? link.narrator : null;
+    // Same name the node shows (see [_ChainNode._name]).
+    final name = link.isConfirmed
+        ? link.displayName
+        : (link.narratorText.isNotEmpty
+            ? link.narratorText
+            : link.displayName);
+    setState(() {
+      if (_selectedIndex == index) {
+        _selectedIndex = null;
+        _selected = null;
+      } else {
+        _selectedIndex = index;
+        _selected = inlineStatusForTap(
+          name: name,
+          outcome: outcome,
+          status: narrator?.status ?? '',
+          statusSource: narrator?.statusSource ?? '',
+        );
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final links = widget.links;
     if (links.isEmpty) {
       return const EmptyLibraryCard(
         title: 'لا توجد بيانات سلسلة موثّقة',
@@ -42,7 +98,16 @@ class IsnadTree extends StatelessWidget {
     }
     final nodes = <Widget>[];
     for (var i = 0; i < links.length; i++) {
-      nodes.add(_ChainNode(db: db, link: links[i]));
+      nodes.add(
+        _ChainNode(
+          db: widget.db,
+          link: links[i],
+          onTap: () => _select(i),
+          statusLine: i == _selectedIndex && _selected != null
+              ? inlineStatusLineText(_selected!)
+              : null,
+        ),
+      );
       nodes.add(const _Connector());
     }
     nodes.add(const _HadithNode());
@@ -76,10 +141,24 @@ class _Connector extends StatelessWidget {
 }
 
 class _ChainNode extends StatelessWidget {
-  const _ChainNode({required this.db, required this.link});
+  const _ChainNode({
+    required this.db,
+    required this.link,
+    required this.onTap,
+    this.statusLine,
+  });
 
   final SunnatiDatabase db;
   final ChainLink link;
+
+  /// Called when the node is tapped; the tree shows the status + source
+  /// as an inline line inside this same node (never a sheet, never a
+  /// navigation, never a popup card).
+  final VoidCallback onTap;
+
+  /// Inline status line to show under the name (null: this node is not
+  /// the tapped one). Rendered in the same red as the narrator names.
+  final String? statusLine;
 
   /// Name to show: the verified narrator's name, else the name exactly
   /// as printed in the hadith text, else the honest placeholder.
@@ -102,23 +181,6 @@ class _ChainNode extends StatelessWidget {
     return null;
   }
 
-  void _onTap(BuildContext context) {
-    if (link.isConfirmed) {
-      showNarratorSheetById(context, db, link.narratorId!);
-    } else if (link.isVerifiedLink) {
-      // Honest-ladder rung (b): verified link, package held back.
-      // No status, no scholar, no source is shown.
-      showNarratorPendingSheet(
-        context,
-        narratorName: _name,
-        verifiedLinkKnown: true,
-      );
-    } else {
-      // Honest-ladder rung (c): no verified biography (yet).
-      showUnverifiedNarratorSheet(context, narratorName: _name);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final confirmed = link.isConfirmed;
@@ -131,7 +193,7 @@ class _ChainNode extends StatelessWidget {
     return Card(
       color: confirmed ? SunnatiColors.blush : SunnatiColors.goldSoft,
       child: InkWell(
-        onTap: () => _onTap(context),
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -193,6 +255,15 @@ class _ChainNode extends StatelessWidget {
                       color: SunnatiColors.inkMuted,
                       fontSize: 12,
                     ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              if (statusLine != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    statusLine!,
+                    style: isnadInlineStatusStyle(context),
                     textAlign: TextAlign.center,
                   ),
                 ),
