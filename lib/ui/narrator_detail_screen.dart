@@ -9,7 +9,7 @@
 /// data says so plainly.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../core/theme.dart';
 import '../data/database.dart';
@@ -103,7 +103,7 @@ class _NarratorDetailScreenState extends State<NarratorDetailScreen> {
             expanded: true,
             showOpenFullPage: false,
           ),
-          _SectionTitle('أقوال العلماء فيه'),
+          const _SectionTitle('أقوال العلماء فيه'),
           if (_sayings.isEmpty)
             const Text(
               'لا توجد أقوال مسجّلة للعلماء فيه بعد.',
@@ -129,7 +129,7 @@ class _NarratorDetailScreenState extends State<NarratorDetailScreen> {
               ),
             ),
           ],
-          _SectionTitle('شيوخه'),
+          const _SectionTitle('شيوخه'),
           if (_teachers.isEmpty)
             const Text(
               'لا يوجد شيوخ مسجّلون له بعد — تُستنتج الشيوخ من الأسانيد الموثّقة فقط.',
@@ -147,7 +147,7 @@ class _NarratorDetailScreenState extends State<NarratorDetailScreen> {
                   )
                   .toList(),
             ),
-          _SectionTitle('تلاميذه'),
+          const _SectionTitle('تلاميذه'),
           if (_students.isEmpty)
             const Text(
               'لا يوجد تلاميذ مسجّلون له بعد — تُستنتج التلاميذ من الأسانيد الموثّقة فقط.',

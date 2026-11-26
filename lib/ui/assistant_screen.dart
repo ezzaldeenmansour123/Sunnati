@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../assistant/assistant_service.dart';
 import '../assistant/explanation_template.dart';

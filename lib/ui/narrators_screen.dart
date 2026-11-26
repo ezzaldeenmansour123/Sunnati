@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../core/theme.dart';
 import '../data/database.dart';
@@ -102,7 +102,8 @@ class _NarratorsScreenState extends State<NarratorsScreen> {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: _tier,
+                    key: ValueKey(_tier),
+                    initialValue: _tier,
                     decoration: const InputDecoration(
                       labelText: 'الطبقة',
                       border: OutlineInputBorder(),
@@ -124,7 +125,8 @@ class _NarratorsScreenState extends State<NarratorsScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: _status,
+                    key: ValueKey(_status),
+                    initialValue: _status,
                     decoration: const InputDecoration(
                       labelText: 'حكم الجرح والتعديل',
                       border: OutlineInputBorder(),

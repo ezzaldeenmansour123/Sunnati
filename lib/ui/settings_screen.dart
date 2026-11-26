@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
 import '../core/app_version.dart';
@@ -125,7 +125,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(12),
         children: [
-          _Section('المظهر'),
+          const _Section('المظهر'),
           Card(
             child: Column(
               children: [
@@ -164,7 +164,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
           ),
-          _Section('التخزين والبيانات'),
+          const _Section('التخزين والبيانات'),
           Card(
             child: Column(
               children: [
@@ -203,7 +203,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
           ),
-          _Section('الإدارة'),
+          const _Section('الإدارة'),
           Card(
             child: Column(
               children: [
@@ -225,7 +225,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
           ),
-          _Section('حول'),
+          const _Section('حول'),
           Card(
             child: Column(
               children: [
@@ -236,7 +236,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 ListTile(
                   title: const Text('حول التطبيق'),
-                  subtitle: Text('الإصدار $appVersionDisplay'),
+                  subtitle: const Text('الإصدار $appVersionDisplay'),
                   trailing: const Icon(Icons.chevron_left),
                   onTap: _showAbout,
                 ),

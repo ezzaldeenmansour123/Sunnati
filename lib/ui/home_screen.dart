@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../core/theme.dart';
 import '../data/database.dart';
@@ -69,12 +69,12 @@ class HomeScreen extends StatelessWidget {
         children: [
           // Brand header: open-book + dome mark is the launcher icon; here
           // the wordmark + tagline carry the identity in petrol + matte gold.
-          Card(
+          const Card(
             color: SunnatiColors.petrol,
-            child: Padding(
+            child: const Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-              child: Column(
-                children: [
+              child: const Column(
+                children: const [
                   const Icon(Icons.menu_book, size: 44, color: Colors.white),
                   const SizedBox(height: 8),
                   const Text(
@@ -204,7 +204,7 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'يعمل دون إنترنت بعد تثبيت المكتبة. المساعد يسترجع من المكتبة فقط ولا يولّد إجابات.',
-            style: TextStyle(color: colors.onSurface.withOpacity(0.6), fontSize: 12),
+            style: TextStyle(color: colors.onSurface.withValues(alpha: 0.6), fontSize: 12),
             textAlign: TextAlign.center,
           ),
         ],

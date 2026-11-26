@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/database.dart';
 import '../data/user_repository.dart';
@@ -332,7 +332,8 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String?>(
-          value: _bookId,
+          key: ValueKey(_bookId),
+          initialValue: _bookId,
           decoration: const InputDecoration(
             labelText: 'الكتاب',
             border: OutlineInputBorder(),
@@ -354,7 +355,8 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<int?>(
-          value: _chapterId,
+          key: ValueKey(_chapterId),
+          initialValue: _chapterId,
           decoration: const InputDecoration(
             labelText: 'الموضوع (الباب)',
             border: OutlineInputBorder(),
@@ -375,7 +377,8 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String?>(
-          value: _grade,
+          key: ValueKey(_grade),
+          initialValue: _grade,
           decoration: const InputDecoration(
             labelText: 'الدرجة',
             border: OutlineInputBorder(),

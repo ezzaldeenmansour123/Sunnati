@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../core/text_compare.dart';
 import '../core/theme.dart';
@@ -90,7 +90,7 @@ class TakhrijScreen extends StatelessWidget {
                 ),
               ),
             ),
-            _SectionTitle(context, 'طرق الحديث (${variants.length})'),
+            _sectionTitle(context, 'طرق الحديث (${variants.length})'),
             if (variants.isEmpty)
               const EmptyLibraryCard(
                 title: 'لا توجد طرق مسجّلة بعد',
@@ -108,7 +108,7 @@ class TakhrijScreen extends StatelessWidget {
               ),
               ...variants.map((v) => _VariantCard(base: h, variant: v)),
             ],
-            _SectionTitle(context, 'مصادر التخريج (${entries.length})'),
+            _sectionTitle(context, 'مصادر التخريج (${entries.length})'),
             if (entries.isEmpty)
               const Text(
                 'لا توجد مصادر تخريج مسجّلة لهذا الحديث بعد.',
@@ -141,7 +141,7 @@ class TakhrijScreen extends StatelessWidget {
   }
 }
 
-Widget _SectionTitle(BuildContext context, String text) {
+Widget _sectionTitle(BuildContext context, String text) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 12),
     child: Text(

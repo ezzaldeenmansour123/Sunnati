@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../core/extended_library.dart';
@@ -379,7 +379,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
                       : extendedLibraryPreparingLabel,
                 ),
                 isThreeLine: entry.author.isNotEmpty,
-                trailing: Chip(
+                trailing: const Chip(
                   label: const Text('قيد التجهيز'),
                   backgroundColor: SunnatiColors.goldSoft,
                 ),

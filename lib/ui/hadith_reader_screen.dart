@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -202,7 +202,7 @@ class _HadithReaderScreenState extends State<HadithReaderScreen> {
           ),
           const SizedBox(height: 16),
           const Divider(),
-          _SectionTitle('الدرجة'),
+          const _SectionTitle('الدرجة'),
           if (_hadith.hasGrades)
             ..._hadith.grades.map(
               (g) => ListTile(
@@ -217,7 +217,7 @@ class _HadithReaderScreenState extends State<HadithReaderScreen> {
               style: TextStyle(color: SunnatiColors.inkMuted),
             ),
           const Divider(),
-          _SectionTitle('الشرح المنقول'),
+          const _SectionTitle('الشرح المنقول'),
           if (_hadith.hasExplanation) ...[
             Text(_hadith.explanation, style: const TextStyle(height: 1.8)),
             const SizedBox(height: 6),
