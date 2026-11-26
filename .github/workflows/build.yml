@@ -1,0 +1,185 @@
+name: Build SUNNATI APK
+
+# Phases 9-10 (v1.0.0): build the app + full library DB, run tests, publish
+# a release APK. `test/` is NEVER deleted — a failing test fails the build.
+# Signing: release builds need the KEYSTORE_BASE64 / KEYSTORE_PASSWORD /
+# KEY_ALIAS / KEY_PASSWORD secrets (see SIGNING.md). A push build without
+# them is DEBUG-signed with a loud warning and must never be distributed;
+# a TAG build (a real release) without them FAILS outright.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Flutter 3.50.1
+        uses: subosito/flutter-action@v2
+        with:
+          # 3.50.1, not 3.24.5: pubspec.lock requires flutter >=3.47.0
+          # (generated with 3.50.1), and all local verification
+          # (flutter analyze 0 errors, flutter test 130/130) ran on 3.50.1.
+          flutter-version: "3.50.1"
+          channel: stable
+
+      - name: Set up Java 17 (keytool — signing verification)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Guard — pubspec version matches the single source of truth
+        run: |
+          PUBSPEC_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          CODE_VERSION=$(grep -oP "appVersion = '\K[^']+" lib/core/app_version.dart)
+          CODE_BUILD=$(grep -oP "appBuildNumber = \K[0-9]+" lib/core/app_version.dart)
+          if [ "$PUBSPEC_VERSION" != "${CODE_VERSION}+${CODE_BUILD}" ]; then
+            echo "ERROR: pubspec version ($PUBSPEC_VERSION) != lib/core/app_version.dart (${CODE_VERSION}+${CODE_BUILD})"
+            exit 1
+          fi
+          echo "Version OK: $PUBSPEC_VERSION"
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Analyse (must pass)
+        run: flutter analyze
+
+      - name: Test (must pass — test/ is never deleted)
+        run: flutter test
+
+      - name: Build the library database (Phases 2-3 — full import)
+        run: |
+          pip install pyarrow
+          python3 tools/build_db.py --out assets/sunnati.db \
+            --data-dir sunnati-data/parquet \
+            --log-json /tmp/sunnati-build-log.json
+          ls -l assets/sunnati.db assets/sunnati.db.sha256
+
+      - name: Apply verified isnad links (Phase 5 core — reviewed scope)
+        # build_db.py creates the narrator tables EMPTY. Without this step
+        # a CI-built library would ship 0 parser candidates and 0 verified
+        # links, silently disabling tap-a-narrator. Seeds exactly the
+        # reviewed scope (1,500-hadith sample) from tools/verified_links.json
+        # and FAILS the build on any count mismatch. Also verifies the
+        # committed derived narrators DB against its published SHA-256.
+        run: |
+          python3 tools/apply_verified_links.py --db assets/sunnati.db \
+            --log-json /tmp/verified-links-log.json
+          # The .sha256 assets hold a bare hash (see build_db.py: the app
+          # compares the trimmed file content to the computed hash), so
+          # verify by explicit comparison, not `sha256sum -c`.
+          test "$(sha256sum assets/narrators.db | cut -d' ' -f1)" = "$(cat assets/narrators.db.sha256)"
+          test "$(sha256sum assets/sunnati.db | cut -d' ' -f1)" = "$(cat assets/sunnati.db.sha256)"
+          ls -l assets/sunnati.db assets/narrators.db
+
+      - name: Download Amiri font (SIL OFL 1.1, google/fonts)
+        run: |
+          mkdir -p assets/fonts
+          curl -fL -o assets/fonts/Amiri-Regular.ttf \
+            https://github.com/google/fonts/raw/main/ofl/amiri/Amiri-Regular.ttf
+          curl -fL -o assets/fonts/Amiri-Bold.ttf \
+            https://github.com/google/fonts/raw/main/ofl/amiri/Amiri-Bold.ttf
+          ls -l assets/fonts/
+
+      - name: Generate launcher icon (petrol + ivory + matte gold)
+        run: |
+          pip install Pillow
+          python3 tools/make_icon.py --out android/app/src/main/res
+
+      - name: Ensure Gradle wrapper jar
+        run: |
+          if [ ! -f android/gradle/wrapper/gradle-wrapper.jar ]; then
+            curl -fL -o android/gradle/wrapper/gradle-wrapper.jar \
+              https://github.com/gradle/gradle/raw/v8.6.0/gradle/wrapper/gradle-wrapper.jar
+          fi
+          ls -l android/gradle/wrapper/
+
+      - name: Set up release signing (if secrets are configured)
+        run: |
+          if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/keystore.jks
+            {
+              echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}"
+              echo "keyPassword=${{ secrets.KEY_PASSWORD }}"
+              echo "keyAlias=${{ secrets.KEY_ALIAS }}"
+              echo "storeFile=keystore.jks"
+            } > android/key.properties
+            echo "HAS_KEYSTORE=true" >> "$GITHUB_ENV"
+            echo "Release keystore configured. Certificate fingerprint (SHA-256):"
+            keytool -list -v -keystore android/app/keystore.jks \
+              -storepass "${{ secrets.KEYSTORE_PASSWORD }}" \
+              -alias "${{ secrets.KEY_ALIAS }}" 2>/dev/null \
+              | grep -E "SHA256:|Alias name:" || echo "WARNING: could not read keystore fingerprint — check alias/password."
+          else
+            echo "HAS_KEYSTORE=false" >> "$GITHUB_ENV"
+            echo "WARNING: KEYSTORE_BASE64 secret not set — this build will be DEBUG-signed. Do NOT distribute it as a release."
+          fi
+
+      - name: Guard — a tagged release MUST be release-signed
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]] && [ "$HAS_KEYSTORE" != "true" ]; then
+            echo "ERROR: building tag ${{ github.ref }} without a release keystore. Set the signing secrets (see SIGNING.md) — a debug-signed tag must never be published as a release."
+            exit 1
+          fi
+          echo "Signing guard OK (ref=${{ github.ref }}, HAS_KEYSTORE=$HAS_KEYSTORE)."
+
+      - name: Build release APK (single arm64-v8a APK)
+        # One APK on purpose: the target test device is a Samsung Galaxy
+        # S22 Ultra (arm64-v8a). A universal/split build is a later
+        # decision, not a silent default.
+        run: flutter build apk --release --target-platform android-arm64
+
+      - name: Verify APK + SHA-256 + signing certificate
+        run: |
+          APK=$(ls build/app/outputs/flutter-apk/app-arm64-v8a-release.apk)
+          sha256sum "$APK" | tee "$APK.sha256"
+          ls -l "$APK"
+          echo "APK signing certificate (SHA-256 fingerprint — compare with SIGNING.md):"
+          keytool -printcert -jarfile "$APK" 2>/dev/null | grep -E "SHA256:|Owner:" || echo "WARNING: could not read APK certificate."
+
+      - name: Upload APK artifact (push builds — verification only, no public release)
+        # Push builds never publish a public release: a public release is
+        # created only from a deliberate tag (after the signing secrets
+        # and the KITAB licence gate are cleared). A push build without
+        # the keystore is debug-signed and must never be distributed.
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunnati-apk
+          path: |
+            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk.sha256
+          retention-days: 14
+
+      - name: Publish release v1.0.0-build-${{ github.run_number }}
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0-build-${{ github.run_number }}
+          name: SUNNATI v1.0.0 (build ${{ github.run_number }})
+          body: |
+            SUNNATI v1.0.0 — the Nine Books (65,712 hadiths) + 3,574
+            HadeethEnc commentaries + 67,334 grader-attributed grades +
+            verified narrators core (500 narrators from Taqrib
+            al-Tahdhib via OpenITI, CC BY-NC-SA 4.0 — see SOURCES.md)
+            with tap-a-narrator inside the hadith text + lexical
+            semantic search. Full build report:
+            SUNNATI_FULL_BUILD_REPORT_2026-11-26.md.
+            Device: Samsung Galaxy S22 Ultra (arm64-v8a).
+          files: |
+            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk.sha256
